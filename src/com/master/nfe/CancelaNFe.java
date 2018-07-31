@@ -45,10 +45,10 @@ import br.servicos.NfeServicos;
 			if(JavaUtil.doValida(request.getParameter("emissor"))){
 				empresa = new br.core.base.EmpresaDb().getEmpresa(request.getParameter("emissor"));
 				if(!JavaUtil.doValida(empresa.getRazaosocial())){
-					throw new Excecoes("A empresa emitente não foi encontrada no sistema!");
+					throw new Excecoes("A empresa emitente nao foi encontrada no sistema!");
 				}
 			} else {
-				throw new Excecoes("A empresa emitente não foi informada!");
+				throw new Excecoes("A empresa emitente nao foi informada!");
 			}
 			Nota_Fiscal_EletronicaED edNF = new Nota_Fiscal_EletronicaED();
 
@@ -91,7 +91,7 @@ import br.servicos.NfeServicos;
 //			            	}
 
 			            } else {
-			            	throw new Mensagens("Retorno do lote não possui MDFe...\n\r");
+			            	throw new Mensagens("Retorno do lote nï¿½o possui MDFe...\n\r");
 			            }
 		            } else {
 		            	throw new Excecoes(""+JavaUtil.getErrors(servico.getErros()).toUpperCase());
