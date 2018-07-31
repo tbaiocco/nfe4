@@ -70,6 +70,40 @@ import br.nfe.model.NfeTransporte;
 import br.servicos.NfeServicos;
 import br.utils.Utils;
 
+import br.com.samuelweb.certificado.exception.CertificadoException;
+import br.com.samuelweb.nfe.Nfe;
+import br.com.samuelweb.nfe.dom.ConfiguracoesIniciaisNfe;
+import br.com.samuelweb.nfe.dom.ConfiguracoesWebNfe;
+import br.com.samuelweb.nfe.dom.Enum.StatusEnum;
+import br.com.samuelweb.nfe.exception.NfeException;
+import br.com.samuelweb.nfe.util.ConstantesUtil;
+import br.com.samuelweb.nfe.util.Estados;
+import br.com.samuelweb.nfe.util.XmlUtil;
+import br.inf.portalfiscal.nfe.schema.envEventoCancNFe.TEnvEvento;
+import br.inf.portalfiscal.nfe.schema.envEventoCancNFe.TEvento;
+import br.inf.portalfiscal.nfe.schema.envEventoCancNFe.TProcEvento;
+import br.inf.portalfiscal.nfe.schema.envEventoCancNFe.TRetEnvEvento;
+import br.inf.portalfiscal.nfe.schema.retEnvEventoCancNFe.TRetEvento;
+
+import br.com.samuelweb.nfe.util.ConstantesUtil;
+import br.com.samuelweb.nfe.util.XmlUtil;
+import br.inf.portalfiscal.nfe.schema_4.enviNFe.*;
+import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe.InfNFe;
+import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe.InfNFe.*;
+import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe.InfNFe.Det.Imposto;
+import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe.InfNFe.Det.Imposto.COFINS;
+import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe.InfNFe.Det.Imposto.COFINS.COFINSAliq;
+import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe.InfNFe.Det.Imposto.ICMS;
+import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe.InfNFe.Det.Imposto.ICMS.ICMS60;
+import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe.InfNFe.Det.Imposto.PIS;
+import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe.InfNFe.Det.Imposto.PIS.PISAliq;
+import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe.InfNFe.Det.Prod;
+import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe.InfNFe.Total.ICMSTot;
+
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.namespace.QName;
+
 public class Nota_Fiscal_EletronicaBD extends BancoUtil {
 
 	private ExecutaSQL executasql;
@@ -3372,10 +3406,9 @@ public class Nota_Fiscal_EletronicaBD extends BancoUtil {
      *  @return NfeNotaFiscal nota para ser impressa ou NfeNotaFiscal vazio no caso de algum erro
      *  @throws Excecoes
      * */
-    public NfeNotaFiscal geraNFe(ArrayList listaNotasFiscais, String dtSaida, String hrSaida) throws Excecoes {
+    public TNFe geraNFe(ArrayList listaNotasFiscais, String dtSaida, String hrSaida) throws Excecoes {
 
-    	NfeNotaFiscal nfReturn = new NfeNotaFiscal();
-    	NfeServicos servico = new NfeServicos();
+    	TNFe nfeReturn = new TNFe();
         try {
         	 // System.out.println("geraNotaFiscal_to_NFe 1");
 //        	Origem_DuplicataED DupliED = new Origem_DuplicataED();
@@ -3384,7 +3417,7 @@ public class Nota_Fiscal_EletronicaBD extends BancoUtil {
             String toReturn = "";
             String sqlUpdate = "";
 
-            //*** Vari�veis
+            //*** Variveis
             ResultSet resLocal = null;
             String sqlBusca = null;
         	 // System.out.println("printNotaFiscalSaida 2");
@@ -3529,16 +3562,6 @@ public class Nota_Fiscal_EletronicaBD extends BancoUtil {
 
 	                    	executasql.executarUpdate(sqlUpdate);
                     }
-//        	        //*** Gerar Livro Fiscal
-//        	        if ("S".equals(ed.edModelo.getDM_Gera_Fiscal()))
-//        	        {
-//                        if (isSaida || JavaUtil.doValida(ed.getDM_Tipo_Devolucao()))
-//                        {
-//                        	new Livro_FiscalBD(executasql).geraLivro_Fiscal_Saidas(new Livro_FiscalED(ed.getOid_nota_fiscal(), "NF"), "S");
-//                        }else{
-//                        	new Livro_FiscalBD(executasql).geraLivro_Fiscal_Entradas(new Livro_FiscalED(ed.getOid_nota_fiscal(), "NF"), "E");
-//                        }
-//        	        }
                 }
 
             	// System.out.println("printNotaFiscalSaida 10");
@@ -3546,28 +3569,11 @@ public class Nota_Fiscal_EletronicaBD extends BancoUtil {
 //              ******** IN�CIO NOTA FISCAL *************
                 nrNotaAtual++;
 //              Nota Fiscal
-                NfeNotaFiscal notafiscal = new NfeNotaFiscal();
+                TNFe.InfNFe infNFe = new InfNFe();
 
-                //Ambiente: 1-prod, 2-homologa
-                if(Parametro_FixoED.getInstancia().getNM_Base().equals("HOMOLOGA")){
-                	notafiscal.setTpAmbiente(2);
-                }
-                else
-                	notafiscal.setTpAmbiente(1);
-
-
-                notafiscal.setVersaoNfe("3.10"); //10-4-14 - VER 3.10
-
-                notafiscal.setIndFinal(1);//10-4-14 - VER 3.10
-                notafiscal.setIndPres(1);//10-4-14 - VER 3.10
-                notafiscal.setIndSinc(0);//10-4-14 - VER 3.10 - 0-asincrono 1-sincrono
-
-                notafiscal.setNatOp(edCFOP.getNm_Natureza_Operacao());//Descri��o da natureza da opera��o
-                notafiscal.setIndPag(0);//indicador da forma de pagamento
-                if(ed.edModelo.getOid_Modelo_Nota_Fiscal()==8){
-                	notafiscal.setIndPag(1);
-                }
-                notafiscal.setModF("55");//c�digo do modelo do documento fiscal
+                infNFe.setId("xxx");
+                infNFe.setVersao("4.00");
+                
                 String ser = doValida(ed.getNm_serie())&&"NF1".equals(ed.getNm_serie())?"1" :
                 	doValida(ed.getNm_serie())&&"NF7".equals(ed.getNm_serie())?"2" :
                 		doValida(ed.getNm_serie())&&"NF6".equals(ed.getNm_serie())?"2" :
@@ -3576,14 +3582,36 @@ public class Nota_Fiscal_EletronicaBD extends BancoUtil {
                 					doValida(ed.getNm_serie())&&"NF08".equals(ed.getNm_serie())?"2" :
                 						doValida(ed.getNm_serie())&&"NF10".equals(ed.getNm_serie())?"2" :
                 				ed.getNm_serie();
-//System.out.println("serie:"+ed.getNm_serie()+"|"+ser);
-                notafiscal.setSerie(new Integer(ser).intValue());//s�rie do documento fiscal
-                notafiscal.setNNF((int)ed.getNr_nota_fiscal());//n�mero do documento fiscal
-                notafiscal.setDEmi(Data.strToDate(ed.getDt_emissao()));//data de emiss�o do documento fiscal
-                notafiscal.setDSaiEnt(Data.strToDate(getValueDef(dtSaida, ed.getDt_emissao())));//data de sa�da ou entrada da mercadoria
-                notafiscal.setTpNf(isSaida ? 1 : 0);//tipo de documento fiscal
-                notafiscal.setTpEmissao(1);//forma de emiss�o do nfe
-                notafiscal.setFinNfe(1);//Finalidade de emiss�o da NF-E >> NORMAL
+                
+             // Dados Nfe
+                Ide ide = new Ide();
+                ide.setCUF("xxx");
+                ide.setCNF("xxx");
+                ide.setNatOp(edCFOP.getNm_Natureza_Operacao());
+                ide.setMod("55");
+                ide.setSerie(ser);
+                ide.setNNF(String.valueOf(ed.getNr_nota_fiscal()));
+                ide.setDhEmi(Data.strToDate(ed.getDt_emissao()));
+                ide.setTpNF(isSaida ? "1" : "0");
+                ide.setIdDest("xxx");
+                ide.setCMunFG("xxx");
+                ide.setTpImp("xxx");
+                ide.setTpEmis("1");
+                ide.setCDV("xxx");
+                ide.setTpAmb("xxx");
+                ide.setFinNFe("1");
+                ide.setIndFinal("xxx");
+                ide.setIndPres("xxx");
+                ide.setProcEmi("xxx");
+                ide.setVerProc("xxx");
+                infNFe.setIde(ide);
+
+//                notafiscal.setIndPag(0);//indicador da forma de pagamento
+//                if(ed.edModelo.getOid_Modelo_Nota_Fiscal()==8){
+//                	notafiscal.setIndPag(1);
+//                }
+                
+//                notafiscal.setDSaiEnt(Data.strToDate(getValueDef(dtSaida, ed.getDt_emissao())));//data de sa�da ou entrada da mercadoria
                 if(ed.getOid_modelo_nota_fiscal() == 13 || ed.getOid_modelo_nota_fiscal() == 15 || ed.getOid_modelo_nota_fiscal() == 22){
                 	notafiscal.setFinNfe(3);//Finalidade de emiss�o da NF-E >> AJUSTE
                 	String NF_Ref = getTableStringValue("nm_ch_referenciada",	"Notas_Fiscais", "oid_nota_fiscal = '"	+ ed.getOid_nota_fiscal() + "'");
@@ -4065,93 +4093,7 @@ System.out.println(" ----- "+notaitem.getXvProd());
     				String infTrib = "\n\nLei da Transpar�ncia - O valor aproximado de tributos incidentes sobre o pre�o deste Documento � de R$ "+new DecimalFormat("#,##0.00").format(notafiscal.getvTotTrib());
         			notafiscal.setInfCpl(ManipulaString.corrigeString(ManipulaString.Enter2BR(inf + txt_dpl))+infTrib);
         			//...
-
-//                  E FIM DA NOTA FISCAL
-                    //AQUI VAI O LANCE DO TestaNFE!!!
-//        			Chama o gerador...
-System.out.println("enviando :"+ed.getNfe_chave_acesso() + "|"+notafiscal.getChaveAcesso());
-                    NfeLote retorno = servico.enviaNfe(notafiscal);
-                    if (retorno != null) {
-                    	System.out.println("Retorno processamento de lote 3.10 ok!!!\n"
-                                + " Recibo: " + retorno.getNRec() + "\n"
-                                + " Data: " + retorno.getData() + "\n"
-                                + " cstat: " + retorno.getCStat() + " \n"
-                                + " Motivo: " + retorno.getXMotivo());
-//System.out.println("enviando :"+ed.getNfe_chave_acesso() + "|"+notafiscal.getChaveAcesso());
-                    	//update na NF
-                        String OK = "";
-                        if(JavaUtil.doValida(ed.getNfe_cstat_lote()) && "100".equals(ed.getNfe_cstat_lote())){
-
-                        } else {
-                        	OK = this.updateRetornoLote(ed, retorno);
-                        }
-
-//                        try {
-//                            System.out.println("aguardando 5s para consultar recibo!!!");
-//                            Thread.sleep(5000);
-//                        } catch (InterruptedException ex) {
-//                            ex.printStackTrace();
-//                        }
-
-                        if (retorno.getNfeNotaFiscal() != null) {
-                            System.out.println("ChAcessoGerada: " + retorno.getNfeNotaFiscal().getChaveAcesso()+"\n");
-
-//                            System.out.println("iniciando consulta de recibo... ");
-                            NfeRetornoEnvioLote ret = null;
-
-                            if (notafiscal.getIndSinc() == 0) {
-                                System.out.println("iniciando consulta de recibo... ");
-                                try {
-                                    System.out.println("aguardando 3s para consultar recibo!!!");
-                                    Thread.sleep(3000);
-                                } catch (InterruptedException ex) {
-                                    ex.printStackTrace();
-                                }
-                                ret = servico.retornoEnvioNfe(retorno.getNRec(), retorno.getNfeNotaFiscal());
-                            } else if (retorno.getNfeRetornoEnvioLote() != null) {
-                                ret = retorno.getNfeRetornoEnvioLote();
-
-                                System.out.println("iniciando consulta de recibo 2... ");
-                                try {
-                                    System.out.println("aguardando 3s para consultar recibo!!!");
-                                    Thread.sleep(3000);
-                                } catch (InterruptedException ex) {
-                                    ex.printStackTrace();
-                                }
-                                ret = servico.retornoEnvioNfe(retorno.getNRec(), retorno.getNfeNotaFiscal());
-                            }
-
-                            if (ret != null) {
-                            	System.out.println("Retorno NFE 3.10 ok!!!\n"
-                                        + " Protocolo: " + ret.getnProt() + "\n"
-                                        + " Data: " + ret.getDhRecbto() + "\n"
-                                        + " cstat: " + ret.getcStat() + "\n"
-                                        + " Motivo: " + ret.getxMotivo());
-                                nfReturn = notafiscal;
-                                nfReturn.setChaveAcesso(retorno.getNfeNotaFiscal().getChaveAcesso());
-                                nfReturn.setProtocolo(ret.getnProt());
-                                nfReturn.setDhRecbto(Utils.getInstance().convertStringDateSefaztoData(ret.getDhRecbto()));
-                                nfReturn.setcStat(Integer.parseInt(ret.getcStat()));
-                                nfReturn.setxMotivo(ret.getxMotivo());
-                                //update na NF
-//                                if(JavaUtil.doValida(ed.getNfe_cstat()) && "100".equals(ed.getNfe_cstat())){
-//
-//                                } else {
-                                	OK = this.updateRetornoNFE(ed, retorno, ret);
-//                                }
-                            } else {
-                            	throw new Mensagens("Erro ao buscar NFE 3.10...\n\r"+JavaUtil.getErrors(servico.getErros()).toUpperCase());
-                            }
-                        } else {
-                        	throw new Mensagens("Retorno do lote n�o tem a nfe...\n\r");
-                        }
-                    } else {
-                    	throw new Mensagens("Erro ao enviar lote 3.10...\n\r"+JavaUtil.getErrors(servico.getErros()).toUpperCase());
-                    }
             }
-
-//            if (!doValida(nfReturn.getChaveAcesso()))
-//                throw new Mensagens("NFe sem Chave de Acesso v�lida, consulte a NF para verificar detalhes...\n\r"+JavaUtil.getErrors(servico.getErros()).toUpperCase());
 
         } catch (Excecoes e) {
         	e.printStackTrace();
@@ -4161,7 +4103,7 @@ System.out.println("enviando :"+ed.getNfe_chave_acesso() + "|"+notafiscal.getCha
             throw new Excecoes(e.getMessage()+ "\n\r" +JavaUtil.getErrors(servico.getErros()).toUpperCase(), this.getClass().getName(), "geraNFe()");
         }
 
-        return nfReturn;
+        return nfeReturn;
     }
 
 	public String updateRetornoLote(Nota_Fiscal_EletronicaED ed, NfeLote retorno) throws SQLException, Excecoes {
@@ -4213,19 +4155,19 @@ System.out.println(sqlUpdate);
 			return "ERRO: "+e.getMessage();
 		}
 	}
-	public String updateRetornoCancelamento(Nota_Fiscal_EletronicaED ed, NfeCce ret) throws SQLException, Excecoes {
+	public String updateRetornoCancelamento(Nota_Fiscal_EletronicaED ed, br.inf.portalfiscal.nfe.schema.envEventoCancNFe.TRetEvento.InfEvento ret) throws SQLException, Excecoes {
 		try{
 			String sqlUpdate;
 			sqlUpdate = "UPDATE Notas_Fiscais SET " +
 			            " nfe_dt_hr_recebimento = '"+(ret.getDhRegEvento()+"                   ").substring(0,20) + "' " +
-			    		" ,nfe_cstat = '" + ret.getcStat() + "' " +
-			    		" ,nfe_motivo = '" + ret.getxMotivo() + "' ";
-			    		if(JavaUtil.doValida(ret.getnProt()))
-			    			sqlUpdate += " ,nfe_protocolo = '"+ret.getnProt() + "' ";
+			    		" ,nfe_cstat = '" + ret.getCStat() + "' " +
+			    		" ,nfe_motivo = '" + ret.getXMotivo() + "' ";
+			    		if(JavaUtil.doValida(ret.getNProt()))
+			    			sqlUpdate += " ,nfe_protocolo = '"+ret.getNProt() + "' ";
     		sqlUpdate += " WHERE oid_Nota_Fiscal = '"+ed.getOid_nota_fiscal()+"' ";
 System.out.println(sqlUpdate);
 			executasql.executarUpdate(sqlUpdate);
-			if(JavaUtil.doValida(ret.getcStat()) && "101".equals(ret.getcStat())){
+			if(JavaUtil.doValida(ret.getCStat()) && "101".equals(ret.getCStat())){
 				return "OK";
             } else {
             	return "NOK";
@@ -4235,69 +4177,89 @@ System.out.println(sqlUpdate);
 		}
 	}
 
-	public void cancelaNFE(Nota_Fiscal_EletronicaED ed) throws Excecoes {
+	public void cancelaNFE(Nota_Fiscal_EletronicaED ed, ConfiguracoesWebNfe config) throws Excecoes {
 
 		NfeServicos servico = new NfeServicos();
 		try{
-			//para horario de verao
-//			TimeZone tz = TimeZone.getTimeZone("GMT-02:00");
-//	        TimeZone.setDefault(tz);
-//	        Calendar ca = GregorianCalendar.getInstance(tz);
-//	        Date dt = ca.getTime();
-			Date dt = new Date();
+			
 
 			int oid_uni = new Integer (String.valueOf(ed.getOID_Unidade_Fiscal())).intValue();
             UnidadeBean unidade_Remetente = new UnidadeBean().getByOID_Unidade(oid_uni);
             PessoaED unidade = new PessoaBD(executasql).getByRecord(unidade_Remetente.getOID_Pessoa());
-			NfeEmitente emitente = new NfeEmitente();
-	        emitente.setCnpj(unidade.getNR_CNPJ_CPF());
 	        CidadeBean orig = CidadeBean.getByOID((int)unidade.getOid_Cidade());
 	        String cIBGE_UF = getTableStringValue("nm_codigo_ibge", "estados", "oid_estado="+orig.getOID_Estado());
-System.out.println("Cid:"+orig.getOID()+"-"+orig.getNM_Cidade()+" | "+cIBGE_UF+" >"+dt.toString());
-	        emitente.setCUf(Integer.parseInt(cIBGE_UF));//C�digo do Estado
-	        NfeNotaFiscal nota = new NfeNotaFiscal();
-	        nota.setCnpj(unidade.getNR_CNPJ_CPF());
-	        nota.setEmitente(emitente);
-	        //nota.setTpAmbiente(1);
-	        if(Parametro_FixoED.getInstancia().getNM_Base().equals("HOMOLOGA"))
-            	nota.setTpAmbiente(2);
-            else
-            	nota.setTpAmbiente(1);
-	        nota.setJustificativaCancelamento("ERRO NA EMISSAO, DESISTENCIA DO CLIENTE.");
-	        nota.setChaveAcesso(ed.getNfe_chave_acesso());
-	        nota.setNNF((int)ed.getNr_nota_fiscal());
-	        nota.setProtocolo(ed.getNfe_protocolo());
+System.out.println("Cid:"+orig.getOID()+"-"+orig.getNM_Cidade()+" | "+cIBGE_UF+" >"+XmlUtil.dataNfe());
+			
+			String chave = ed.getNfe_chave_acesso();
+            String protocolo = ed.getNfe_protocolo();
+            String cnpj = unidade.getNR_CNPJ_CPF();
+            String motivo = "ERRO NA EMISSAO, DESISTENCIA DO CLIENTE.";
 
-	        nota.setDSaiEnt(dt);
+            String id = "ID" + ConstantesUtil.EVENTO.CANCELAR + chave + "01";
 
-	        NfeCce cce = new NfeCce();
-            cce.setcOrgao("" + nota.getEmitente().getCUf());
-            cce.setCNPJ(nota.getEmitente().getCnpj());
-            cce.setnProt(nota.getProtocolo());
-            cce.setDescEvento("Cancelamento");
-            cce.setxJus(nota.getJustificativaCancelamento());
-            cce.setxMotivo(nota.getJustificativaCancelamento());
-            cce.setnSeqEvento(1);
-            cce.setTpEvento(110111);
-            cce.setDhEvento(new Date());
-            cce.setVerEvento("1.00");
-            cce.setVersao("1.00");
-            cce.setTpAmbiente(nota.getTpAmbiente());
-            cce.setChNFe(nota.getChaveAcesso());
+            TEnvEvento enviEvento = new TEnvEvento();
+            enviEvento.setVersao(ConstantesUtil.VERSAO.EVENTO_CANCELAMENTO);
+            enviEvento.setIdLote("1");
 
-	        NfeCce retorno = servico.recepcaoEventoNfe(nota.getTpAmbiente(), nota.getEmitente().getCnpj(),cce);
-	        if (retorno != null) {
-	            System.out.println("Retorno cancelamento 2.00 ok!!!\n"
-	                    + " Protocolo: " + retorno.getnProt() + "\n"
-	                    + " Data: " + retorno.getDhRegEvento() + "\n"
-	                    + " cstat: " + retorno.getcStat() + " \n"
-	                    + " Motivo: " + retorno.getxMotivo());
-	            String OK = this.updateRetornoCancelamento(ed, retorno);
+            TEvento eventoCancela = new TEvento();
+            eventoCancela.setVersao(ConstantesUtil.VERSAO.EVENTO_CANCELAMENTO);
+
+            TEvento.InfEvento infoEvento = new TEvento.InfEvento();
+            infoEvento.setId(id);
+            infoEvento.setChNFe(chave);
+//            infoEvento.setCOrgao(cIBGE_UF);
+            infoEvento.setCOrgao(String.valueOf(config.getEstado().getCodigoIbge()));
+            infoEvento.setTpAmb(config.getAmbiente());
+            infoEvento.setCNPJ(cnpj);
+
+            infoEvento.setDhEvento(XmlUtil.dataNfe());
+            infoEvento.setTpEvento(ConstantesUtil.EVENTO.CANCELAR);
+            infoEvento.setNSeqEvento("1");
+            infoEvento.setVerEvento(ConstantesUtil.VERSAO.EVENTO_CANCELAMENTO);
+
+            TEvento.InfEvento.DetEvento detEvento = new TEvento.InfEvento.DetEvento();
+            detEvento.setVersao(ConstantesUtil.VERSAO.EVENTO_CANCELAMENTO);
+            detEvento.setDescEvento("Cancelamento");
+            detEvento.setNProt(protocolo);
+            detEvento.setXJust(motivo);
+            infoEvento.setDetEvento(detEvento);
+            eventoCancela.setInfEvento(infoEvento);
+            enviEvento.getEvento().add(eventoCancela);
+            
+
+            TRetEnvEvento retorno = Nfe.cancelarNfe(enviEvento, false, ConstantesUtil.NFE);
+            
+            if (retorno != null) {
+            	if (!StatusEnum.LOTE_EVENTO_PROCESSADO.getCodigo().equals(retorno.getCStat())) {
+                    throw new NfeException("Status:" + retorno.getCStat() + " - Motivo:" + retorno.getXMotivo());
+                }
+
+                if (!StatusEnum.EVENTO_VINCULADO.getCodigo().equals(retorno.getRetEvento().get(0).getInfEvento().getCStat())) {
+                    throw new NfeException("Status:" + retorno.getRetEvento().get(0).getInfEvento().getCStat() + " - Motivo:" + retorno.getRetEvento().get(0).getInfEvento().getXMotivo());
+                }
+
+                br.inf.portalfiscal.nfe.schema.envEventoCancNFe.TRetEvento retEnv = retorno.getRetEvento().get(0);
+                
+                System.out.println("Status:" + retEnv.getInfEvento().getCStat());
+                System.out.println("Motivo:" + retEnv.getInfEvento().getXMotivo());
+                System.out.println("Data:" + retEnv.getInfEvento().getDhRegEvento());
+                
+	            System.out.println("Retorno cancelamento 4.00 ok!!!\n"
+	                    + " Protocolo: " + retEnv.getInfEvento().getNProt() + "\n"
+	                    + " Data: " + retEnv.getInfEvento().getDhRegEvento() + "\n"
+	                    + " cstat: " + retEnv.getInfEvento().getCStat() + " \n"
+	                    + " Motivo: " + retEnv.getInfEvento().getXMotivo());
+	            String OK = this.updateRetornoCancelamento(ed, retEnv.getInfEvento());
 
 	        } else {
-	            System.out.println("Erro ao buscar cancelamento 2.00 ... consulte hashMap");
+	            System.out.println("Erro ao buscar cancelamento 4.00 ... consulte hashMap");
 	            JavaUtil.showErrors(servico.getErros());
 	        }
+
+            
+
+			
+	        
 		} catch (Exception e) {
         	e.printStackTrace();
             throw new Excecoes(e.getMessage()+ "\n" +JavaUtil.getErrors(servico.getErros()), this.getClass().getName(), "geraNFe()");

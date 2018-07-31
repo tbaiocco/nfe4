@@ -1,27 +1,22 @@
 package com.master.nfe;
 
 import java.io.IOException;
-import java.util.Date;
+import java.lang.invoke.MethodHandles;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.master.cte.RetornaMensagem;
-import com.master.ed.ManifestoED;
 import com.master.ed.Nota_Fiscal_EletronicaED;
-import com.master.rn.MDFeRN;
+import com.master.rn.Nota_Fiscal_EletronicaRN;
 import com.master.util.Excecoes;
 import com.master.util.JavaUtil;
-import com.master.util.Mensagens;
 
-import br.mdfe.core.base.EmpresaDb;
-import br.mdfe.model.Mdfe;
-import br.mdfe.model.MdfeEvento;
+import br.com.samuelweb.certificado.Certificado;
+import br.com.samuelweb.certificado.CertificadoService;
+import br.com.samuelweb.nfe.dom.ConfiguracoesWebNfe;
+import br.com.samuelweb.nfe.util.Estados;
 import br.model.Empresa;
-import br.model.NfeCancelamento;
-import br.model.NfeNotaFiscal;
-import br.servicos.MdfeServicos;
 import br.servicos.NfeServicos;
 
 /**
@@ -39,7 +34,7 @@ import br.servicos.NfeServicos;
 		super();
 	}
 
-	private void cancelaNfe(HttpServletRequest request, HttpServletResponse response){
+	private void cancelaNfe(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 		NfeServicos servico = new NfeServicos();
 		try{
 			if(JavaUtil.doValida(request.getParameter("emissor"))){
@@ -53,68 +48,49 @@ import br.servicos.NfeServicos;
 			Nota_Fiscal_EletronicaED edNF = new Nota_Fiscal_EletronicaED();
 
 			if(JavaUtil.doValida(request.getParameter("oid_Nota_Fiscal"))){
-//				ed.setOID_Manifesto(request.getParameter("oid_Manifesto"));
-////
-				NfeNotaFiscal nota = new NfeNotaFiscal();
 
-//				Mdfe man = new MDFeRN(empresa).getDados(ed, false);
-//		        mdfe.setCOrgao(empresa.getcUf());
-//		        mdfe.setCNPJ(man.getEmit().getCNPJ());
-//		        mdfe.setTpAmb(man.getTpAmb());
-//		        mdfe.setChMDFe(man.getChAcesso());
-//		        mdfe.setTpEvento(110111);
-//		        mdfe.setNProtAprovacaoMDFe(man.getNProt());
-//		        mdfe.setDescEvento("Cancelamento");
-//		        mdfe.setXJust("ERRO NA EMISSAO DO MDFE");
-//		        mdfe.setNSeqEvento(1);
-//		        mdfe.setDhEvento(new Date());
+				Certificado certificado = CertificadoService.certificadoPfx(
+	             		empresa.getCertificado(), 
+	             		empresa.getSenha());
+	             //Esse Objeto Voce pode guardar em uma Session.
+	             ConfiguracoesWebNfe config = ConfiguracoesWebNfe.iniciaConfiguracoes(Estados.RS,
+	                     empresa.getAmbiente(),
+	                     certificado,
+	                     MethodHandles.lookup().lookupClass().
+	                     getResource("/schemas").getPath(), //PEGAR SCHEMAS EM AMBIENTE WEB ESTA PASTA ESTA DENTRO DE RESOURCES
+	                     false);
 
-				if (nota.getNProt() != null) {
-					NfeCancelamento retorno = servico.cancelaNfe(nota);
-		            if (retorno != null) {
-		            	System.out.println("Retorno " + " 1.00 ok!!!\n"
-		                        + " Protocolo: " + retorno.getnProt() + "\n"
-		                        + " Data: " + retorno.getDhRecbto() + "\n"
-		                        + " cstat: " + retorno.getcStat() + " \n"
-		                        + " Motivo: " + retorno.getxMotivotivo());
-		                if (retorno.getnProt() != null) {
-
-			            	new MDFeRN(empresa).alteraCancelamento(ed, retorno);
-
-//			            	MdfeConsulta cons = servico.consultaMdfe(man.getChAcesso(), man.getTpAmb(), man.getEmit().getCNPJ());
-//			            	if( cons.getNProt() != null){
-//			            		System.out.println("Consulta 1.00 ok!!!\n"
-//			                            + " Protocolo: " + cons.getNProt() + "\n"
-//			                            + " Data: " + cons.getDhRecbto() + "\n"
-//			                            + " cstat: " + cons.getCStat() + "\n"
-//			                            + " Motivo: " + cons.getXMotivo());
-//			            	}
-
-			            } else {
-			            	throw new Mensagens("Retorno do lote n�o possui MDFe...\n\r");
-			            }
-		            } else {
-		            	throw new Excecoes(""+JavaUtil.getErrors(servico.getErros()).toUpperCase());
-		            }
-		        } else {
-					System.out.println("NADA LOCALIZADO...");
-				}
+	             Nota_Fiscal_EletronicaED ed = this.getByRecord(request.getParameter("oid_Nota_Fiscal"));
+	             try{
+	             	new Nota_Fiscal_EletronicaRN().enviaNFE_cancelada(ed, config);
+	             } catch (Excecoes e) {
+	                 e.printStackTrace();
+	                 throw e;
+	             } catch(Exception e){
+	             	e.printStackTrace();
+	             	throw new Excecoes();
+	             }
 			} else {
 				System.out.println("NADA LOCALIZADO...");
 			}
 
-		} catch(Excecoes e){
-			System.out.println("deu erro!!!");
-			e.printStackTrace();
-			RetornaMensagem.montaTelaErro(request, response, e);
 		} catch (Exception e){
 			//nada
 //			JavaUtil.getErrors(servico.getErros()).toUpperCase();
 			System.out.println("deu erro!!!");
 			e.printStackTrace();
-			RetornaMensagem.montaTelaErro(request, response, new Excecoes(""+JavaUtil.getErrors(servico.getErros()).toUpperCase()));
+			throw new ServletException(e);
 		}
 	}
+	
+	private Nota_Fiscal_EletronicaED getByRecord(String oid_Nota_Fiscal) throws Excecoes {
+
+        Nota_Fiscal_EletronicaED ed = new Nota_Fiscal_EletronicaED();
+
+        ed.setOid_nota_fiscal(oid_Nota_Fiscal);
+
+        return new Nota_Fiscal_EletronicaRN().getByRecord(ed);
+    }
 
 	/* (non-Java-doc)
 	 * @see javax.servlet.http.HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
@@ -135,14 +111,6 @@ import br.servicos.NfeServicos;
 	 * @see javax.servlet.http.HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		String retorno = request.getParameter("urlRetono");
-		String oid_Nota_Fiscal = request.getParameter("oid_Nota_Fiscal");
-
-		cancelaNfe(request,response);
-
-		if(JavaUtil.doValida(retorno) && JavaUtil.doValida(oid_Nota_Fiscal)){
-			response.sendRedirect(retorno+"?oid_Nota_Fiscal="+oid_Nota_Fiscal+"&eRequest=true&acao=S&Busca_Campo=Nota_Fiscal");
-		}
+		doGet(request, response);
 	}
 }
