@@ -1,8 +1,8 @@
 package com.master.util;
 
 /**
- * Classe para Manipulaï¿½ï¿½o de SubString
- * @author Andrï¿½ Valadas
+ * Classe para Manipulação de SubString
+ * @author André Valadas
  */
 public class ArquivoUtil extends JavaUtil {
 
@@ -18,7 +18,7 @@ public class ArquivoUtil extends JavaUtil {
         length = (this.strLinha = getValueDef(strLinha, "")).length();
     }
     
-    /** VALIDAï¿½ï¿½ES */
+    /** VALIDAÇÕES */
     private boolean valida(int beginIndex, int endIndex) {
         return !((length < 1 ) || (beginIndex < 0 ) || (endIndex > length) || (beginIndex > endIndex));
     }
@@ -38,7 +38,7 @@ public class ArquivoUtil extends JavaUtil {
         } catch (Exception e) {
              System.out.println("ERRO ao converter DOUBLE! / ERRO["+e.getMessage()+"]\n" +
  				   			   " - LINHA: "+nlinha+"\n" +
- 				   			   " - POSIï¿½ï¿½O: "+begin+" a "+end+"\n");
+ 				   			   " - POSIÇÃO: "+begin+" a "+end+"\n");
             return 0;
         }
     }
@@ -50,11 +50,11 @@ public class ArquivoUtil extends JavaUtil {
             try {
                 if (strLinha.substring(begin, end).indexOf("-") > 0)
                     begin += strLinha.substring(begin, end).indexOf("-");
-                return valida(begin, end) ? (Double.parseDouble(strLinha.substring(begin, end).replace(',','.').trim())) : 0;
+                return valida(begin, end) ? Valor.getValorArredondado(Double.parseDouble(strLinha.substring(begin, end).replace(',','.').trim())) : 0;
             } catch (Exception e) {
                  System.out.println("ERRO ao converter DOUBLE ARREDONDADO! / ERRO["+e.getMessage()+"]\n" +
                         		   " - LINHA: "+nlinha+"\n" +
-                        		   " - POSIï¿½ï¿½O: "+begin+" a "+end+"\n");
+                        		   " - POSIÇÃO: "+begin+" a "+end+"\n");
                 return 0;
             }
         } else return getDouble(begin, end);
@@ -69,11 +69,11 @@ public class ArquivoUtil extends JavaUtil {
                 try {
                     if (strLinha.substring(begin, end).indexOf("-") > 0)
                         begin += strLinha.substring(begin, end).indexOf("-");
-                    return valida(begin, end) ? (Double.parseDouble(strLinha.substring(begin, end).replace(',','.').trim())) : 0;
+                    return valida(begin, end) ? Valor.getValorArredondado(Double.parseDouble(strLinha.substring(begin, end).replace(',','.').trim()), casas) : 0;
                 } catch (Exception e) {
                      System.out.println("ERRO ao converter DOUBLE ARREDONDADO! / ERRO["+e.getMessage()+"]\n" +
                             		   " - LINHA: "+nlinha+"\n" +
-                            		   " - POSIï¿½ï¿½O: "+begin+" a "+end+"\n");
+                            		   " - POSIÇÃO: "+begin+" a "+end+"\n");
                     return 0;
                 }
             } else return getDouble(begin, end, true);
@@ -87,7 +87,7 @@ public class ArquivoUtil extends JavaUtil {
         } catch (Exception e) {
              System.out.println("ERRO ao converter INTEGER! / ERRO["+e.getMessage()+"]\n" +
             				   " - LINHA: "+nlinha+"\n" +
-            				   " - POSIï¿½ï¿½O: "+begin+" a "+end+"\n");
+            				   " - POSIÇÃO: "+begin+" a "+end+"\n");
             return 0;
         }
     }

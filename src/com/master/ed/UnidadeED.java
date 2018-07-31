@@ -9,7 +9,7 @@ package com.master.ed;
  * @version 1.0
  */
 
-public class UnidadeED  {
+public class UnidadeED extends RelatorioBaseED {
 
 	private static final long serialVersionUID = 7107333736311762419L;
 

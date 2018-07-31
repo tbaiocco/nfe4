@@ -90,6 +90,7 @@ public class ProdutoED extends MasterED implements Cloneable {
         ed.setOid_Tipo_Estoque ( oid_Tipo_Estoque);
         ed.setOid_Localizacao ( oid_Localizacao);
         ed.edPreco = edPreco;
+        ed.edSetor = edSetor;
         return ed;
     }
     
@@ -241,6 +242,7 @@ public class ProdutoED extends MasterED implements Cloneable {
 
     boolean carregaPreco = true;
     public Preco_ProdutoED edPreco = new Preco_ProdutoED();
+    public Setor_ProdutoED edSetor = new Setor_ProdutoED();
 
     public String getCD_Produto() {
         return CD_Produto;

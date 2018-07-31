@@ -477,7 +477,7 @@ public class FileUtil {
 
     }
     
-    public static void appendToFile(String fileName, String fileString) throws Excecoes {
+    public static void appendToFile(String fileName, String fileString) {
 
     	  try {
     		  if (!JavaUtil.doValida(fileName))
@@ -490,14 +490,13 @@ public class FileUtil {
     		  
     		  FileWriter file = new FileWriter(arquivo, true);
     		  file.write(Data.getDataCompleta() + ": " + fileString + "\r\n");
-    		  file.write(fileString);
     		  file.flush();
     		  file.close();
     		  
   // System.out.println("LOGs salvos");
     	  } catch(Exception e){
+    		  System.err.println("nao consegui escrever no arquivo: " + fileName);
     		  e.printStackTrace();
-    		  throw new Excecoes();
     	  }
 
       }

@@ -1,45 +1,24 @@
 package com.master.rn;
 
-/**
- * @author Andre Valadas
- */
-import java.io.File;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.StringTokenizer;
 
 import javax.servlet.http.HttpServletResponse;
 
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JasperExportManager;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-import br.cte.model.CteInutilizacao;
-import br.cte.model.Empresa;
-import br.nfe.core.BeanDanfeItens;
-import br.nfe.model.NfeInutilizacao;
-import br.nfe.model.NfeLote;
-import br.nfe.model.NfeNotaFiscal;
-import br.nfe.model.NfeRetornoEnvioLote;
-import br.servicos.NfeServicos;
-import br.nfe.utils.Configuracoes;
-
-import com.master.bd.CTeBD;
 import com.master.bd.Carga_EntregaBD;
 import com.master.bd.CidadeBD;
 import com.master.bd.Item_Nota_Fiscal_TransacoesBD;
 import com.master.bd.Item_PedidoBD;
-import com.master.bd.Livro_FiscalBD;
 import com.master.bd.Lancamento_ContabilBD;
+import com.master.bd.Livro_FiscalBD;
 import com.master.bd.Modelo_Nota_FiscalBD;
-import com.master.bd.Movimento_LogisticoBD;
 import com.master.bd.Nota_Fiscal_EletronicaBD;
 import com.master.bd.Ocorrencia_Nota_FiscalBD;
 import com.master.bd.Origem_DuplicataBD;
+import com.master.bd.Parametro_WmsBD;
 import com.master.bd.Parcelamento_FinanceiroBD;
 import com.master.bd.PedidoBD;
 import com.master.bd.WMS_EstoqueBD;
@@ -50,19 +29,17 @@ import com.master.ed.Livro_FiscalED;
 import com.master.ed.Lote_CompromissoED;
 import com.master.ed.Modelo_Nota_FiscalED;
 import com.master.ed.Movimento_DuplicataED;
-import com.master.ed.Movimento_LogisticoED;
+import com.master.ed.Nota_Fiscal_CompraED;
 import com.master.ed.Nota_Fiscal_EletronicaED;
 import com.master.ed.Ocorrencia_Nota_FiscalED;
-import com.master.ed.Nota_Fiscal_CompraED;
 import com.master.ed.Origem_DuplicataED;
+import com.master.ed.Parametro_WmsED;
 import com.master.ed.Parcelamento_FinanceiroED;
 import com.master.ed.Posto_CompromissoED;
 import com.master.ed.RelatorioED;
 import com.master.ed.UsuarioED;
 import com.master.iu.NFEBean;
-import com.master.rl.Nota_Fiscal_TransacoesRL;
 import com.master.root.CidadeBean;
-import com.master.root.ClienteBean;
 import com.master.root.PessoaBean;
 import com.master.root.UnidadeBean;
 import com.master.util.BancoUtil;
@@ -75,10 +52,15 @@ import com.master.util.Mensagens;
 import com.master.util.Utilitaria;
 import com.master.util.bd.Transacao;
 import com.master.util.ed.Parametro_FixoED;
-import com.master.util.mail.Mailer;
-import com.master.ed.Parametro_WmsED;
-import com.master.bd.Parametro_WmsBD;
-import com.master.util.BancoUtil;
+
+import br.cte.model.Empresa;
+import br.nfe.core.BeanDanfeItens;
+import br.nfe.model.NfeInutilizacao;
+import br.nfe.model.NfeLote;
+import br.nfe.model.NfeNotaFiscal;
+import br.nfe.model.NfeRetornoEnvioLote;
+import br.nfe.utils.Configuracoes;
+import br.servicos.NfeServicos;
 
 
 public class Nota_Fiscal_EletronicaRN extends Transacao {
@@ -202,8 +184,8 @@ public class Nota_Fiscal_EletronicaRN extends Transacao {
         	Ocorrencia_Nota_FiscalED ocoNF =new Ocorrencia_Nota_FiscalED();
         	ocoNF.setOID_Nota_Fiscal(ed.getOid_nota_fiscal());
         	new Ocorrencia_Nota_FiscalBD(this.sql).deleta(ocoNF);
-        	// Apaga os itens da NF que não forem D=Devoluçao.
-        	// Os Itens das notas fiscais de devolução são excluidos junto da exclusão da nota fiscal
+        	// Apaga os itens da NF que nï¿½o forem D=Devoluï¿½ao.
+        	// Os Itens das notas fiscais de devoluï¿½ï¿½o sï¿½o excluidos junto da exclusï¿½o da nota fiscal
         	if (!"D".equals(ed.getDm_tipo_nota_fiscal())){
         		Item_Nota_Fiscal_TransacoesED itnNF = new Item_Nota_Fiscal_TransacoesED();
         		itnNF.setOID_Nota_Fiscal(ed.getOid_nota_fiscal());
@@ -230,11 +212,11 @@ public class Nota_Fiscal_EletronicaRN extends Transacao {
 	        Nota_Fiscal_EletronicaBD Nota_FiscalBD = new Nota_Fiscal_EletronicaBD(this.sql);
 
 	        if (!"15".equals(String.valueOf(ed.getOid_modelo_nota_fiscal()))){
-		        //*** Atualiza Valores da NF(Caso não possua itens tbm)
+		        //*** Atualiza Valores da NF(Caso nï¿½o possua itens tbm)
 		        Nota_FiscalBD.atualizaValorICMS(ed.getOid_nota_fiscal());
 	        }
 
-	        //*** Situação X ou oid_modelo_nota_fiscal = 15 - crédito icms finaliza a Nota Fiscal Direto!
+	        //*** Situaï¿½ï¿½o X ou oid_modelo_nota_fiscal = 15 - crï¿½dito icms finaliza a Nota Fiscal Direto!
 	        if (!"X".equals(ed.getDM_Situacao()) && !"15".equals(String.valueOf(ed.getOid_modelo_nota_fiscal())))
 	        {
 	            Nota_FiscalBD.verificaProdutos(ed);
@@ -248,7 +230,7 @@ public class Nota_Fiscal_EletronicaRN extends Transacao {
 
 	        //*** Finaliza NF de Compra
 	        Nota_FiscalBD.finalizaNF_Entrada(ed);
-	        //*** Gera NF de Devolução caso exista NR_QT_Devolucao nos itens
+	        //*** Gera NF de Devoluï¿½ï¿½o caso exista NR_QT_Devolucao nos itens
 	        //this.geraNFDevolucaoFornecedor(ed);
 
 	        this.fimTransacao(true);
@@ -262,7 +244,7 @@ public class Nota_Fiscal_EletronicaRN extends Transacao {
         }
     }
 
-    //*** Finalização da NF de Saida (impressão)
+    //*** Finalizaï¿½ï¿½o da NF de Saida (impressï¿½o)
     public boolean  finalizaNF_Saida(Nota_Fiscal_EletronicaED edNota) throws Excecoes {
 
         try {
@@ -313,7 +295,7 @@ public class Nota_Fiscal_EletronicaRN extends Transacao {
                 else new Livro_FiscalBD(this.sql).geraLivro_Fiscal_Saidas(new Livro_FiscalED(ed.getOid_nota_fiscal(), "NF"), "S");
 	        }
 
-	        //*** Gerar Contabilização
+	        //*** Gerar Contabilizaï¿½ï¿½o
 	        if ("S".equals(ed.edModelo.getDM_Gera_Contabilizacao()))
 	        {
 	        	Nota_Fiscal_CompraED nfEd = new Nota_Fiscal_CompraED();
@@ -347,10 +329,10 @@ public class Nota_Fiscal_EletronicaRN extends Transacao {
 	        } else {
 	        	//*** FAZ A BAIXA DA DEVOLUCAO NA NOTA DE ENTRADA
 		        if ("D".equals(ed.getDm_tipo_nota_fiscal()) ) {
-			        ArrayList lstNFi = new ArrayList(); // Contém os itens da nota de devolução
-			        ArrayList lstNFe = new ArrayList(); // Contém os números das notas de entrada que tiveram itens devolvidos
-			        ArrayList lstNF = new ArrayList();  // Contém os números das notas já retonados
-			        String NF_nr ="";					// String com os números das notas separados por virgula
+			        ArrayList lstNFi = new ArrayList(); // Contï¿½m os itens da nota de devoluï¿½ï¿½o
+			        ArrayList lstNFe = new ArrayList(); // Contï¿½m os nï¿½meros das notas de entrada que tiveram itens devolvidos
+			        ArrayList lstNF = new ArrayList();  // Contï¿½m os nï¿½meros das notas jï¿½ retonados
+			        String NF_nr ="";					// String com os nï¿½meros das notas separados por virgula
 		        	// Busca todos os itens da nota fiscal de devolucao
 		        	Item_Nota_Fiscal_TransacoesED edNFi = new Item_Nota_Fiscal_TransacoesED();
 		        	edNFi.setOID_Nota_Fiscal(ed.getOid_nota_fiscal());
@@ -358,17 +340,17 @@ public class Nota_Fiscal_EletronicaRN extends Transacao {
 		        	//Itera os itens da nota de devolucao para buscar nas notas de entrada
 		        	for (int x = 0; x <lstNFi.size(); x++){
 		        		edNFi = (Item_Nota_Fiscal_TransacoesED)lstNFi.get(x);
-		        		// Dá baixa da quantidade devolvida da nota fiscal original de entrada, retorna array c/nrs das notas originais
+		        		// Dï¿½ baixa da quantidade devolvida da nota fiscal original de entrada, retorna array c/nrs das notas originais
 		        		lstNFe =  new Item_Nota_Fiscal_TransacoesBD(this.sql).devolveItem(edNFi,edNFi.getOid_Produto_Cliente(),edNFi.getNR_Quantidade());
 		        		for (int y = 0; y < lstNFe.size(); y++) {
 		        			String nr_Nota = (String)lstNFe.get(y);
-		        			if (!lstNF.contains(nr_Nota)) { // Verifica se nr nf não está no array
+		        			if (!lstNF.contains(nr_Nota)) { // Verifica se nr nf nï¿½o estï¿½ no array
 		    					lstNF.add(nr_Nota);
 		        			}
 		        		}
 		        	}
-		        	// Altera a nota fiscal de devolução colocando os nrs das notas originais na observacao.
-		    		for (int y = 0; y < lstNF.size(); y++) { // Itera o array de nrs nf para formar um string único para a observação
+		        	// Altera a nota fiscal de devoluï¿½ï¿½o colocando os nrs das notas originais na observacao.
+		    		for (int y = 0; y < lstNF.size(); y++) { // Itera o array de nrs nf para formar um string ï¿½nico para a observaï¿½ï¿½o
 						NF_nr = NF_nr +", " + lstNF.get(y);
 		    		}
 		    		// Anota as nfs retornadas nas observacoes da nota de devolucao
@@ -402,15 +384,15 @@ public class Nota_Fiscal_EletronicaRN extends Transacao {
             throw e;
         } catch(Exception e) {
             this.abortaTransacao();
-            throw new Excecoes("Falha ao realizar finalização. Problemas ao buscar dados no cliente...");
+            throw new Excecoes("Falha ao realizar finalizaï¿½ï¿½o. Problemas ao buscar dados no cliente...");
         }
     }
 
-    //*** Finalização da NF de Devolucao (impressão)
+    //*** Finalizaï¿½ï¿½o da NF de Devolucao (impressï¿½o)
     public boolean finalizaNF_Devolucao(Nota_Fiscal_EletronicaED ed, boolean abreTrans) throws Excecoes {
 
         try {
-        	if (abreTrans) this.inicioTransacao(); // Esta gambiarra foi colocada aqui porque há um método nesta classe que tambem usa este método só que ela já abriu a transaçao....
+        	if (abreTrans) this.inicioTransacao(); // Esta gambiarra foi colocada aqui porque hï¿½ um mï¿½todo nesta classe que tambem usa este mï¿½todo sï¿½ que ela jï¿½ abriu a transaï¿½ao....
 
 	        Nota_Fiscal_EletronicaBD Nota_FiscalBD = new Nota_Fiscal_EletronicaBD(this.sql);
 
@@ -438,7 +420,7 @@ public class Nota_Fiscal_EletronicaRN extends Transacao {
 	        if ("S".equals(ed.edModelo.getDM_Gera_Fiscal())) {
                new Livro_FiscalBD(this.sql).geraLivro_Fiscal_Saidas(new Livro_FiscalED(ed.getOid_nota_fiscal(), "NF"), "S");
 	        }
-	        if (finaliza) { // Se conseguiu dar baixa na NF de entrada dá baixa no estoque e Finaliza
+	        if (finaliza) { // Se conseguiu dar baixa na NF de entrada dï¿½ baixa no estoque e Finaliza
 		        //*** VERIFICA SE DEVE MOVIMENTAR ESTOQUE
 //Estoque
 
@@ -469,18 +451,18 @@ public class Nota_Fiscal_EletronicaRN extends Transacao {
 
         try {
             if (!JavaUtil.doValida(ed.getOid_nota_fiscal()))
-                throw new Mensagens("Nota fiscal não informada para Exclusão!");
+                throw new Mensagens("Nota fiscal nï¿½o informada para Exclusï¿½o!");
             if (!JavaUtil.doValida(ed.getDm_tipo_nota_fiscal()))
-                throw new Mensagens("Tipo de Nota não informado!");
+                throw new Mensagens("Tipo de Nota nï¿½o informado!");
             if (!"E".equals(ed.getDm_tipo_nota_fiscal()) && !"F".equals(ed.getDm_tipo_nota_fiscal()))
-                throw new Mensagens("Tipo e Nota incorreto para operação!");
+                throw new Mensagens("Tipo e Nota incorreto para operaï¿½ï¿½o!");
             this.inicioTransacao();
             Nota_Fiscal_EletronicaBD Nota_FiscalBD = new Nota_Fiscal_EletronicaBD(this.sql);
             //*** Busca Dados da NF
 
             Nota_Fiscal_EletronicaED edNota = Nota_FiscalBD.getByRecord(new Nota_Fiscal_EletronicaED(ed.getOid_nota_fiscal()));
             if (!JavaUtil.doValida(ed.getOid_nota_fiscal()))
-                throw new Mensagens("Nota fiscal não encontrada para Exclusão!");
+                throw new Mensagens("Nota fiscal nï¿½o encontrada para Exclusï¿½o!");
 
             //*** Se Gerou Livro Fiscal
             if ("S".equals(edNota.edModelo.getDM_Gera_Fiscal()))
@@ -588,18 +570,18 @@ public class Nota_Fiscal_EletronicaRN extends Transacao {
     	String DM_Tipo_Devolucao = null;
     	try {
             if (!JavaUtil.doValida(ed.getOid_nota_fiscal()))
-                throw new Mensagens("Nota fiscal não informada para Cancelamento!");
+                throw new Mensagens("Nota fiscal nï¿½o informada para Cancelamento!");
             if (!JavaUtil.doValida(ed.getDm_tipo_nota_fiscal()))
-                throw new Mensagens("Tipo de Nota não informado!");
+                throw new Mensagens("Tipo de Nota nï¿½o informado!");
             if (!"E".equals(ed.getDm_tipo_nota_fiscal()) && !"F".equals(ed.getDm_tipo_nota_fiscal()))
-                throw new Mensagens("Tipo e Nota incorreto para operação!");
+                throw new Mensagens("Tipo e Nota incorreto para operaï¿½ï¿½o!");
 
             this.inicioTransacao();
             Nota_Fiscal_EletronicaBD Nota_FiscalBD = new Nota_Fiscal_EletronicaBD(this.sql);
             //*** Busca Dados da NF
             Nota_Fiscal_EletronicaED edNota = Nota_FiscalBD.getByRecord(new Nota_Fiscal_EletronicaED(ed.getOid_nota_fiscal()));
             if (!JavaUtil.doValida(ed.getOid_nota_fiscal()))
-                throw new Mensagens("Nota fiscal não encontrada para Cancelamento!");
+                throw new Mensagens("Nota fiscal nï¿½o encontrada para Cancelamento!");
 
             DM_Tipo_Devolucao = edNota.getDM_Tipo_Devolucao();
 
@@ -713,9 +695,9 @@ public class Nota_Fiscal_EletronicaRN extends Transacao {
 
         try {
             if (!JavaUtil.doValida(ed.getOid_nota_fiscal()))
-                throw new Mensagens("Nota fiscal não informada para Cancelamento");
+                throw new Mensagens("Nota fiscal nï¿½o informada para Cancelamento");
             if (!JavaUtil.doValida(ed.getDM_Tipo_Devolucao()))
-                throw new Mensagens("Tipo de Cancelamento não informado!");
+                throw new Mensagens("Tipo de Cancelamento nï¿½o informado!");
 
             this.inicioTransacao();
             Nota_Fiscal_EletronicaBD Nota_FiscalBD = new Nota_Fiscal_EletronicaBD(this.sql);
@@ -723,9 +705,9 @@ public class Nota_Fiscal_EletronicaRN extends Transacao {
             //*** Busca Dados da NF Original
             Nota_Fiscal_EletronicaED edNota = Nota_FiscalBD.getByRecord(new Nota_Fiscal_EletronicaED(ed.getOid_nota_fiscal()));
             if (!JavaUtil.doValida(ed.getOid_nota_fiscal()))
-                throw new Mensagens("Nota fiscal não encontrada para Cancelamento");
+                throw new Mensagens("Nota fiscal nï¿½o encontrada para Cancelamento");
 
-            /** NÃO DEVE retirar do livro fiscal e sim gerar um lançamento com os valores zerados
+            /** Nï¿½O DEVE retirar do livro fiscal e sim gerar um lanï¿½amento com os valores zerados
             //*** Se Gerou Livro Fiscal
             if ("S".equals(edNota.edModelo.getDM_Gera_Fiscal()))
             {
@@ -746,7 +728,7 @@ public class Nota_Fiscal_EletronicaRN extends Transacao {
             if ("S".equals(edNota.edModelo.getDM_Movimenta_Estoque()) && "S".equals(edNota.getDM_Estoque()))
             {
                 /*** Atualiza Estoque
-                 *   Atualiza o estoque direto pela nota fiscal de saída e não pela
+                 *   Atualiza o estoque direto pela nota fiscal de saï¿½da e nï¿½o pela
                  *   nota de entrada respectiva. Veja em entradaEstoqueByNota() abaixo
                  ***/
                 Item_Nota_Fiscal_TransacoesED edItem_NF = new Item_Nota_Fiscal_TransacoesED();
@@ -779,7 +761,7 @@ public class Nota_Fiscal_EletronicaRN extends Transacao {
             if (edNota.getOid_Carga_Entrega() > 0)
                 new Carga_EntregaBD(this.sql).updateTotais(edNota.getOid_Carga_Entrega());
 
-            //*** Seta NF com Situação de Cancelada
+            //*** Seta NF com Situaï¿½ï¿½o de Cancelada
             this.sql.executarUpdate(" UPDATE Notas_Fiscais SET" +
                                     "     DM_Situacao = 'C'" +
                                     "    ,DM_Estoque = '"+("S".equals(edNota.getDM_Estoque()) ? "E" : "N")+"'" +
@@ -855,7 +837,7 @@ public class Nota_Fiscal_EletronicaRN extends Transacao {
 
         try {
             if (!JavaUtil.doValida(ed.getOid_nota_fiscal()))
-                throw new Mensagens("Nota fiscal não informada para Cancelamento");
+                throw new Mensagens("Nota fiscal nï¿½o informada para Cancelamento");
 
             this.inicioTransacao();
             Nota_Fiscal_EletronicaBD Nota_FiscalBD = new Nota_Fiscal_EletronicaBD(this.sql);
@@ -863,9 +845,9 @@ public class Nota_Fiscal_EletronicaRN extends Transacao {
             //*** Busca Dados da NF Original
             Nota_Fiscal_EletronicaED edNota = Nota_FiscalBD.getByRecord(new Nota_Fiscal_EletronicaED(ed.getOid_nota_fiscal()));
             if (!JavaUtil.doValida(ed.getOid_nota_fiscal()))
-                throw new Mensagens("Nota fiscal não encontrada para Cancelamento");
+                throw new Mensagens("Nota fiscal nï¿½o encontrada para Cancelamento");
 
-            /** NÃO DEVE retirar do livro fiscal e sim gerar um lançamento com os valores zerados
+            /** Nï¿½O DEVE retirar do livro fiscal e sim gerar um lanï¿½amento com os valores zerados
             //*** Se Gerou Livro Fiscal
             if ("S".equals(edNota.edModelo.getDM_Gera_Fiscal()))
             {
@@ -886,7 +868,7 @@ public class Nota_Fiscal_EletronicaRN extends Transacao {
             if ("S".equals(edNota.edModelo.getDM_Movimenta_Estoque()) && "S".equals(edNota.getDM_Estoque()))
             {
                 /*** Atualiza Estoque
-                 *   Atualiza o estoque direto pela nota fiscal de saída e não pela
+                 *   Atualiza o estoque direto pela nota fiscal de saï¿½da e nï¿½o pela
                  *   nota de entrada respectiva. Veja em entradaEstoqueByNota() abaixo
                  ***/
                 Item_Nota_Fiscal_TransacoesED edItem_NF = new Item_Nota_Fiscal_TransacoesED();
@@ -905,7 +887,7 @@ public class Nota_Fiscal_EletronicaRN extends Transacao {
             if (edNota.getOid_Carga_Entrega() > 0)
                 new Carga_EntregaBD(this.sql).updateTotais(edNota.getOid_Carga_Entrega());
 
-//            //*** Seta NF com Situação de DENEGADA
+//            //*** Seta NF com Situaï¿½ï¿½o de DENEGADA
             this.sql.executarUpdate(" UPDATE Notas_Fiscais SET" +
                                     "     DM_Situacao = 'D'" +
                                     "    ,DM_Estoque = '"+("S".equals(edNota.getDM_Estoque()) ? "E" : "N")+"'" +
@@ -977,7 +959,7 @@ public class Nota_Fiscal_EletronicaRN extends Transacao {
         }
     }
 
-    //*** Devolução Nota Fiscal de Venda
+    //*** Devoluï¿½ï¿½o Nota Fiscal de Venda
     public Nota_Fiscal_EletronicaED geraNFDevolucaoVenda(Nota_Fiscal_EletronicaED edDevolucao, Ocorrencia_Nota_FiscalED edOcorrencia) throws Exception {
 
         try {
@@ -992,7 +974,7 @@ public class Nota_Fiscal_EletronicaRN extends Transacao {
             if ("S".equals(edDevolucao.edModelo.getDM_Movimenta_Estoque()))
                 edDevolucao.setDM_Estoque("S");
 	        edDevolucao.setHr_entrada(Data.getHoraHM());
-	        /** Inclui NF de Devolução! **/
+	        /** Inclui NF de Devoluï¿½ï¿½o! **/
 	        String Nm_serie = edDevolucao.getNm_serie();
             edDevolucao.setNm_serie("DEVOLUCAO_SAIDA");//p/ gerar novo Numero
             edDevolucao.setNr_nota_fiscal(0);//p/ gerar novo Numero
@@ -1009,9 +991,9 @@ public class Nota_Fiscal_EletronicaRN extends Transacao {
                 edItem.setOID_Pedido(0);
                 edItem.setOID_Item_Nota_Fiscal(0);
                 edItem.setOID_Nota_Fiscal(edDevolucao.getOid_nota_fiscal());
-                //Troca o oid da natureza do item da NF de devolução pelo correspondente a do item da NF original
+                //Troca o oid da natureza do item da NF de devoluï¿½ï¿½o pelo correspondente a do item da NF original
                 String cdNaturezaDevolucao = Item_Nota_FiscalBD.getTableStringValue("cd_cfo_conhecimento", "Naturezas_Operacoes", "oid_Natureza_Operacao = '"+edItem.getOid_natureza_operacao()+"'");
-                //Pega o oid da da natureza de devoluçao pelo codigo dela
+                //Pega o oid da da natureza de devoluï¿½ao pelo codigo dela
                 edItem.setOid_natureza_operacao(Item_Nota_FiscalBD.getTableIntValue("oid_natureza_operacao", "Naturezas_Operacoes", "cd_natureza_operacao = '"+cdNaturezaDevolucao+"'"));
                 Item_Nota_FiscalBD.inclui(edItem);
             }
@@ -1042,18 +1024,18 @@ public class Nota_Fiscal_EletronicaRN extends Transacao {
                 edMov.setDM_Debito_Credito("C");
                 edMov.setDM_Tipo_Lancamento("L");
                 edMov.setDM_Tipo_Pagamento("T");
-                //Esta linha estava com problemas... Não há no Parametro_FixoED getOID_Historico_Liquidacao_Cobranca_Retorno()
+                //Esta linha estava com problemas... Nï¿½o hï¿½ no Parametro_FixoED getOID_Historico_Liquidacao_Cobranca_Retorno()
                 //edMov.setOid_Historico(new Integer(Parametro_FixoED.getInstancia().getOID_Historico_Liquidacao_Cobranca_Retorno()));
-                //substituída por essa
+                //substituï¿½da por essa
                 edMov.setOid_Historico(new Integer(Parametro_FixoED.getInstancia().getOID_Historico_Liquidacao_Cobranca()));
 
                 edMov.setOid_Duplicata(new Long(edDuplicataOrig.getOID_Duplicata()).longValue());
                 double vlLiquidar = edParc.getVL_Parcela();
 
                 edMov.setVL_Pago(vlLiquidar);
-                //Esta linha estava com problemas... Não há no Parametro_FixoED getOID_Carteira_Nota_Retorno()
+                //Esta linha estava com problemas... Nï¿½o hï¿½ no Parametro_FixoED getOID_Carteira_Nota_Retorno()
                 //edMov.setOID_Carteira(new Integer(Parametro_FixoED.getInstancia().getOID_Carteira_Nota_Retorno()));
-                //substituída por essa
+                //substituï¿½da por essa
                 edMov.setOID_Carteira(new Integer(new Long(Parametro_FixoED.getInstancia().getOID_Carteira_Faturamento()).intValue()));
 
                 edMov.setOid_Conta_Corrente(bancoUtil.getTableStringValue("oid_Conta_Corrente","Carteiras","oid_Carteira="+edMov.getOID_Carteira()));
@@ -1072,7 +1054,7 @@ public class Nota_Fiscal_EletronicaRN extends Transacao {
 	        if ("S".equals(edDevolucao.edModelo.getDM_Movimenta_Estoque()))
 	        {
                 /*** Atualiza Estoque
-                 *   Atualiza o estoque direto pela nota fiscal de saída e não pela
+                 *   Atualiza o estoque direto pela nota fiscal de saï¿½da e nï¿½o pela
                  *   nota de entrada respectiva. Veja em entradaEstoqueByNota() abaixo
                  ***/
 		        Item_Nota_Fiscal_TransacoesED edItem_NF = new Item_Nota_Fiscal_TransacoesED();
@@ -1099,7 +1081,7 @@ public class Nota_Fiscal_EletronicaRN extends Transacao {
 	                PedidoBD.atualizaSituacaoPedido(Long.parseLong(oid_Pedido), "C");
 	            }
 	        }
-	        /** Seta NF Original com Situação Devolvida **/
+	        /** Seta NF Original com Situaï¿½ï¿½o Devolvida **/
             this.sql.executarUpdate(" UPDATE Notas_Fiscais SET" +
                                     "     DM_Situacao = 'D'" +
                                     "    ,oid_Nota_Fiscal_Devolucao = '"+edDevolucao.getOid_nota_fiscal()+"'" +
@@ -1117,13 +1099,13 @@ public class Nota_Fiscal_EletronicaRN extends Transacao {
         }
     }
 
-    //*** Devolução Fornecedor Nota Fiscal de Saida + impressão (QTD_Devolução nos itens da NF)
+    //*** Devoluï¿½ï¿½o Fornecedor Nota Fiscal de Saida + impressï¿½o (QTD_Devoluï¿½ï¿½o nos itens da NF)
     private void geraNFDevolucaoFornecedor(Nota_Fiscal_EletronicaED edNota) throws Exception {
 
         try {
 
 	        if (!JavaUtil.doValida(edNota.getOid_nota_fiscal()))
-	            throw new Excecoes("ID Nota Fiscal não infomado!");
+	            throw new Excecoes("ID Nota Fiscal nï¿½o infomado!");
 
 	        if (!new BancoUtil().doExiste("Itens_Notas_Fiscais","oid_Nota_Fiscal = '"+edNota.getOid_nota_fiscal()+"'" +
 	        									  				" AND NR_QT_Devolucao > 0"))
@@ -1143,7 +1125,7 @@ public class Nota_Fiscal_EletronicaRN extends Transacao {
 	        edNota.setOid_Nota_Fiscal_Original(edNota.getOid_nota_fiscal());
 	        edNota.setOid_natureza_operacao(0);
 
-	        //*** Busca NR da Nota e Série
+	        //*** Busca NR da Nota e Sï¿½rie
 	        Nota_FiscalBD.setNrSerieNotaFromAIDOF(edNota, "DEV");
 	        edNota.setDm_tipo_nota_fiscal(edNota.edModelo.getDM_Tipo_Nota_Fiscal());
 	        //*** Verifica deve ser impressa
@@ -1154,7 +1136,7 @@ public class Nota_Fiscal_EletronicaRN extends Transacao {
 	        edNota.setDM_Situacao("N");
 	        edNota.setDM_Impresso("N");
 
-	        //*** Inclui Nota Fiscal de Devoluçao Fornecedor
+	        //*** Inclui Nota Fiscal de Devoluï¿½ao Fornecedor
 	        edNota = Nota_FiscalBD.inclui(edNota);
 
 	        double nrItens = 0, vlICMS = 0, vlIPI = 0, vlICMSAprov = 0, vlProdutos = 0;
@@ -1163,7 +1145,7 @@ public class Nota_Fiscal_EletronicaRN extends Transacao {
 	        for (int i = 0; i < listaItens.size(); i++)
             {
 	            Item_Nota_Fiscal_TransacoesED edItem = (Item_Nota_Fiscal_TransacoesED) listaItens.get(i);
-	            //*** Lista Produtos para Devolução
+	            //*** Lista Produtos para Devoluï¿½ï¿½o
 	            if (edItem.getNR_QT_Devolucao() > 0)
                 {
 	                edItem.setOID_Item_Nota_Fiscal(0);
@@ -1204,7 +1186,7 @@ public class Nota_Fiscal_EletronicaRN extends Transacao {
         if (lista.size() < 1)
             throw new Mensagens("Lista de Notas vazia! Execute novamente a consulta!");
         if (!JavaUtil.doValida(dmTipo_NF))
-            throw new Mensagens("Tipo de Nota não informada!");
+            throw new Mensagens("Tipo de Nota nï¿½o informada!");
 
         //*** NFs de saida
         if ("S".equals(dmTipo_NF))
@@ -1223,16 +1205,16 @@ public class Nota_Fiscal_EletronicaRN extends Transacao {
         {
             for (int i = 0; i < lista.size(); i++)
                 this.finalizaNF_Entrada((Nota_Fiscal_EletronicaED) lista.get(i));
-        } else throw new Mensagens("Tipo de Nota não reconhecido!");
+        } else throw new Mensagens("Tipo de Nota nï¿½o reconhecido!");
     }
 
     //*** Finaliza Nota Fiscal de Venda Direta
     public void finalizaNF_VendaDireta(String oid_Nota_Fiscal, String oid_Conhecimento) throws Exception {
 
         if (!JavaUtil.doValida(oid_Nota_Fiscal))
-            throw new Mensagens("ID Nota Fiscal não informada!");
+            throw new Mensagens("ID Nota Fiscal nï¿½o informada!");
         if (!JavaUtil.doValida(oid_Conhecimento))
-            throw new Mensagens("ID Conhecimento não informado!");
+            throw new Mensagens("ID Conhecimento nï¿½o informado!");
 
         try {
 	        this.inicioTransacao();
@@ -1240,7 +1222,7 @@ public class Nota_Fiscal_EletronicaRN extends Transacao {
 	        Nota_Fiscal_EletronicaBD Nota_FiscalBD = new Nota_Fiscal_EletronicaBD(this.sql);
             Nota_Fiscal_EletronicaED ed = Nota_FiscalBD.getByRecord(new Nota_Fiscal_EletronicaED(oid_Nota_Fiscal));
             if (!JavaUtil.doValida(ed.getOid_nota_fiscal()))
-                throw new Mensagens("Nota Fiscal não encontrada!");
+                throw new Mensagens("Nota Fiscal nï¿½o encontrada!");
 
             //*** Gerar Livro Fiscal
             String dm_tipo_documento = bancoUtil.getTableStringValue("dm_tipo_documento","Conhecimentos","oid_conhecimento='"+oid_Conhecimento+"'");
@@ -1313,7 +1295,7 @@ public class Nota_Fiscal_EletronicaRN extends Transacao {
 
         if (ed.getOid_nota_fiscal().compareTo("") == 0) {
             Excecoes exc = new Excecoes();
-            exc.setMensagem("Código da Nota Fiscal não foi informado!!!");
+            exc.setMensagem("Cï¿½digo da Nota Fiscal nï¿½o foi informado!!!");
             throw exc;
         }
         this.inicioTransacao();
@@ -1349,7 +1331,7 @@ public class Nota_Fiscal_EletronicaRN extends Transacao {
         return aux;
     }
 
-    /** ------------ RELATÓRIOS ---------------- */
+    /** ------------ RELATï¿½RIOS ---------------- */
 //  *** Notas Fiscais Matricial
     public String geraNotaFiscal_to_EmissorNFe(ArrayList listaNotasFiscais, String dtSaida, String hrSaida) throws Excecoes {
     	return "";
@@ -1376,166 +1358,29 @@ public class Nota_Fiscal_EletronicaRN extends Transacao {
     //*** Notas Fiscais Matricial
     public String imprime_NotasFiscaisMatricial(ArrayList listaNotasFiscais, String dtSaida, String hrSaida) throws Excecoes {
 
-        try {
-            this.inicioTransacao();
-
-            String toReturn = new Nota_Fiscal_TransacoesRL(this.sql).printNotaFiscalSaida(listaNotasFiscais, dtSaida, hrSaida);
-            this.fimTransacao(true);
-            return toReturn;
-        } catch (Excecoes e) {
-            this.abortaTransacao();
-            e.printStackTrace();
-            throw e;
-        } catch(RuntimeException e) {
-            this.abortaTransacao();
-            e.printStackTrace();
-            throw e;
-        } catch(Exception e){
-        	this.abortaTransacao();
-            e.printStackTrace();
-            throw new Excecoes();
-        }
+        return "";
     }
 
 //  *** Notas Fiscais Servico Matricial
     public String imprime_NotasFiscaisServicoMatricial(ArrayList listaNotasFiscais, String dtSaida, String hrSaida) throws Excecoes {
 
-        try {
-            this.inicioTransacao();
-
-            String toReturn = new Nota_Fiscal_TransacoesRL(this.sql).printNotaFiscalServico(listaNotasFiscais, dtSaida, hrSaida);
-            this.fimTransacao(true);
-            return toReturn;
-        } catch (Excecoes e) {
-            this.abortaTransacao();
-            e.printStackTrace();
-            throw e;
-        } catch(RuntimeException e) {
-            this.abortaTransacao();
-            e.printStackTrace();
-            throw e;
-        } catch(Exception e){
-        	this.abortaTransacao();
-            e.printStackTrace();
-            throw new Excecoes();
-        }
+        return "";
     }
 
-    //*** Notas Fiscal de Alterção de Placa
+    //*** Notas Fiscal de Alterï¿½ï¿½o de Placa
     public String imprime_NotaAlteracaoPlaca(ArrayList listaNotasFiscais, String dtSaida, String hrSaida) throws Excecoes {
 
-        try {
-            this.inicioTransacao();
-            String toReturn = new Nota_Fiscal_TransacoesRL(this.sql).printNotaAlteracaoPlaca(listaNotasFiscais, dtSaida, hrSaida);
-            this.fimTransacao(true);
-            return toReturn;
-        } catch (Excecoes e) {
-            this.abortaTransacao();
-            throw e;
-        } catch(RuntimeException e) {
-            this.abortaTransacao();
-            throw e;
-        }
+        return "";
     }
 
     //*** Notas Fiscais de Venda
     public void relNF_Venda(RelatorioED ed) throws Exception {
 
-        try {
-            this.inicioTransacao();
-            if ("NF_Venda_00".equals(ed.getNomeRelatorio()))
-                new Nota_Fiscal_TransacoesRL(this.sql).relProdutosEntregador(ed);
-            else if ("NF_Venda_01".equals(ed.getNomeRelatorio()))
-                new Nota_Fiscal_TransacoesRL(this.sql).relNFEntregador(ed);
-            else if ("NF_Venda_02".equals(ed.getNomeRelatorio()))
-                new Nota_Fiscal_TransacoesRL(this.sql).relNFVendasVendedor(ed);
-            else if ("NF_Venda_03".equals(ed.getNomeRelatorio()))
-                new Nota_Fiscal_TransacoesRL(this.sql).relNFVendasVendedorSelecao(ed);
-            else if ("NF_Venda_04".equals(ed.getNomeRelatorio()))
-                new Nota_Fiscal_TransacoesRL(this.sql).relNFVendasCliente(ed);
-            else if ("NF_Venda_05".equals(ed.getNomeRelatorio()))
-                new Nota_Fiscal_TransacoesRL(this.sql).relNFVendasEntregador(ed);
-            else if ("NF_Venda_06".equals(ed.getNomeRelatorio()))
-                new Nota_Fiscal_TransacoesRL(this.sql).relVendas(ed);
-            else if ("NF_Venda_07".equals(ed.getNomeRelatorio()))
-                new Nota_Fiscal_TransacoesRL(this.sql).relResumoGorduras(ed);
-            else if ("NF_Venda_08".equals(ed.getNomeRelatorio()))
-                new Nota_Fiscal_TransacoesRL(this.sql).relComissaoVendedor(ed);
-            else if ("NF_Venda_30".equals(ed.getNomeRelatorio()))
-                new Nota_Fiscal_TransacoesRL(this.sql).relComissaoVendedor1(ed);
-//            else if ("NF_Venda_10".equals(ed.getNomeRelatorio()))
-                //new Nota_Fiscal_TransacoesRL(this.sql).relNFVendasDiretaFornecedor(ed);
-            else if ("NF_Venda_09".equals(ed.getNomeRelatorio()))
-                new Nota_Fiscal_TransacoesRL(this.sql).relNFVendasVendedorFornecedor(ed);
-            else if ("NF_Venda_11".equals(ed.getNomeRelatorio()))
-                new Nota_Fiscal_TransacoesRL(this.sql).relNFVendasVendedorFornecedorSelecao(ed);
-            else if ("NF_Venda_12".equals(ed.getNomeRelatorio()))
-                new Nota_Fiscal_TransacoesRL(this.sql).relNFVendasFornecedor(ed);
-            else if ("NF_Venda_13".equals(ed.getNomeRelatorio()))
-                new Nota_Fiscal_TransacoesRL(this.sql).relNFNotas_Emissao(ed);
-            else if ("NF_Venda_14".equals(ed.getNomeRelatorio()))
-                new Nota_Fiscal_TransacoesRL(this.sql).relNFNotas_Anuladas(ed);
-            else if ("NF_Venda_15".equals(ed.getNomeRelatorio()))
-                new Nota_Fiscal_TransacoesRL(this.sql).relNFVendasMargemContribuicaoV(ed);
-            else if ("NF_Venda_16".equals(ed.getNomeRelatorio()))
-                new Nota_Fiscal_TransacoesRL(this.sql).relNFVendaDireta(ed);
-            else if ("NF_Venda_17".equals(ed.getNomeRelatorio()))
-                new Nota_Fiscal_TransacoesRL(this.sql).relNFVendaDiretaSetor(ed);
-            else if ("NF_Venda_18".equals(ed.getNomeRelatorio())) {
-            	ed.setNomeRelatorio("NF_Venda_15");
-                new Nota_Fiscal_TransacoesRL(this.sql).relNFVendasMargemContribuicaoE(ed);
-            }
-            else if ("NF_Venda_19".equals(ed.getNomeRelatorio()))
-                new Nota_Fiscal_TransacoesRL(this.sql).relNFVendaDiretaAcerto(ed);
-            else if ("NF_Venda_20".equals(ed.getNomeRelatorio()))
-                new Nota_Fiscal_TransacoesRL(this.sql).relNFEvolucaoVendedor(ed);
-            else if ("NF_Venda_21".equals(ed.getNomeRelatorio()))
-                new Nota_Fiscal_TransacoesRL(this.sql).relNFiscaisVendas(ed);
-            else if ("NF_Venda_22".equals(ed.getNomeRelatorio()))
-                new Nota_Fiscal_TransacoesRL(this.sql).relNFDataEmissao(ed);
-            else if ("NF_Venda_23".equals(ed.getNomeRelatorio()))
-                new Nota_Fiscal_TransacoesRL(this.sql).relNFDistribuicao(ed);
-            else if ("NF_Venda_24".equals(ed.getNomeRelatorio()))
-                new Nota_Fiscal_TransacoesRL(this.sql).relNFDistribuicaoCidades(ed);
-            else if ("NF_Venda_25".equals(ed.getNomeRelatorio()))
-                new Nota_Fiscal_TransacoesRL(this.sql).relResumoGorduras_Analiticas_Vendedor(ed);
-            else if ("NF_Venda_26".equals(ed.getNomeRelatorio()))
-                new Nota_Fiscal_TransacoesRL(this.sql).relResumoGorduras_Analiticas_Cliente(ed);
-            else if ("NF_Venda_27".equals(ed.getNomeRelatorio()))
-                new Nota_Fiscal_TransacoesRL(this.sql).relNFDistribuicaoSegmentacao(ed);
-            else if ("NF_Venda_28".equals(ed.getNomeRelatorio()))
-                new Nota_Fiscal_TransacoesRL(this.sql).relNFdaDistribuicao(ed);
-            else if ("NF_Venda_29".equals(ed.getNomeRelatorio()))
-                new Nota_Fiscal_TransacoesRL(this.sql).relNFVendaRealVendedor(ed);
-            else if ("NF_Venda_31".equals(ed.getNomeRelatorio()))
-                new Nota_Fiscal_TransacoesRL(this.sql).relNFHistoricoSupervisor(ed);
-            else if ("NF_Venda_40".equals(ed.getNomeRelatorio()))
-                new Nota_Fiscal_TransacoesRL(this.sql).relNFTrocasClienteABC(ed);
-            else if ("NF_Venda_41".equals(ed.getNomeRelatorio()))
-                new Nota_Fiscal_TransacoesRL(this.sql).relNFTrocasProdutoABC(ed);
-            else if ("NF_Venda_42".equals(ed.getNomeRelatorio()))
-                new Nota_Fiscal_TransacoesRL(this.sql).relNFClienteVolumeABC(ed);
-            else if ("NF_Venda_50".equals(ed.getNomeRelatorio()))
-                new Nota_Fiscal_TransacoesRL(this.sql).relVendasMKP(ed);
-            else if ("NF_Venda_51".equals(ed.getNomeRelatorio()))
-                new Nota_Fiscal_TransacoesRL(this.sql).relVendasVolumes(ed);
-            else if ("NF_Venda_52".equals(ed.getNomeRelatorio()))
-                new Nota_Fiscal_TransacoesRL(this.sql).relVendasCobertura(ed);
-            else throw new Mensagens("Relatório: "+ed.getNomeRelatorio()+" não encontrado!");
-        } finally {
-            this.fimTransacao(false);
-        }
     }
 
-    //*** Notas Fiscais de ENTRADA Conferência
+    //*** Notas Fiscais de ENTRADA Conferï¿½ncia
     public void relNFConferencia(RelatorioED ed) throws Exception {
 
-        try {
-            this.inicioTransacao();
-            new Nota_Fiscal_TransacoesRL(this.sql).relNFConferencia(ed);
-        } finally {
-            this.fimTransacao(false);
-        }
     }
     //*** Notas Fiscais de ENTRADA Volume de Compra
     public void relNFVolume_de_Compras(RelatorioED ed) throws Exception {
@@ -1570,7 +1415,7 @@ public class Nota_Fiscal_EletronicaRN extends Transacao {
     }
 
 
-    //*** Relatório da Evolução dos Vendedores em     Valores /(vendas - Devoluções)
+    //*** Relatï¿½rio da Evoluï¿½ï¿½o dos Vendedores em     Valores /(vendas - Devoluï¿½ï¿½es)
     public void relNFEvolucaoVendedor(RelatorioED ed) throws Exception {
 
         try {
@@ -1580,7 +1425,7 @@ public class Nota_Fiscal_EletronicaRN extends Transacao {
             this.fimTransacao(false);
         }
     }
-    //*** Relatório de notas fiscais de venda (genérico)
+    //*** Relatï¿½rio de notas fiscais de venda (genï¿½rico)
     public void relNFiscaisVendas(RelatorioED ed) throws Exception {
 
         try {
@@ -1592,11 +1437,11 @@ public class Nota_Fiscal_EletronicaRN extends Transacao {
     }
 
     /**
-     * Devolução Simbólica Nota Fiscal de Venda
-     * 1 - Le todas as NFs de saida ainda não devolvidas do cliente
-     * 2 - Cria uma nota fiscal de devolucao para cada nota de saída , trocando o cfop
+     * Devoluï¿½ï¿½o Simbï¿½lica Nota Fiscal de Venda
+     * 1 - Le todas as NFs de saida ainda nï¿½o devolvidas do cliente
+     * 2 - Cria uma nota fiscal de devolucao para cada nota de saï¿½da , trocando o cfop
      * 3 - Para cada item da nf de saida cria um item na nota de devolucao
-     * 4 - Atualiza a nota de saida para informar que já foi devolvida e o oid da nf de devolucao, se devolveu ok.
+     * 4 - Atualiza a nota de saida para informar que jï¿½ foi devolvida e o oid da nf de devolucao, se devolveu ok.
      */
     public boolean geraNFDevolucaoSimbolica(Nota_Fiscal_EletronicaED ed) throws Excecoes {
 
@@ -1617,12 +1462,12 @@ public class Nota_Fiscal_EletronicaRN extends Transacao {
             Parametro_WmsED edPWms = new Parametro_WmsED();
             edPWms = new Parametro_WmsBD(this.sql).getByRecord(edPWms);
             oid_Modelo_Nota_Fiscal = bancoUtil.getTableIntValue("oid_Modelo_Nota_Fiscal","Modelos_Notas_Fiscais","cd_Modelo_Nota_Fiscal='"+edPWms.getCd_Modelo_Nota_Fiscal()+"'");
-            // Busca todas as notas fiscais de saida do cliente não devolvidas
+            // Busca todas as notas fiscais de saida do cliente nï¿½o devolvidas
             ed.setDm_tipo_nota_fiscal("S");
             ed.setDm_Devolvido("N");
             ed.setDM_Situacao("F");
             lstNFc = new Nota_Fiscal_EletronicaBD(this.sql).lista(ed);
-            // Itera as notas retornadas para geracao das nfs de devolução simbólica
+            // Itera as notas retornadas para geracao das nfs de devoluï¿½ï¿½o simbï¿½lica
             for (int i = 0; i <lstNFc.size(); i++){
             	Nota_Fiscal_EletronicaED edNFc = new Nota_Fiscal_EletronicaED();
             	edNFc = (Nota_Fiscal_EletronicaED)lstNFc.get(i);
@@ -1633,7 +1478,7 @@ public class Nota_Fiscal_EletronicaRN extends Transacao {
 
 	            	//Guarda o oid da nota para buscar seus itens e atualizar a NF no final
 	            	oid_NF_Saida = edNFc.getOid_nota_fiscal();
-	            	// Coloca a pessoa dona da nota de saida como destinatário/fornecedor
+	            	// Coloca a pessoa dona da nota de saida como destinatï¿½rio/fornecedor
 	            	edNFc.setOid_pessoa_fornecedor(edNFc.getOid_pessoa());
 	            	edNFc.setOid_pessoa_destinatario(edNFc.getOid_pessoa());
 	            	// Coloca o armazenador como dono da nota
@@ -1684,7 +1529,7 @@ public class Nota_Fiscal_EletronicaRN extends Transacao {
 	            	// Gelson
 	            	ed.edModelo.getDM_Movimenta_Estoque();
 	            	edNFc.setOid_Nota_Fiscal_Original(oid_NF_Saida);
-	            	// Insere a nota e pega ela no mesmo objeto, já com novo oid
+	            	// Insere a nota e pega ela no mesmo objeto, jï¿½ com novo oid
 	            	edNFc = new Nota_Fiscal_EletronicaBD(this.sql).inclui(edNFc);
 	            	edNFc = new Nota_Fiscal_EletronicaBD(this.sql).getByRecord(edNFc);
 	            	oid_NF_Devolucao = edNFc.getOid_nota_fiscal();
@@ -1692,7 +1537,7 @@ public class Nota_Fiscal_EletronicaRN extends Transacao {
 	            	Item_Nota_Fiscal_TransacoesED edNFi = new Item_Nota_Fiscal_TransacoesED();
 	            	edNFi.setOID_Nota_Fiscal(oid_NF_Saida);
 	            	lstNFi = new Item_Nota_Fiscal_TransacoesBD(this.sql).lista(edNFi);
-	            	//Itera os itens da nota de saída para a geração dos itens da devolução
+	            	//Itera os itens da nota de saï¿½da para a geraï¿½ï¿½o dos itens da devoluï¿½ï¿½o
 	            	for (int x = 0; x <lstNFi.size(); x++){
 	            		edNFi = (Item_Nota_Fiscal_TransacoesED)lstNFi.get(x);
 	            		edNFi.setOID_Item_Nota_Fiscal(0);
@@ -1703,13 +1548,13 @@ public class Nota_Fiscal_EletronicaRN extends Transacao {
 	            		new Item_Nota_Fiscal_TransacoesBD(this.sql).inclui(edNFi);
 
 	            	}
-	            	// Busca Novamente a nota fiscal de devolução já com os valores atualizados
+	            	// Busca Novamente a nota fiscal de devoluï¿½ï¿½o jï¿½ com os valores atualizados
 	            	edNFc = new Nota_Fiscal_EletronicaBD(this.sql).getByRecord(edNFc);
 
 	            	//Finaliza a nota de devolucao e retorna true se foi possivel dar baixa na nf de entrada
 	            	finalizado = this.finalizaNF_Devolucao(edNFc,false);
 
-	            	// Pega a nota fiscal de saida para marcar que já foi devolvida e colocar o oid da nf de devolução
+	            	// Pega a nota fiscal de saida para marcar que jï¿½ foi devolvida e colocar o oid da nf de devoluï¿½ï¿½o
 	            	Nota_Fiscal_EletronicaED edNFs = new Nota_Fiscal_EletronicaED();
 	            	edNFs.setOid_nota_fiscal(oid_NF_Saida);
 	            	edNFs = new Nota_Fiscal_EletronicaBD(this.sql).getByRecord(edNFs);
@@ -1719,7 +1564,7 @@ public class Nota_Fiscal_EletronicaRN extends Transacao {
                 }
             }
             this.fimTransacao(true);
-            if ( lstNFc.size() <=0 ) throw new Mensagens("Não há notas de saídas para devolução simbólica nesta seleção!");
+            if ( lstNFc.size() <=0 ) throw new Mensagens("Nï¿½o hï¿½ notas de saï¿½das para devoluï¿½ï¿½o simbï¿½lica nesta seleï¿½ï¿½o!");
 
         } catch(Excecoes e) {
             this.abortaTransacao();
@@ -1832,7 +1677,7 @@ public class Nota_Fiscal_EletronicaRN extends Transacao {
             	this.denegacaoNFVenda((Nota_Fiscal_EletronicaED)listaNotasFiscais.get(0));
             }
             else {
-            	throw new Excecoes("NF RECUSADA! Cód. "+nota.getcStat().intValue()+" | Desc.:"+nota.getxMotivo());
+            	throw new Excecoes("NF RECUSADA! Cï¿½d. "+nota.getcStat().intValue()+" | Desc.:"+nota.getxMotivo());
             }
         } catch (Excecoes e) {
             this.abortaTransacao();
@@ -1858,121 +1703,11 @@ public class Nota_Fiscal_EletronicaRN extends Transacao {
         String pathPDF = "";
 
 //        String img = Configuracoes.getInstance().getAppDir() + "/logo.png";
-		String img = Configuracoes.getInstance().getAppDir() + "/relatorios/logop.jpg";
-System.out.println(img);
-        File f = new File(img);
-        if (f.exists()) {
-            parametros.put("logo", img);
-        }
-
-        String pathJasper = Configuracoes.getInstance().getAppDir() + "/relatorios/";
-        JRBeanCollectionDataSource jrbcds = new JRBeanCollectionDataSource(danfeItens);
-        String arquivo = "DANFE3";
-        String path = pathJasper + arquivo + ".jasper";
-        try {
-            JasperPrint jp = JasperFillManager.fillReport(path, parametros, jrbcds);
-
-//            pathPDF = "/data/hcte/relatorios/out/" + "DANFE" + nota.getNNF() + ".pdf";
-            pathPDF = Configuracoes.getInstance().getAppDir() + "/relatorios/out/" + "DANFE" + nota.getNNF() + ".pdf";
-            JasperExportManager.exportReportToPdfFile(jp, pathPDF);
-
-//            JasperExportManager.exportReportToPdfStream(jp, response.getOutputStream());
-
-//            JasperViewer jv = new JasperViewer(jp, false);
-//            jv.setTitle("Nfe");
-//            jv.setVisible(true);
-        } catch (JRException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
         return pathPDF;
     }
 
     public void imprimeDANFE(Nota_Fiscal_EletronicaED ed, HttpServletResponse response) throws Exception {
 
-    	NfeServicos servico = new NfeServicos();
-    	try {
-            this.inicioTransacao();
-            Nota_Fiscal_EletronicaBD nfBD = new Nota_Fiscal_EletronicaBD(this.sql);
-        	ed = nfBD.getByRecord(ed);
-        	NfeNotaFiscal nota = nfBD.getNFeDANFE(ed);
-        	this.fimTransacao(false);
-            HashMap parametros = servico.getParametrosNfeJasper(nota);
-            Collection<BeanDanfeItens> danfeItens = servico.getDanfeItens();
-
-//            //e-mail...
-//            try{
-//            	String cliente = ManipulaString.limpaCampo(ed.getOid_pessoa_destinatario());
-//            	PessoaBean pes = PessoaBean.getByOID(cliente);
-//            	System.out.print(pes.getEMail()+"....");
-//            	if(JavaUtil.doValida(pes.getEMail())){
-//
-//            		System.out.println("EMAIL....");
-//                	String caminho = "/data/doc-e/nfe/"+ManipulaString.limpaCampo(nota.getEmitente().getCnpj())+"/";
-//                	String arq = nota.getChaveAcesso()+"-procNFe.xml";
-//                	//Aqui manda o e-mail...
-//                	EmailED mail = new EmailED();
-//                	mail.setNM_Host("smtp.transmiro.com.br"); //host
-//                	mail.setNM_Email_Origem("nfe@transmiro.com.br"); //sender
-//                	mail.setNM_Username("nfe@transmiro.com.br"); //user
-//                	mail.setNM_Protocolo("smtp");
-//                	mail.setNM_Senha("tr20nf15"); //pass
-//                	mail.setNM_Subject("TRANSMIRO, arquivo XML de emissao da NFE "+nota.getNNF()); //subject
-//                	mail.setNM_Email_Destino(pes.getEMail()+";nfe@transmiro.com.br;teo@nalthus.com.br"); //to
-////                	mail.setNM_Email_Destino("teo@nalthus.com.br"); //to
-//                	mail.setTX_Mensagem(" </br><strong>A TRANSMIRO acaba de EMITIR a NFe acima para sua empresa.</strong></br> Em anexo o arquivo XML da autorizacao de uso desta NFe.</br>" +
-//                			"<font color=red>*** Esta eh uma mensagem automatica, <strong>NAO RESPONDA ESTA MENSAGEM!</strong> ***</font></br></br></br></br>"); //message
-//                	mail.setNM_Path(caminho); //path of attachment
-//                	mail.setNM_File(arq); //file to attach
-//                	mail.setNR_Porta("25"); //port to server
-//                	mail.setDM_Autenticacao("S"); //auth: S / N
-//                	Mailer.sendMail(mail);
-//            	}
-//            } catch (Exception e){
-//            	e.printStackTrace();
-//            	//mais nada
-//            }
-
-//            String img = Configuracoes.getInstance().getAppDir() + "/logo.png";
-            String img = Configuracoes.getInstance().getAppDir() + "/relatorios/logop.jpg";
-System.out.println(img);
-            File f = new File(img);
-            if (f.exists()) {
-                parametros.put("logo", img);
-            }
-
-            String pathJasper = Configuracoes.getInstance().getAppDir() + "/relatorios/";
-            JRBeanCollectionDataSource jrbcds = new JRBeanCollectionDataSource(danfeItens);
-            String arquivo = "DANFE3";
-            String path = pathJasper + arquivo + ".jasper";
-            try {
-                JasperPrint jp = JasperFillManager.fillReport(path, parametros, jrbcds);
-                response.setHeader("application/pdf", "Content-Type");
-                response.setHeader("Content-Disposition:","inline; filename=" + "DANFE" + nota.getNNF() + ".pdf");
-                response.setContentType("application/pdf");
-                JasperExportManager.exportReportToPdfStream(jp, response.getOutputStream());
-//                JasperViewer jv = new JasperViewer(jp, false);
-//                jv.setTitle("Nfe");
-//                jv.setVisible(true);
-            } catch (JRException e) {
-                e.printStackTrace();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-    	} catch (Excecoes e) {
-            this.abortaTransacao();
-            e.printStackTrace();
-            throw e;
-        } catch(RuntimeException e) {
-            this.abortaTransacao();
-            e.printStackTrace();
-            throw e;
-        } catch(Exception e){
-        	this.abortaTransacao();
-            e.printStackTrace();
-            throw new Excecoes();
-        }
 
     }
 
@@ -2057,7 +1792,7 @@ System.out.println(img);
         }
     }
 
-//  *** Busca Oid, Numero, Série da Nota Fiscal
+//  *** Busca Oid, Numero, Sï¿½rie da Nota Fiscal
 	public Nota_Fiscal_EletronicaED numeraNFe(Nota_Fiscal_EletronicaED ed,String nmSerie) throws Exception {
 		try {
             this.inicioTransacao();

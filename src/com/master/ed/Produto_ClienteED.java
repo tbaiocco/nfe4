@@ -1,8 +1,10 @@
 package com.master.ed;
 
+import com.master.util.Valor;
+
 /**
- * Tï¿½tulo: Produto_ClienteED Descriï¿½ï¿½o: Produtos Clientes - ED Data da criaï¿½ï¿½o:
- * 10/2003 Atualizado em: 02/2004 Empresa: ï¿½xitoLogï¿½stica Mastercom Autor:
+ * Título: Produto_ClienteED Descrição: Produtos Clientes - ED Data da criação:
+ * 10/2003 Atualizado em: 02/2004 Empresa: ÊxitoLogística Mastercom Autor:
  * Carlos Eduardo de Holleben
  */
 
@@ -79,11 +81,11 @@ public class Produto_ClienteED extends MasterED {
             return "Bloqueado Venda";
         else if ("C".equals(dm_Situacao))
             return "Bloqueado Compra";
-        else return "Nï¿½o Informado!";
+        else return "Não Informado!";
     }
     /** SALDO FINANCEIRO **/
     public double getSaldoFinanceiro() {
-        return Math.ceil(this.getNR_QT_Atual()*this.getVL_Preco_Custo());
+        return Valor.round(this.getNR_QT_Atual()*this.getVL_Preco_Custo(), 2);
     }
     
     public String getDM_Rotatividade() {

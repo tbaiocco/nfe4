@@ -62,11 +62,15 @@ public class ExecutaSQL {
         Statement st = null;
         ResultSet rs = null;
         if (conexao == null)
-            throw new Excecoes("Conexï¿½o nï¿½o estï¿½ ativa!", this.getClass().getName(), "executarConsulta");
+            throw new Excecoes("Conexão não está ativa!", this.getClass().getName(), "executarConsulta");
         
         try {
             st = conexao.createStatement();
-
+            //st = conexao.createStatement(ResultSet.TYPE_FORWARD_ONLY,
+            // ResultSet.CONCUR_READ_ONLY);
+            if (transacao != null) {
+            	transacao.addQuery(sql);
+            }
             rs = st.executeQuery(sql);
             return rs;
         } catch (SQLException e) {
@@ -80,10 +84,14 @@ public class ExecutaSQL {
         int result = 0;
         
         if (conexao == null)
-            throw new Excecoes("Conexï¿½o nï¿½o estï¿½ ativa!", this.getClass().getName(), "executarUpdate");
+            throw new Excecoes("Conexão não está ativa!", this.getClass().getName(), "executarUpdate");
         try {
             st = conexao.createStatement();
-  
+            //st.execute("ALTER SESSION SET NLS_DATE_FORMAT = 'dd/mm/yyyy
+            // hh24:mi:ss'");
+            if (transacao != null) {
+            	transacao.addQuery(sql);
+            }
             result = st.executeUpdate(sql);
             st.close();
 

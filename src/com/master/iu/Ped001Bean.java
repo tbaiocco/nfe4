@@ -1,8 +1,8 @@
 package com.master.iu;
 
 /**
- * Módulo: Pedidos
- * @author André Valadas
+ * Mï¿½dulo: Pedidos
+ * @author Andrï¿½ Valadas
 */
 
 import java.util.ArrayList;
@@ -15,7 +15,6 @@ import javax.servlet.http.HttpServletResponse;
 import com.master.ed.PedidoED;
 import com.master.ed.ProdutoED;
 import com.master.ed.RelatorioED;
-import com.master.rl.JasperRL;
 import com.master.rn.PedidoRN;
 import com.master.rn.ProdutoRN;
 import com.master.util.Data;
@@ -49,7 +48,7 @@ public class Ped001Bean extends JavaUtil {
       	String NM_Serie = request.getParameter("FT_NM_Serie");
       	
         if (!doValida(oid_Pessoa))
-            throw new Excecoes("ID Pessoa não informado!");
+            throw new Excecoes("ID Pessoa nï¿½o informado!");
         
         PedidoED ed = new PedidoED();
         ed.setOID_Pessoa(oid_Pessoa);
@@ -71,9 +70,9 @@ public class Ped001Bean extends JavaUtil {
         	        ed.setOid_Entregador(Integer.parseInt(oid_Entregador));
         	    if (doValida(oid_Natureza_Operacao))
         	        ed.setOid_Natureza_Operacao(Integer.parseInt(oid_Natureza_Operacao));
-        	    else throw new Excecoes("Natureza de Operação não informada!");
+        	    else throw new Excecoes("Natureza de Operaï¿½ï¿½o nï¿½o informada!");
         	}
-        } else throw new Excecoes("Tipo de Pedido[Compra ou Venda] não informado!");
+        } else throw new Excecoes("Tipo de Pedido[Compra ou Venda] nï¿½o informado!");
       	
 		if (doValida(oid_Vendedor))
 		    ed.setOID_Vendedor(oid_Vendedor);
@@ -132,7 +131,7 @@ public class Ped001Bean extends JavaUtil {
             ed.setOid_Pessoa_Distribuidor(oid_Pessoa_Distribuidor);
             ed.setDM_Frete(DM_Frete);
             ed.setOID_Pedido(Long.parseLong(oid_Pedido));            
-        } else throw new Excecoes("Parâmetros incorretos!");            
+        } else throw new Excecoes("Parï¿½metros incorretos!");            
 
         //*** Informar o tipo de Pedido[Compra ou Venda]
         if (doValida(DM_Pedido))
@@ -144,9 +143,9 @@ public class Ped001Bean extends JavaUtil {
         	        ed.setOid_Entregador(Integer.parseInt(oid_Entregador));
         	    if (doValida(oid_Natureza_Operacao))
         	        ed.setOid_Natureza_Operacao(Integer.parseInt(oid_Natureza_Operacao));
-        	    else throw new Excecoes("Natureza de Operação não informada!");
+        	    else throw new Excecoes("Natureza de Operaï¿½ï¿½o nï¿½o informada!");
         	}
-        } else throw new Excecoes("Tipo de Pedido[Compra ou Venda] não informado!");
+        } else throw new Excecoes("Tipo de Pedido[Compra ou Venda] nï¿½o informado!");
         
         ed.setDT_Faturamento(request.getParameter("FT_DT_Faturamento"));
         if (doValida(request.getParameter("FT_DM_Meio_Pagamento")))
@@ -198,7 +197,7 @@ public class Ped001Bean extends JavaUtil {
         if (doValida(oid_Pedido)){
             ed.setOID_Pedido(Long.parseLong(oid_Pedido));
             ed.setDM_Situacao(DM_Situacao);
-        } else throw new Excecoes("Parâmetros incorretos!");
+        } else throw new Excecoes("Parï¿½metros incorretos!");
         
         new PedidoRN().deleta(ed);
     }
@@ -207,7 +206,7 @@ public class Ped001Bean extends JavaUtil {
 
     	String oid_Pedido = request.getParameter("oid_Pedido");
     	if (!doValida(oid_Pedido))
-    	    throw new Excecoes("Parâmetros incorretos!");
+    	    throw new Excecoes("Parï¿½metros incorretos!");
     	
     	PedidoED ed = new PedidoED(Long.parseLong(oid_Pedido));
     	ed.setDM_Situacao("C");
@@ -219,17 +218,17 @@ public class Ped001Bean extends JavaUtil {
 
         String oid_Pedido = request.getParameter("oid_Pedido");
         if (!doValida(oid_Pedido))
-            throw new Excecoes("Pedido não informado!");
+            throw new Excecoes("Pedido nï¿½o informado!");
 
         return new PedidoRN().verificaCriticaFinanceira(new PedidoRN().getByRecord(new PedidoED(Long.parseLong(oid_Pedido), "V")));
     }
     
-    //*** APROVAÇÃO DO PEDIDO DE VENDA
+    //*** APROVAï¿½ï¿½O DO PEDIDO DE VENDA
     public int setAprovacaoPedidoVenda(HttpServletRequest request)throws Exception {
 
         String oid_Pedido = request.getParameter("oid_Pedido");
         if (!doValida(oid_Pedido))
-            throw new Excecoes("Pedido não informado!");
+            throw new Excecoes("Pedido nï¿½o informado!");
 
         return new PedidoRN().setAprovacaoPedidoVenda(new PedidoRN().getByRecord(new PedidoED(Long.parseLong(oid_Pedido), "V")));
     }
@@ -239,12 +238,12 @@ public class Ped001Bean extends JavaUtil {
 
         String oid_Pedido = request.getParameter("oid_Pedido");
         if (!doValida(oid_Pedido))
-            throw new Excecoes("Pedido não informado!");
+            throw new Excecoes("Pedido nï¿½o informado!");
 
         new PedidoRN().atualizaSituacaoPedido(Long.parseLong(oid_Pedido), "C");
     }
     
-    //*** LIBERA CRÍTICA FINANCEIRA e ESTOQUE
+    //*** LIBERA CRï¿½TICA FINANCEIRA e ESTOQUE
     public void liberaCriticas(HttpServletRequest request) throws Exception {
 
         String oid_Pedido = request.getParameter("oid_Pedido");
@@ -252,11 +251,11 @@ public class Ped001Bean extends JavaUtil {
         String DM_Critica_Estoque = request.getParameter("FT_DM_Critica_Estoque");
         
         if (!doValida(oid_Pedido))
-            throw new Mensagens("Pedido não informado!");
+            throw new Mensagens("Pedido nï¿½o informado!");
         if (!doValida(DM_Critica_Estoque) && !doValida(DM_Critica_Financeira))
-            throw new Mensagens("Critica não informada para liberação!");
+            throw new Mensagens("Critica nï¿½o informada para liberaï¿½ï¿½o!");
         if (!"S".equals(DM_Critica_Financeira) && !"S".equals(DM_Critica_Estoque))
-            throw new Mensagens("Não há Criticas nesse Pedido para liberação!");
+            throw new Mensagens("Nï¿½o hï¿½ Criticas nesse Pedido para liberaï¿½ï¿½o!");
         
         if ("S".equals(DM_Critica_Financeira))
             new PedidoRN().atualizaCriticaFinanceira(Long.parseLong(oid_Pedido), "L");
@@ -274,17 +273,17 @@ public class Ped001Bean extends JavaUtil {
         String DM_Pedido = request.getParameter("FT_DM_Pedido");
         
         if (!doValida(NR_Pedido))
-            throw new Mensagens("Pedido não informado!");
+            throw new Mensagens("Pedido nï¿½o informado!");
         if (!doValida(oid_Unidade))
-            throw new Mensagens("Unidade não informada para liberação!");
+            throw new Mensagens("Unidade nï¿½o informada para liberaï¿½ï¿½o!");
         if (!doValida(oid_Vendedor))
-            throw new Mensagens("Vendedor não informada para liberação!");
+            throw new Mensagens("Vendedor nï¿½o informada para liberaï¿½ï¿½o!");
         if (!doValida(DT_Entrega))
-            throw new Mensagens("Data de Entrega não informada para liberação!");
+            throw new Mensagens("Data de Entrega nï¿½o informada para liberaï¿½ï¿½o!");
         if (!doValida(DM_Critica))
-            throw new Mensagens("Tipo de Crítica não informada para liberação!");
+            throw new Mensagens("Tipo de Crï¿½tica nï¿½o informada para liberaï¿½ï¿½o!");
         if (!doValida(DM_Pedido))
-            throw new Mensagens("Tipo de Pedido não informado para liberação!");
+            throw new Mensagens("Tipo de Pedido nï¿½o informado para liberaï¿½ï¿½o!");
         
         PedidoED ed = new PedidoED();
         ed.setNR_Pedido(Long.parseLong(NR_Pedido));
@@ -300,7 +299,7 @@ public class Ped001Bean extends JavaUtil {
     public boolean doExisteItensPedido(String oid_Pedido) throws Excecoes {
 
         if (!doValida(oid_Pedido))
-            throw new Excecoes("Pedido não informado!");
+            throw new Excecoes("Pedido nï¿½o informado!");
         return new Ped002Bean().doExisteItensPedido(oid_Pedido);
     }
 
@@ -310,7 +309,7 @@ public class Ped001Bean extends JavaUtil {
         String NR_Pedido = request.getParameter("FT_NR_Pedido");
         String DM_Pedido = request.getParameter("FT_DM_Pedido");
         if (!doValida(DM_Pedido))
-            throw new Excecoes("Tipo de Pedido[Compra ou Venda] não informado!");            
+            throw new Excecoes("Tipo de Pedido[Compra ou Venda] nï¿½o informado!");            
         
         PedidoED ed = new PedidoED();
         if (doValida(oid_Pedido))
@@ -325,9 +324,9 @@ public class Ped001Bean extends JavaUtil {
     public PedidoED getByOID_Pedido(String oid_Pedido, String DM_Pedido) throws Excecoes{
 
         if (!doValida(oid_Pedido))
-            throw new Excecoes("ID Pedido não informado!");
+            throw new Excecoes("ID Pedido nï¿½o informado!");
         if (!doValida(DM_Pedido))
-            throw new Excecoes("Tipo de Pedido[Compra ou Venda] não informado!");
+            throw new Excecoes("Tipo de Pedido[Compra ou Venda] nï¿½o informado!");
         return new PedidoRN().getByRecord(new PedidoED(Long.parseLong(oid_Pedido), DM_Pedido));
     }
 
@@ -340,7 +339,7 @@ public class Ped001Bean extends JavaUtil {
         if (!doValida(NR_Pedido))
             return ed;
         if (!doValida(DM_Pedido))
-            throw new Excecoes("Tipo de Pedido[Compra ou Venda] não informado!");
+            throw new Excecoes("Tipo de Pedido[Compra ou Venda] nï¿½o informado!");
         
         ed.setNR_Pedido(Integer.parseInt(NR_Pedido));
         ed.setDM_Pedido(DM_Pedido);
@@ -355,7 +354,7 @@ public class Ped001Bean extends JavaUtil {
         if (!doValida(NR_Pedido_Palm))
             return ed;
         if (!doValida(DM_Pedido))
-            throw new Excecoes("Tipo de Pedido[Compra ou Venda] não informado!");
+            throw new Excecoes("Tipo de Pedido[Compra ou Venda] nï¿½o informado!");
         
         ed.setNR_Pedido_Palm(NR_Pedido_Palm);
         ed.setDM_Pedido(DM_Pedido);
@@ -415,7 +414,7 @@ public class Ped001Bean extends JavaUtil {
             if ("V".equals(DM_Pedido))
         	    if (doValida(oid_Entregador))
         	        ed.setOid_Entregador(Integer.parseInt(oid_Entregador));
-        } else throw new Mensagens("Tipo de Pedido[Compra ou Venda] não informado!");  
+        } else throw new Mensagens("Tipo de Pedido[Compra ou Venda] nï¿½o informado!");  
         return new PedidoRN().lista(ed);
     }
     
@@ -460,7 +459,7 @@ public class Ped001Bean extends JavaUtil {
             ed.setDT_Previsao_Inicial(DT_Entrega_Inicial);
         if (doValida(DT_Entrega_Final))
             ed.setDT_Previsao_Final(DT_Entrega_Final);
-        ed.setDM_Filtrar_ACF("N"); //*** Não Filtrar Aprovados, Cancelados ou Finalizados
+        ed.setDM_Filtrar_ACF("N"); //*** Nï¿½o Filtrar Aprovados, Cancelados ou Finalizados
         ed.setDM_Pedido("V");
         return new PedidoRN().lista(ed);
     }
@@ -471,12 +470,12 @@ public class Ped001Bean extends JavaUtil {
         if (lista.size() < 1)
             throw new Mensagens("Lista de Pedidos vazia! Execute novamente a consulta!");
         if (!doValida(oid_Entregador))
-            throw new Excecoes("Entregador não informado!");
+            throw new Excecoes("Entregador nï¿½o informado!");
         
         new PedidoRN().atualizaEntregadorPedido(lista, Integer.parseInt(oid_Entregador), oid_Veiculo);
     }
     
-    //*** Seta Entregador em uma determinada lista de Pedidos aprovando os mesmos caso não possuam ocorrências  
+    //*** Seta Entregador em uma determinada lista de Pedidos aprovando os mesmos caso nï¿½o possuam ocorrï¿½ncias  
     public void aprovacaoByEntregadorPedido(ArrayList lista, String oid_Entregador, String oid_Veiculo, String update)throws Exception {
         new PedidoRN().aprovacaoByEntregadorPedido(lista, oid_Entregador, oid_Veiculo, update);
     }
@@ -494,7 +493,7 @@ public class Ped001Bean extends JavaUtil {
         for (int i = 0; i < lista.size(); i++)
         {
             PedidoED ed = (PedidoED) lista.get(i);
-            //*** Se ja existem criticas não verifica
+            //*** Se ja existem criticas nï¿½o verifica
             if (!"S".equals(ed.getDM_Critica_Financeira()))
                 nrOcorrencias += new PedidoRN().verificaCriticaFinanceira(ed);
             
@@ -502,13 +501,13 @@ public class Ped001Bean extends JavaUtil {
                 ++nrCriticados;
             nrOld = nrOcorrencias;
         }
-        //*** Lança mensagem na tela para usuário 
+        //*** Lanï¿½a mensagem na tela para usuï¿½rio 
         if (nrOcorrencias > 0)
-            throw new Mensagens("ATENÇÃO: ["+nrCriticados+"] de ["+lista.size()+"] Pedido(s) possuem Criticas Financeiras! TOTAL: ["+nrOcorrencias+"] Ocorrências! Consulte as Ocorrências para Liberação dos Pedidos.");
+            throw new Mensagens("ATENï¿½ï¿½O: ["+nrCriticados+"] de ["+lista.size()+"] Pedido(s) possuem Criticas Financeiras! TOTAL: ["+nrOcorrencias+"] Ocorrï¿½ncias! Consulte as Ocorrï¿½ncias para Liberaï¿½ï¿½o dos Pedidos.");
     }
 
-    /** ------------ RELATÓRIOS ---------------- */
-    // Pedido de Compra em branco(PADRÃO)
+    /** ------------ RELATï¿½RIOS ---------------- */
+    // Pedido de Compra em branco(PADRï¿½O)
     public void Rel_Padrao(HttpServletRequest request, HttpServletResponse response) throws Exception {
       
         ArrayList lista = new ArrayList();
@@ -544,10 +543,9 @@ public class Ped001Bean extends JavaUtil {
         });
         RelatorioED edRel = new RelatorioED(response, "Pedido_Compra_5");
         edRel.setLista(lista);
-        new JasperRL(edRel).geraRelatorio();       
     }
   
-    //*** Relatório geral para COMPRA
+    //*** Relatï¿½rio geral para COMPRA
     public void relListagemGeral(HttpServletRequest request, HttpServletResponse response) throws Exception {
       
         String Relatorio = request.getParameter("Relatorio");
@@ -556,13 +554,13 @@ public class Ped001Bean extends JavaUtil {
         String DT_Emissao_Final = request.getParameter("FT_DT_Final");
         
         if (!doValida(Relatorio))
-            throw new Mensagens("Nome do Relatório não informado!");
+            throw new Mensagens("Nome do Relatï¿½rio nï¿½o informado!");
         if (!doValida(oid_Pessoa_Distribuidor))
-            throw new Mensagens("Distribuidor não informado!");
+            throw new Mensagens("Distribuidor nï¿½o informado!");
         if (!doValida(DT_Emissao_Inicial))
-            throw new Mensagens("Data de Emissão Inicial não informada!");
+            throw new Mensagens("Data de Emissï¿½o Inicial nï¿½o informada!");
         if (!doValida(DT_Emissao_Final))
-            throw new Mensagens("Data de Emissão Final não informada!");
+            throw new Mensagens("Data de Emissï¿½o Final nï¿½o informada!");
         
         RelatorioED ed = new RelatorioED(response, Relatorio);
         ed.setOid_pessoa_distribuidor(oid_Pessoa_Distribuidor);
@@ -633,9 +631,9 @@ public class Ped001Bean extends JavaUtil {
         String DM_Critica_Estoque = request.getParameter("FT_DM_Critica_Estoque");
         
         if (!doValida(Relatorio))
-            throw new Mensagens("Nome do Relatório não informado!");
+            throw new Mensagens("Nome do Relatï¿½rio nï¿½o informado!");
         if (!doValida(oid_Entregador))
-            throw new Mensagens("Entregador não informado!");
+            throw new Mensagens("Entregador nï¿½o informado!");
 
         RelatorioED ed = new RelatorioED(response, Relatorio);
         ed.setOid_entregador(Integer.parseInt(oid_Entregador));
@@ -689,10 +687,10 @@ public class Ped001Bean extends JavaUtil {
         String DM_Critica_Estoque = request.getParameter("FT_DM_Critica_Estoque");
         
         if (!doValida(Relatorio))
-            throw new Mensagens("Nome do Relatório não informado!");
+            throw new Mensagens("Nome do Relatï¿½rio nï¿½o informado!");
         if (!doValida(DM_Tipo_Quebra))
-            throw new Mensagens("Tipo de Quebra não informado!");
-        //*** Agrupa o nome do Relatório com o Tipo de Quebra
+            throw new Mensagens("Tipo de Quebra nï¿½o informado!");
+        //*** Agrupa o nome do Relatï¿½rio com o Tipo de Quebra
         RelatorioED ed = new RelatorioED(response, Relatorio+DM_Tipo_Quebra);
         if (doValida(oid_Entregador))
             ed.setOid_entregador(Integer.parseInt(oid_Entregador));
@@ -725,7 +723,7 @@ public class Ped001Bean extends JavaUtil {
       
         new PedidoRN().relProdutosPesar(ed);       
     }
-    //*** Produtos não Vendidos/Sem Estoque(Pedido de Venda)
+    //*** Produtos nï¿½o Vendidos/Sem Estoque(Pedido de Venda)
     public void relFaltaEstoque(HttpServletRequest request, HttpServletResponse response) throws Exception {
       
         String Relatorio = request.getParameter("Relatorio");
@@ -745,7 +743,7 @@ public class Ped001Bean extends JavaUtil {
         String DM_Critica_Estoque = request.getParameter("FT_DM_Critica_Estoque");
         
         if (!doValida(Relatorio))
-            throw new Mensagens("Nome do Relatório não informado!");
+            throw new Mensagens("Nome do Relatï¿½rio nï¿½o informado!");
 
         RelatorioED ed = new RelatorioED(response, Relatorio);
         if (doValida(oid_Entregador))
@@ -802,9 +800,9 @@ public class Ped001Bean extends JavaUtil {
         String DT_Entrega_Final = request.getParameter("FT_DT_Entrega_Final");
         
         if (!doValida(Relatorio))
-            throw new Mensagens("Nome do Relatório não informado!");
+            throw new Mensagens("Nome do Relatï¿½rio nï¿½o informado!");
         if (!doValida(DM_Pedido))
-            throw new Mensagens("Tipo de Pedido não informado!");
+            throw new Mensagens("Tipo de Pedido nï¿½o informado!");
         
         RelatorioED ed = new RelatorioED(response, Relatorio);
         if (doValida(oid_Pedido))
@@ -866,7 +864,7 @@ public class Ped001Bean extends JavaUtil {
         String DT_Entrega_Final = request.getParameter("FT_DT_Entrega_Final");
         
         if (!doValida(DM_Pedido))
-            throw new Mensagens("Tipo de Pedido não informado!");
+            throw new Mensagens("Tipo de Pedido nï¿½o informado!");
         
         RelatorioED ed = new RelatorioED();
         if (doValida(oid_Pedido))
@@ -927,7 +925,7 @@ public class Ped001Bean extends JavaUtil {
         String DM_Critica_Estoque = request.getParameter("FT_DM_Critica_Estoque");
         
         if (!doValida(Relatorio))
-            throw new Mensagens("Nome do Relatório não informado!");
+            throw new Mensagens("Nome do Relatï¿½rio nï¿½o informado!");
 
         RelatorioED ed = new RelatorioED(response, Relatorio);
         if (doValida(oid_Entregador))
@@ -962,7 +960,7 @@ public class Ped001Bean extends JavaUtil {
         new PedidoRN().relTrocasClientes(ed);       
     }
     
-    //*** Margem de Contribuição do Vendedor(GORDURA)
+    //*** Margem de Contribuiï¿½ï¿½o do Vendedor(GORDURA)
     public void relResumoGorduras(HttpServletRequest request, HttpServletResponse response) throws Exception {
           
         String Relatorio = request.getParameter("Relatorio");
@@ -982,7 +980,7 @@ public class Ped001Bean extends JavaUtil {
         String DM_Critica_Estoque = request.getParameter("FT_DM_Critica_Estoque");
         
         if (!doValida(Relatorio))
-            throw new Mensagens("Nome do Relatório não informado!");
+            throw new Mensagens("Nome do Relatï¿½rio nï¿½o informado!");
 
         RelatorioED ed = new RelatorioED(response, Relatorio);
         if (doValida(oid_Entregador))

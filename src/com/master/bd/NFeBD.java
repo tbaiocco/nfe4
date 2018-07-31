@@ -4,8 +4,9 @@ import java.sql.ResultSet;
 
 import com.master.ed.Nota_Fiscal_EletronicaED;
 import com.master.root.FormataDataBean;
+import com.master.util.BancoUtil;
 import com.master.util.Excecoes;
-import com.master.util.JavaUtil;
+import com.master.util.Utilitaria;
 import com.master.util.bd.ExecutaSQL;
 
 public class NFeBD {
@@ -13,8 +14,10 @@ public class NFeBD {
 	private ExecutaSQL executasql;
 
 	FormataDataBean dataFormatada = new FormataDataBean();
+	Utilitaria util = new Utilitaria (executasql);
 
 	public NFeBD(ExecutaSQL sql) {
+		util = new Utilitaria(executasql);
 		this.executasql = sql;
 	}
 
@@ -25,8 +28,8 @@ public class NFeBD {
 		ResultSet rs = null;
 		long nrFinal = 0, oid_AIDOF = 0;
 		try {
-			if (!JavaUtil.doValida(nmSerie))
-				throw new Excecoes("Sï¿½rie nï¿½o informada!");
+			if (!util.doValida(nmSerie))
+				throw new Excecoes("Série não informada!");
 
 			String sql = "SELECT " +
 						 "NR_Proximo, " +
@@ -37,7 +40,7 @@ public class NFeBD {
 						 "WHERE " +
 						 "CD_Aidof = '" + nmSerie + "'";
 
-			//*** Seta NR e Sï¿½rie da Nota Fiscal
+			//*** Seta NR e Série da Nota Fiscal
 			rs = this.executasql.executarConsulta(sql);
 			while (rs.next()) {
 				ed.setNm_serie(rs.getString("NM_Serie"));
@@ -46,21 +49,21 @@ public class NFeBD {
 				oid_AIDOF = rs.getLong("OID_Aidof");
 			}
 			if (oid_AIDOF < 1)
-				throw new Excecoes("AIDOF nï¿½o encontrado : "
+				throw new Excecoes("AIDOF não encontrado : "
 						+ nmSerie);
 
-			//*** Verifica por seguranï¿½a se NR ja existe
-//			while (JavaUtil.doExiste("Notas_Fiscais", "NR_Nota_Fiscal = "
-//					+ ed.getNr_nota_fiscal() +
-//					" and NM_Serie = '" + ed.getNm_serie() + "'" +
-//					" and oid_Pessoa = '" + ed.getOid_pessoa() + "'"
-//					))
-//				ed.setNr_nota_fiscal(ed.getNr_nota_fiscal() + 1);
+			//*** Verifica por segurança se NR ja existe
+			while (util.doExiste("Notas_Fiscais", "NR_Nota_Fiscal = "
+					+ ed.getNr_nota_fiscal() +
+					" and NM_Serie = '" + ed.getNm_serie() + "'" +
+					" and oid_Pessoa = '" + ed.getOid_pessoa() + "'"
+					))
+				ed.setNr_nota_fiscal(ed.getNr_nota_fiscal() + 1);
 
 			//*** Se Fora do "Range" da NF informa erro
 			if ((ed.getNr_nota_fiscal() + 1) > nrFinal)
 				throw new Excecoes(
-						"Nï¿½mero sequencial da Nota Fiscal esgotado! Atualize no AIDOF!");
+						"Número sequencial da Nota Fiscal esgotado! Atualize no AIDOF!");
 
 	    	// .println("setNrSerieNotaFromAIDOF ed.getNr_nota_fiscal="+ed.getNr_nota_fiscal());
 
@@ -82,9 +85,9 @@ System.out.println("numeraNFe ->>" +sql);
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new com.master.util.Excecoes(e.getMessage(), e, this.getClass().getName(), "numeraNFe()");
+			throw new Excecoes(e.getMessage(), e, this.getClass().getName(), "numeraNFe()");
 		} finally {
-			rs.close();
+			util.closeResultset(rs);
 		}
 
 		return ed;

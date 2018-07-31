@@ -6,6 +6,7 @@ import java.io.OutputStream;
 import java.sql.ResultSet;
 import java.util.Iterator;
 
+import com.master.util.TransacaoLog;
 import com.master.util.ed.Parametro_FixoED;
 
 import br.cte.model.Empresa;
@@ -24,6 +25,8 @@ public class Transacao {
 //			   															   parametro_FixoED.getNM_Database_URLBase2(),
 //			   															   parametro_FixoED.getNM_Database_UsuarioBase2(),
 //			   															   parametro_FixoED.getNM_Database_PwdBase2());
+
+    private TransacaoLog trancacoesLog = new TransacaoLog();
 
     public Transacao() {
         sql = null;
@@ -119,6 +122,7 @@ public class Transacao {
             sql.close();
             jdbcConPool.soltaConexao(sql.getConnection());
             sql = null;
+            writeLog();
         }
     }
 
@@ -130,6 +134,7 @@ public class Transacao {
             sqlBase2.close();
             jdbcConPool.soltaConexao(sqlBase2.getConnection());
             sqlBase2 = null;
+            writeLog();
         }
     }
 
@@ -146,6 +151,10 @@ public class Transacao {
     	try {
 			ResultSet res = sql.executarConsulta("select pg_backend_pid from pg_backend_pid()");
 			try {
+				if (res.next()) {
+					trancacoesLog.setPid(res.getInt("pg_backend_pid"));
+					trancacoesLog.setClasse(getClass().getName());
+				}
 			} finally {
 		    	if (res != null) {
 		            res.close();
@@ -168,4 +177,34 @@ public class Transacao {
 		}
     }
 
+    protected void addQuery(String sql) {
+    	trancacoesLog.getComandos().add(sql);
+    	writeLog();
+    }
+    protected void writeLog() {
+    	if (Parametro_FixoED.getInstancia().isLogTransactions()) {
+	    	try {
+	    		String directory = "/tmp/";
+		    	File file = new File(directory);
+		    	if (!file.exists()) {
+		    		directory = "c:/temp/";
+
+		    	}
+		    	String arquivo = directory + trancacoesLog.getPid() + ".log";
+		    	file = new File(arquivo);
+		    	OutputStream out = new FileOutputStream(file);
+		    	String output = "";
+		    	Iterator iterator = trancacoesLog.getComandos().iterator();
+		    	while (iterator.hasNext()) {
+		    		output += "\n" + iterator.next();
+		    	}
+		    	byte[] b = output.getBytes();
+		    	out.write(b);
+		    	out.flush();
+		    	out.close();
+	    	} catch (Throwable e) {
+	    		e.printStackTrace();
+	    	}
+    	}
+    }
 }

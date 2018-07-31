@@ -2,12 +2,15 @@ package com.master.util.ed;
 
 import java.util.Locale;
 
+import br.cte.base.EmpresaDb;
+
+import com.master.ed.EmpresaED;
 import com.master.util.*;
 
 import br.cte.model.Empresa;
 
 public class Parametro_FixoED {
-  // Variï¿½vel da instï¿½ncia para nï¿½o precisar instanciar esta classe
+  // Variável da instância para não precisar instanciar esta classe
   private static Parametro_FixoED instancia;
 
   private Empresa empresaEmissao;
@@ -276,6 +279,7 @@ public class Parametro_FixoED {
   private String DM_Formulario_Manifesto;
   private String DM_Formulario_Manifesto_Redespacho;
   private String DM_Formulario_Romaneio_Notal_Fiscal;
+  private String DM_Formulario_Romaneio_Itens_Notal_Fiscal;
   private String DM_Formulario_Acerto_Contas;
   private String DM_Formulario_Romaneio_Entrega;
   private double PE_Aliquota_CSLL;
@@ -330,7 +334,7 @@ public class Parametro_FixoED {
   private int OID_Tipo_Movimento_Ajuste_Exc = 9; //Exclusao
   private String DM_Formulario_AWB;
   private boolean movimento_Ordem_Servico_Duplicada;
-  private String textoImprimirCampoNaoValidado = "(nï¿½o possui)";
+  private String textoImprimirCampoNaoValidado = "(não possui)";
   private double PE_Comissao_Motorista;
   private double PE_Base_Comissao_Motorista;
   private String DM_Base_Comissao_Motorista;
@@ -2456,7 +2460,7 @@ public class Parametro_FixoED {
   }
 
   /**
-   * URL que o usuï¿½rio usou para acessar o sistema (ex.:
+   * URL que o usuário usou para acessar o sistema (ex.:
    * http://localhost:8180/sistema/)
    */
   public String getUrl () {
@@ -3254,7 +3258,7 @@ public void setDM_Subtrai_Pedagio_PIS_COFINS(String subtrai_Pedagio_PIS_COFINS) 
   private String DM_Formulario_Ordem_Carga;
 
   public Parametro_FixoED () {
-    // Seta os parï¿½metros padrï¿½es
+    // Seta os parâmetros padrões
     doSetParametrosPadrao ();
 
     if ("KIELING".equals (getNM_Empresa ())) {
@@ -3377,7 +3381,7 @@ public void setDM_Subtrai_Pedagio_PIS_COFINS(String subtrai_Pedagio_PIS_COFINS) 
     setDocument_Form_Action ("http://localhost:8180/Sistema/");
 
     DM_Situacao = "OK";
-    // DM_Situacao="Sistema em Manutenï¿½ï¿½o. Aguarde !!!";
+    // DM_Situacao="Sistema em Manutenção. Aguarde !!!";
 
     DM_Dia_Nao_Util="SD"; //sabado, domingo
 
@@ -3591,7 +3595,7 @@ public void setDM_Subtrai_Pedagio_PIS_COFINS(String subtrai_Pedagio_PIS_COFINS) 
 
     NM_Nivel_Produto5 = "Diversos";
 
-    // Bloqueia inclusï¿½o da mesma nf em dois ou mais conhecimentos:
+    // Bloqueia inclusão da mesma nf em dois ou mais conhecimentos:
     setNF_Multi_Conhecimento (false);
 
     setDT_Hoje (Data.getDataDMY ());

@@ -76,13 +76,15 @@ public class Ordem_FreteRN extends Transacao  {
 	      //aqui faz o get das informacoes para o Map
 	      ed = Ordem_FreteBD.getByRecord(ed);
 	      //aqui monta o bagulho
-	      FileUtil.appendToFile("/data/cte/tmp/logCFE.log", "montando dados para envio. unidade - nr_ordem_frete:" + ed.getCD_Unidade() +" - "+ed.getNR_Ordem_Frete());
+	      FileUtil.appendToFile("/data/cte/tmp/logCFE.log", "montando dados para envio. unidade - nr_ordem_frete:" + ed.getOID_Unidade() +" - "+ed.getNR_Ordem_Frete());
 	      CfeFacade cfe = new CfeFacadeImp();
 	      Map<String, String> map = (HashMap<String, String>)this.montaDadosEnvioCFe(ed);
 //	      PamcardUtil.acceptSSL();
 	      System.out.println("certif:"+Parametros.CERT_FILE);
 //	      cfe.incluirContratoFrete(Configuracoes.getInstance().getAppDir() + "/certificados/pamcard_transmiro_87283164000151.crt",map);
+	     
 	      cfe.incluirContratoFrete(Parametros.CERT_FILE, Parametros.CERT_PASS, map);
+	      
 	      FileUtil.appendToFile("/data/cte/tmp/logCFE.log", "" + cfe.toString());
 	      //colocar CIOT, Viagem e data
 	      ed.setCIOT(cfe.getCiotNumero());
@@ -104,12 +106,14 @@ public class Ordem_FreteRN extends Transacao  {
 	    	  this.baixaCompromisso_ADTO_Pamcard(ed, ed.getCIOT());
 	      } catch (Exception e){
 	    	  System.out.println("problema na baixa do compromisso...");
+	    	  FileUtil.appendToFile("/data/cte/tmp/logCFE.log", "Problema na baixa do compromisso: " + e.getMessage());
 	    	  e.printStackTrace();
 	      }
 
 	    }
 	    catch(Excecoes exc){
 	    	exc.printStackTrace();
+	    	FileUtil.appendToFile("/data/cte/tmp/logCFE.log", "Problema: " + exc.getMessage());
 		    this.abortaTransacao();
 		    throw exc;
 	    }
@@ -117,6 +121,7 @@ public class Ordem_FreteRN extends Transacao  {
 	    catch(Exception e){
 	      //faz rollback pois deu algum erro
 	    	e.printStackTrace();
+	    	FileUtil.appendToFile("/data/cte/tmp/logCFE.log", "Problema: " + e.getMessage());
 	      this.abortaTransacao();
 
 	      throw new Excecoes(e.getMessage(),this.getClass().getName(),"enviaCFE(Ordem_FreteED)");

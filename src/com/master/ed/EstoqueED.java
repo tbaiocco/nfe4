@@ -1,6 +1,7 @@
 package com.master.ed;
 
-public class EstoqueED {
+public class EstoqueED
+    extends RelatorioBaseED {
 
   public long oid_estoque;
   public String nm_estoque;

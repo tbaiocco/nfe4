@@ -40,7 +40,7 @@ public class Contrato_VendedorBean extends JavaUtil implements Serializable {
         String DT_Inicial = request.getParameter("FT_DT_Inicial");
         String DT_Final = request.getParameter("FT_DT_Final");
 
-        //*** Validações
+        //*** Validaï¿½ï¿½es
         if ((doValida(oid_Pessoa_Distribuidor)) && (doValida(Oid_Vendedor))
                 && (doValida(DT_Contrato)) && (doValida(DM_Tipo_Contrato))
                 && (doValida(NR_Contrato))) {
@@ -60,7 +60,7 @@ public class Contrato_VendedorBean extends JavaUtil implements Serializable {
                 ed.setDT_Final(Data.strToDate(DT_Final));
                 ed.setNR_Folha(Integer.parseInt(NR_Folha));
             }
-        } else throw new Excecoes("Parâmetros incorretos!");
+        } else throw new Excecoes("Parï¿½metros incorretos!");
 
         return new Contrato_VendedorRN().inclui(ed);
     }
@@ -72,9 +72,9 @@ public class Contrato_VendedorBean extends JavaUtil implements Serializable {
         String oid_Vendedor = request.getParameter("oid_Vendedor");
         String DM_Tipo_Contrato = request.getParameter("FT_DM_Tipo_Contrato");
         
-        //*** Validações
+        //*** Validaï¿½ï¿½es
         if (!doValida(oid_Contrato_Vendedor) || !doValida(DM_Tipo_Contrato) || !doValida(oid_Vendedor))
-            throw new Excecoes("Parâmetros incorretos!");
+            throw new Excecoes("Parï¿½metros incorretos!");
 
         Contrato_VendedorED ed = new Contrato_VendedorED(Integer.parseInt(oid_Contrato_Vendedor));
         ed.setOid_Vendedor(oid_Vendedor);
@@ -89,13 +89,13 @@ public class Contrato_VendedorBean extends JavaUtil implements Serializable {
         String Oid_Vendedor = request.getParameter("oid_Vendedor");
         String DM_Tipo_Contrato = request.getParameter("FT_DM_Tipo_Contrato");
 
-        //*** Validações
+        //*** Validaï¿½ï¿½es
         if (doValida(Oid_Vendedor)) {
 
             ed.setOid_Vendedor(Oid_Vendedor);
             ed.setDM_Tipo_Contrato(DM_Tipo_Contrato);
 
-        } else throw new Excecoes("Parâmetros incorretos!");
+        } else throw new Excecoes("Parï¿½metros incorretos!");
 
         return new Contrato_VendedorRN().lista(ed);
     }
@@ -111,31 +111,15 @@ public class Contrato_VendedorBean extends JavaUtil implements Serializable {
         return new BancoUtil().doExiste(strFrom, strWhere);
     }
 
-    //*** Próximo Registro
-    public int getPróximoNRContrato(String oid_Vendedor, String oid_Pessoa_Distribuidor) throws Excecoes {
-
-        //*** Validações
-        if (doValida(oid_Vendedor) && doValida(oid_Pessoa_Distribuidor)) {
-
-            String strCampo = "NR_Contrato";
-            String strFrom = "contratos_vendedores";
-            String strWhere = " oid_Vendedor = '" + oid_Vendedor + "'" +
-                              " AND oid_Pessoa = '"+oid_Pessoa_Distribuidor+"'";
-            return (new BancoUtil().getMaximo(strCampo, strFrom, strWhere) + 1);
-
-        } else throw new Excecoes("Parâmetros incorretos!");
-
-    }
-
     public Contrato_VendedorED getByRecord(String oid_Contrato_Vendedor) throws Excecoes {
 
-        //*** Validações
+        //*** Validaï¿½ï¿½es
         if (doValida(oid_Contrato_Vendedor)) {
             return new Contrato_VendedorRN().getByRecord(new Contrato_VendedorED(Integer.parseInt(oid_Contrato_Vendedor)));
-        } else throw new Excecoes("Parâmetros incorretos!");
+        } else throw new Excecoes("Parï¿½metros incorretos!");
     }
 
-    //*** RELATÓRIOS
+    //*** RELATï¿½RIOS
     // Contratos do Vendedor
     public void RelContrato_Vendedor_ANEXO(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
@@ -151,7 +135,7 @@ public class Contrato_VendedorBean extends JavaUtil implements Serializable {
             ed.setNR_Contrato("000");
             new Contrato_VendedorRN().RelContrato_Vendedor_ANEXO(response, ed);
 
-        } else throw new Excecoes("Parâmetros incorretos!");
+        } else throw new Excecoes("Parï¿½metros incorretos!");
     }
 
     public void RelContrato_Vendedor_ADENDO(HttpServletRequest request,
@@ -160,7 +144,7 @@ public class Contrato_VendedorBean extends JavaUtil implements Serializable {
         String Oid_Contrato_Vendedor = request.getParameter("oid_Contrato_Vendedor");
         String Oid_Vendedor = request.getParameter("oid_Vendedor");
 
-        //*** Validações
+        //*** Validaï¿½ï¿½es
         if (doValida(Oid_Vendedor) && doValida(Oid_Contrato_Vendedor)) {
 
             Contrato_VendedorRelED ed = new Contrato_VendedorRelED();
@@ -169,6 +153,6 @@ public class Contrato_VendedorBean extends JavaUtil implements Serializable {
 
             new Contrato_VendedorRN().RelContrato_Vendedor_ADENDO(response, ed);
 
-        } else throw new Excecoes("Parâmetros incorretos!");
+        } else throw new Excecoes("Parï¿½metros incorretos!");
     }
 }

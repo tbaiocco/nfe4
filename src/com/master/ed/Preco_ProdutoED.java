@@ -30,6 +30,7 @@ public class Preco_ProdutoED extends MasterED {
         this.carregaProduto = loadProduto;
     }
     //*** Referencia a Tabela de Vendas
+    public Tabela_VendaED edTabela = new Tabela_VendaED();
     private boolean carregaTabela = false;
     private boolean carregaProduto = false;
 

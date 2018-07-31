@@ -12,6 +12,7 @@ import com.master.util.bd.ExecutaSQL;
 public class Natureza_OperacaoBD {
 
     private ExecutaSQL executasql;
+    Utilitaria util = new Utilitaria(executasql);
 
     public Natureza_OperacaoBD(ExecutaSQL sql) {
         this.executasql = sql;
@@ -188,7 +189,7 @@ public class Natureza_OperacaoBD {
 //    catch(Exception exc){
 //      Excecoes exce = new Excecoes();
 //      exce.setExc(exc);
-//      exce.setMensagem("Erro no mï¿½todo listar");
+//      exce.setMensagem("Erro no método listar");
 //      exce.setClasse(this.getClass().getName());
 //      exce.setMetodo("geraRelatorio(Natureza_OperacaoED ed)");
 //    }

@@ -1,11 +1,15 @@
 package com.master.root;
 
-import java.sql.*;
-import java.util.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
-import auth.*;
-import com.master.rl.*;
-import com.master.util.*;
+import com.master.util.JavaUtil;
+
+import auth.OracleConnection2;
 
 public class FornecedorBean  {
 
@@ -436,7 +440,7 @@ public class FornecedorBean  {
 
 
     /*
-     * ---------------- Bloco Padrão para Todas Classes ------------------
+     * ---------------- Bloco Padrï¿½o para Todas Classes ------------------
      */
     public String getUsuario_Stamp() {
         return Usuario_Stamp;
@@ -509,13 +513,13 @@ public class FornecedorBean  {
 
     public void insert() throws Exception {
         /*
-         * Abre a conexão com o banco
+         * Abre a conexï¿½o com o banco
          */
         Connection conn = null;
         try {
-            // Pede uma conexão ao gerenciador do driver
-            // passando como parâmetro o NM_Tipo_Documento do DSN
-            // o NM_Tipo_Documento de usuário e a senha do banco.
+            // Pede uma conexï¿½o ao gerenciador do driver
+            // passando como parï¿½metro o NM_Tipo_Documento do DSN
+            // o NM_Tipo_Documento de usuï¿½rio e a senha do banco.
             conn = OracleConnection2.getWEB();
             conn.setAutoCommit(false);
         } catch (Exception e) {
@@ -632,7 +636,7 @@ public class FornecedorBean  {
             throw e;
         }
         /*
-         * Faz o commit e fecha a conexão.
+         * Faz o commit e fecha a conexï¿½o.
          */
         try {
             conn.commit();
@@ -645,13 +649,13 @@ public class FornecedorBean  {
 
     public void update() throws Exception {
         /*
-         * Abre a conexão com o banco
+         * Abre a conexï¿½o com o banco
          */
         Connection conn = null;
         try {
-            // Pede uma conexão ao gerenciador do driver
-            // passando como parâmetro o NM_Tipo_Documento do DSN
-            // o NM_Tipo_Documento de usuário e a senha do banco.
+            // Pede uma conexï¿½o ao gerenciador do driver
+            // passando como parï¿½metro o NM_Tipo_Documento do DSN
+            // o NM_Tipo_Documento de usuï¿½rio e a senha do banco.
             conn = OracleConnection2.getWEB();
             conn.setAutoCommit(false);
         } catch (Exception e) {
@@ -754,7 +758,7 @@ public class FornecedorBean  {
             throw e;
         }
         /*
-         * Faz o commit e fecha a conexão.
+         * Faz o commit e fecha a conexï¿½o.
          */
         try {
             conn.commit();
@@ -767,13 +771,13 @@ public class FornecedorBean  {
 
     public void delete() throws Exception {
         /*
-         * Abre a conexão com o banco
+         * Abre a conexï¿½o com o banco
          */
         Connection conn = null;
         try {
-            // Pede uma conexão ao gerenciador do driver
-            // passando como parâmetro o NM_Tipo_Documento do DSN
-            // o NM_Tipo_Documento de usuário e a senha do banco.
+            // Pede uma conexï¿½o ao gerenciador do driver
+            // passando como parï¿½metro o NM_Tipo_Documento do DSN
+            // o NM_Tipo_Documento de usuï¿½rio e a senha do banco.
             conn = OracleConnection2.getWEB();
             conn.setAutoCommit(false);
         } catch (Exception e) {
@@ -799,7 +803,7 @@ public class FornecedorBean  {
             throw e;
         }
         /*
-         * Faz o commit e fecha a conexão.
+         * Faz o commit e fecha a conexï¿½o.
          */
         try {
             StringBuffer buff_Pessoa = new StringBuffer();
@@ -833,13 +837,13 @@ public class FornecedorBean  {
 
     public static final FornecedorBean getByOID_Fornecedor(String oid) throws Exception {
         /*
-         * Abre a conexão com o banco
+         * Abre a conexï¿½o com o banco
          */
         Connection conn = null;
         try {
-            // Pede uma conexão ao gerenciador do driver
-            // passando como parâmetro o NM_Tipo_Documento do DSN
-            // o NM_Tipo_Documento de usuário e a senha do banco.
+            // Pede uma conexï¿½o ao gerenciador do driver
+            // passando como parï¿½metro o NM_Tipo_Documento do DSN
+            // o NM_Tipo_Documento de usuï¿½rio e a senha do banco.
             conn = OracleConnection2.getWEB();
             conn.setAutoCommit(false);
         } catch (Exception e) {
@@ -971,13 +975,13 @@ public class FornecedorBean  {
 
     public static final FornecedorBean getByCD_Fornecedor(String NR_CNPJ_CPF) throws Exception {
         /*
-         * Abre a conexão com o banco
+         * Abre a conexï¿½o com o banco
          */
         Connection conn = null;
         try {
-            // Pede uma conexão ao gerenciador do driver
-            // passando como parâmetro o NM_Tipo_Documento do DSN
-            // o NM_Tipo_Documento de usuário e a senha do banco.
+            // Pede uma conexï¿½o ao gerenciador do driver
+            // passando como parï¿½metro o NM_Tipo_Documento do DSN
+            // o NM_Tipo_Documento de usuï¿½rio e a senha do banco.
             conn = OracleConnection2.getWEB();
             conn.setAutoCommit(false);
         } catch (Exception e) {
@@ -1095,13 +1099,13 @@ public class FornecedorBean  {
 
     public static final FornecedorBean getByCD_Fornec(String CD_Fornecedor) throws Exception {
         /*
-         * Abre a conexão com o banco
+         * Abre a conexï¿½o com o banco
          */
         Connection conn = null;
         try {
-            // Pede uma conexão ao gerenciador do driver
-            // passando como parâmetro o NM_Tipo_Documento do DSN
-            // o NM_Tipo_Documento de usuário e a senha do banco.
+            // Pede uma conexï¿½o ao gerenciador do driver
+            // passando como parï¿½metro o NM_Tipo_Documento do DSN
+            // o NM_Tipo_Documento de usuï¿½rio e a senha do banco.
             conn = OracleConnection2.getWEB();
             conn.setAutoCommit(false);
         } catch (Exception e) {
@@ -1219,14 +1223,14 @@ public class FornecedorBean  {
 
     public static final List getByNM_Razao_Social(String NM_Razao_Social) throws Exception {
         /*
-         * Abre a conexão com o banco
+         * Abre a conexï¿½o com o banco
          */
         Connection conn = null;
 
         try {
-            // Pede uma conexão ao gerenciador do driver
-            // passando como parâmetro o NM_Tipo_Documento do DSN
-            // o NM_Tipo_Documento de usuário e a senha do banco.
+            // Pede uma conexï¿½o ao gerenciador do driver
+            // passando como parï¿½metro o NM_Tipo_Documento do DSN
+            // o NM_Tipo_Documento de usuï¿½rio e a senha do banco.
             conn = OracleConnection2.getWEB();
             conn.setAutoCommit(false);
         } catch (Exception e) {
@@ -1318,14 +1322,14 @@ public class FornecedorBean  {
 
     public static final List getByNM_Fantasia(String NM_Fantasia) throws Exception {
         /*
-         * Abre a conexão com o banco
+         * Abre a conexï¿½o com o banco
          */
         Connection conn = null;
 
         try {
-            // Pede uma conexão ao gerenciador do driver
-            // passando como parâmetro o NM_Tipo_Documento do DSN
-            // o NM_Tipo_Documento de usuário e a senha do banco.
+            // Pede uma conexï¿½o ao gerenciador do driver
+            // passando como parï¿½metro o NM_Tipo_Documento do DSN
+            // o NM_Tipo_Documento de usuï¿½rio e a senha do banco.
             conn = OracleConnection2.getWEB();
             conn.setAutoCommit(false);
         } catch (Exception e) {
@@ -1410,13 +1414,13 @@ public class FornecedorBean  {
 
     public static final List getByNR_CNPJ_CPF(String NR_CNPJ_CPF) throws Exception {
         /*
-         * Abre a conexão com o banco
+         * Abre a conexï¿½o com o banco
          */
         Connection conn = null;
         try {
-            // Pede uma conexão ao gerenciador do driver
-            // passando como parâmetro o NM_Tipo_Documento do DSN
-            // o NM_Tipo_Documento de usuário e a senha do banco.
+            // Pede uma conexï¿½o ao gerenciador do driver
+            // passando como parï¿½metro o NM_Tipo_Documento do DSN
+            // o NM_Tipo_Documento de usuï¿½rio e a senha do banco.
             conn = OracleConnection2.getWEB();
             conn.setAutoCommit(false);
         } catch (Exception e) {
@@ -1501,9 +1505,9 @@ public class FornecedorBean  {
     public static final List getAll() throws Exception {
         Connection conn = null;
         try {
-            // Pede uma conexão ao gerenciador do driver
-            // passando como parâmetro o NM_Tipo_Documento do DSN
-            // o NM_Tipo_Documento de usuário e a senha do banco.
+            // Pede uma conexï¿½o ao gerenciador do driver
+            // passando como parï¿½metro o NM_Tipo_Documento do DSN
+            // o NM_Tipo_Documento de usuï¿½rio e a senha do banco.
             conn = OracleConnection2.getWEB();
             conn.setAutoCommit(false);
         } catch (Exception e) {
@@ -1589,9 +1593,9 @@ public class FornecedorBean  {
     public static final List getAll(javax.servlet.http.HttpServletRequest req, javax.servlet.http.HttpServletResponse res) throws Exception {
         Connection conn = null;
         try {
-            // Pede uma conexão ao gerenciador do driver
-            // passando como parâmetro o NM_Tipo_Documento do DSN
-            // o NM_Tipo_Documento de usuário e a senha do banco.
+            // Pede uma conexï¿½o ao gerenciador do driver
+            // passando como parï¿½metro o NM_Tipo_Documento do DSN
+            // o NM_Tipo_Documento de usuï¿½rio e a senha do banco.
             conn = OracleConnection2.getWEB();
             conn.setAutoCommit(false);
         } catch (Exception e) {
@@ -1731,9 +1735,9 @@ public class FornecedorBean  {
             Connection conn = null;
 
             try {
-                // Pede uma conexão ao gerenciador do driver
-                // passando como parâmetro o NM_Tipo_Documento do DSN
-                // o NM_Tipo_Documento de usuário e a senha do banco.
+                // Pede uma conexï¿½o ao gerenciador do driver
+                // passando como parï¿½metro o NM_Tipo_Documento do DSN
+                // o NM_Tipo_Documento de usuï¿½rio e a senha do banco.
                 conn = OracleConnection2.getWEB();
                 conn.setAutoCommit(false);
             } catch (Exception e) {
@@ -1743,9 +1747,6 @@ public class FornecedorBean  {
             Statement stmt = conn.createStatement();
             ResultSet cursor = stmt.executeQuery(sql);
 
-            FornecedorRL fornecRL = new FornecedorRL();
-
-            new EnviaPDF().enviaBytes(req, res, fornecRL.geraRelacaoFornecedores(cursor));
 
         } catch (Exception exc) {
             exc.printStackTrace();
@@ -1777,9 +1778,9 @@ public class FornecedorBean  {
             Connection conn = null;
 
             try {
-                // Pede uma conexão ao gerenciador do driver
-                // passando como parâmetro o NM_Tipo_Documento do DSN
-                // o NM_Tipo_Documento de usuário e a senha do banco.
+                // Pede uma conexï¿½o ao gerenciador do driver
+                // passando como parï¿½metro o NM_Tipo_Documento do DSN
+                // o NM_Tipo_Documento de usuï¿½rio e a senha do banco.
                 conn = OracleConnection2.getWEB();
                 conn.setAutoCommit(false);
             } catch (Exception e) {
@@ -1789,9 +1790,6 @@ public class FornecedorBean  {
             Statement stmt = conn.createStatement();
             ResultSet cursor = stmt.executeQuery(sql);
 
-            FornecedorRL fornecRL = new FornecedorRL();
-
-            new EnviaPDF().enviaBytes(req, res, fornecRL.geraRelacaoFornecedores_Qualificados(cursor));
 
         } catch (Exception exc) {
             exc.printStackTrace();
@@ -1801,16 +1799,16 @@ public class FornecedorBean  {
 
     public static final FornecedorBean getByRecord(String NR_CNPJ_CPF) throws Exception {
         /*
-         * Abre a conexão com o banco
+         * Abre a conexï¿½o com o banco
          */
         Connection conn = null;
 
         FornecedorBean p = new FornecedorBean();
 
         try {
-            // Pede uma conexão ao gerenciador do driver
-            // passando como parâmetro o NM_Tipo_Documento do DSN
-            // o NM_Tipo_Documento de usuário e a senha do banco.
+            // Pede uma conexï¿½o ao gerenciador do driver
+            // passando como parï¿½metro o NM_Tipo_Documento do DSN
+            // o NM_Tipo_Documento de usuï¿½rio e a senha do banco.
             conn = OracleConnection2.getWEB();
             conn.setAutoCommit(false);
         } catch (Exception e) {

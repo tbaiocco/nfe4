@@ -1,21 +1,18 @@
 package com.master.rn;
 
 /**
- * @author Jeanine e Vinícius
+ * @author Jeanine e Vinï¿½cius
  *
  */
 
 import java.util.ArrayList;
 
+import javax.servlet.http.HttpServletRequest;
+
 import com.master.bd.Nota_ContabilBD;
 import com.master.ed.Nota_ContabilED;
-import com.master.ed.RelatorioBaseED;
-import com.master.util.Data;
 import com.master.util.Excecoes;
 import com.master.util.bd.Transacao;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import com.master.rl.JasperRL;
 
 public class Nota_ContabilRN extends Transacao {
 	Nota_ContabilBD Nota_ContabilBD = null;
@@ -24,7 +21,7 @@ public class Nota_ContabilRN extends Transacao {
 
 	}
 
-	// ========================== Inclui Usuário =============================\\
+	// ========================== Inclui Usuï¿½rio =============================\\
 	public Nota_ContabilED inclui(Nota_ContabilED ed, HttpServletRequest request)
 			throws Excecoes {
 
@@ -109,7 +106,7 @@ public class Nota_ContabilRN extends Transacao {
 		}
 	}
 
-	// ======================= Lista Usuário ===========================\\
+	// ======================= Lista Usuï¿½rio ===========================\\
 	public ArrayList lista(Nota_ContabilED ed) throws Excecoes {
 
 		try {

@@ -290,7 +290,7 @@ public class Data {
 
         if (JavaUtil.doValida(Data1) && JavaUtil.doValida(Data2)) {
 	        if (!JavaUtil.doValida(comparador))
-	            throw new Mensagens("Comparador >,<,= n�o informado!");
+	            throw new Mensagens("Comparador >,<,= niso informado!");
 
 	        Calendar DT_Data1 = Calendar.getInstance();
 	        Calendar DT_Data2 = Calendar.getInstance();
@@ -318,7 +318,7 @@ public class Data {
      */
     public static boolean isSegunda(String strData) throws Excecoes {
       boolean dia_ok=false;
-      //Domingo = 1, Segunda=2, ter�a=3 ... s�bado=7
+      //Domingo = 1, Segunda=2, terisa=3 ... sisbado=7
       if (getDiaSemanaNumero(strData)==2) {
     	  dia_ok=true;
       }
@@ -326,7 +326,7 @@ public class Data {
     }
     public static boolean isTerca(String strData) throws Excecoes {
       boolean dia_ok=false;
-      //Domingo = 1, Segunda=2, ter�a=3 ... s�bado=7
+      //Domingo = 1, Segunda=2, terisa=3 ... sisbado=7
       if (getDiaSemanaNumero(strData)==3) {
     	  dia_ok=true;
       }
@@ -334,7 +334,7 @@ public class Data {
     }
     public static boolean isQuarta(String strData) throws Excecoes {
       boolean dia_ok=false;
-      //Domingo = 1, Segunda=2, ter�a=3 ... s�bado=7
+      //Domingo = 1, Segunda=2, terisa=3 ... sisbado=7
       if (getDiaSemanaNumero(strData)==4) {
     	  dia_ok=true;
       }
@@ -342,7 +342,7 @@ public class Data {
     }
     public static boolean isQuinta(String strData) throws Excecoes {
       boolean dia_ok=false;
-      //Domingo = 1, Segunda=2, ter�a=3 ... s�bado=7
+      //Domingo = 1, Segunda=2, terisa=3 ... sisbado=7
       if (getDiaSemanaNumero(strData)==5) {
     	  dia_ok=true;
       }
@@ -350,7 +350,7 @@ public class Data {
     }
     public static boolean isSexta(String strData) throws Excecoes {
       boolean dia_ok=false;
-      //Domingo = 1, Segunda=2, ter�a=3 ... s�bado=7
+      //Domingo = 1, Segunda=2, terisa=3 ... sisbado=7
       if (getDiaSemanaNumero(strData)==6) {
     	  dia_ok=true;
       }
@@ -360,7 +360,7 @@ public class Data {
     public static boolean isSabado(String strData) throws Excecoes {
       boolean dia_ok=false;
 
-      //Domingo = 1, Segunda=2, ter�a=3 ... s�bado=7
+      //Domingo = 1, Segunda=2, terisa=3 ... sisbado=7
       if (getDiaSemanaNumero(strData)==7) {
     	  dia_ok=true;
       }
@@ -368,9 +368,9 @@ public class Data {
     }
     public static boolean isDomingo(String strData) throws Excecoes {
       boolean dia_ok=false;
-      //// System.out.println("� Domingo:"+getDiaSemana(strData));
+      //// System.out.println("is Domingo:"+getDiaSemana(strData));
 
-      //Domingo = 1, Segunda=2, ter�a=3 ... s�bado=7
+      //Domingo = 1, Segunda=2, terisa=3 ... sisbado=7
       if (getDiaSemanaNumero(strData)==1) {
     	  dia_ok=true;
       }
@@ -407,18 +407,18 @@ public class Data {
             //int diaSemana = cal.get(Calendar.DAY_OF_WEEK);
             //// System.out.println("O dia " + strData + " cai num(a) " + dataSaida.format(data));
             //if (diaSemana >= Calendar.MONDAY && diaSemana <= Calendar.FRIDAY)
-            //    // System.out.println("� um dia �til");
-            //else // System.out.println("� no final de semana");
+            //    // System.out.println("is um dia istil");
+            //else // System.out.println("is no final de semana");
             return dataSaida.format(data).trim();
         } catch (ParseException e) {
-            throw new Excecoes("Data inv�lida: " + strData, "com.master.util.Data", "getDiaSemana()");
+            throw new Excecoes("Data invislida: " + strData, "com.master.util.Data", "getDiaSemana()");
         }
     }
 
     /**
      * Data maxima do Mes
      * @param strData - Data em formato DD/MM/AAAA
-     * @return seta ultima data v�lida para o mes passado, caso data passada seja superior a ultima data valida do mes
+     * @return seta ultima data vislida para o mes passado, caso data passada seja superior a ultima data valida do mes
      */
     public static String getDataMaximaNoMes(String strData) throws Excecoes {
         if (!JavaUtil.doValida(strData)){
@@ -451,13 +451,13 @@ public class Data {
 
             return new SimpleDateFormat(SHORT_DATE).format(cal.getTime());
         } catch (ParseException e) {
-            throw new Excecoes("Data inv�lida: "+strData, "com.master.util.Data", "getDataMaximaNoMes()");
+            throw new Excecoes("Data invislida: "+strData, "com.master.util.Data", "getDataMaximaNoMes()");
         }
     }
     /**
      * Ultimo dia do Mes
      * @param strData - Data em formato DD/MM/AAAA
-     * @return seta ultima data v�lida para o mes passado, caso data passada seja superior a ultima data valida do mes
+     * @return seta ultima data vislida para o mes passado, caso data passada seja superior a ultima data valida do mes
      */
     public static String getUltimoDiaDoMes(String strData) throws Excecoes {
         if (!JavaUtil.doValida(strData)){
@@ -487,7 +487,7 @@ public class Data {
 
             return new SimpleDateFormat(SHORT_DATE).format(cal.getTime());
         } catch (ParseException e) {
-            throw new Excecoes("Data inv�lida: "+strData, "com.master.util.Data", "getDataMaximaNoMes()");
+            throw new Excecoes("Data invislida: "+strData, "com.master.util.Data", "getDataMaximaNoMes()");
         }
     }
 
@@ -495,7 +495,7 @@ public class Data {
      * Manupula dias
      * @param strData - Data em formato DD/MM/AAAA
      * @param dias - positivo p/ mais e negativo p/ menos
-     * @return data com menos/mais diferen�a de dias
+     * @return data com menos/mais diferenisa de dias
      */
     public static String manipulaDias(String strData, int dias) throws Excecoes {
 
@@ -511,7 +511,7 @@ public class Data {
             cal.add(Calendar.DAY_OF_MONTH, dias);
             return new SimpleDateFormat(SHORT_DATE).format(cal.getTime());
         } catch (ParseException e) {
-            throw new Excecoes("Data inv�lida: "+strData, "com.master.util.Data", "manipulaDias()");
+            throw new Excecoes("Data invislida: "+strData, "com.master.util.Data", "manipulaDias()");
         }
     }
 
@@ -555,9 +555,9 @@ public class Data {
         }
     }
     /**
-     * Dia da Semana em n�meros 1-Domingo, 2-Segunda, 3-ter�a .... 7-s�bado
+     * Dia da Semana em nismeros 1-Domingo, 2-Segunda, 3-terisa .... 7-sisbado
      * @param strData - Data em formato DD/MM/AAAA
-     * @return n�mero do dia
+     * @return nismero do dia
      */
     public static String getSomaDiaData(String strData , int NR_Dias) throws Excecoes {
         if (!JavaUtil.doValida(strData)){
@@ -578,14 +578,14 @@ public class Data {
 
           return dateFormatter.calendarToString (cal , SHORT_DATE);
         } catch (ParseException e) {
-            throw new Excecoes("Data inv�lida: " + strData, "com.master.util.Data", "getDiaSemana()");
+            throw new Excecoes("Data invislida: " + strData, "com.master.util.Data", "getDiaSemana()");
         }
     }
 
     /**
      * Adiciona Numero de Meses a uma Data
      * @param strData - Data em formato DD/MM/AAAA
-     * @return n�mero de Meses
+     * @return nismero de Meses
      */
     public static String getSomaMesesData(String strData , int nrMeses) throws Excecoes {
         if (!JavaUtil.doValida(strData)){
@@ -602,9 +602,9 @@ public class Data {
     }
 
     /**
-     * Dia da Semana em n�meros 1-Domingo, 2-Segunda, 3-ter�a .... 7-s�bado
+     * Dia da Semana em nismeros 1-Domingo, 2-Segunda, 3-terisa .... 7-sisbado
      * @param strData - Data em formato DD/MM/AAAA
-     * @return n�mero do dia
+     * @return nismero do dia
      */
     public static int getDiaSemanaNumero(String strData) throws Excecoes {
         if (!JavaUtil.doValida(strData)){
@@ -619,11 +619,11 @@ public class Data {
           Date data = dataEntrada.parse(strData);
 
           Calendar cal = Data.stringToCalendar (strData , "dd/MM/yyyy");
-          //Domingo = 1, Segunda=2, ter�a=3 ... s�bado=7
+          //Domingo = 1, Segunda=2, terisa=3 ... sisbado=7
 
             return cal.get (Calendar.DAY_OF_WEEK);
         } catch (ParseException e) {
-            throw new Excecoes("Data inv�lida: " + strData, "com.master.util.Data", "getDiaSemana()");
+            throw new Excecoes("Data invislida: " + strData, "com.master.util.Data", "getDiaSemana()");
         }
     }
 
@@ -638,7 +638,7 @@ public class Data {
     }
 
     /**
-     * Dia da Semana em n�meros 1-Domingo, 2-Segunda, 3-ter�a .... 7-s�bado
+     * Dia da Semana em nismeros 1-Domingo, 2-Segunda, 3-terisa .... 7-sisbado
      * @param strData1 - Data em formato DD/MM/AAAA inicio
      * @param strData2 - Data em formato DD/MM/AAAA final
      * @param int dia  - Dia a ser acumulado
@@ -671,7 +671,7 @@ public class Data {
             return toReturn;
 
         } catch (ParseException e) {
-            throw new Excecoes("Parametros inv�lidos: " + strData1 + "," + strData2 + "," + dia, "com.master.util.Data", "getSomaDias()");
+            throw new Excecoes("Parametros invislidos: " + strData1 + "," + strData2 + "," + dia, "com.master.util.Data", "getSomaDias()");
         }
     }
 

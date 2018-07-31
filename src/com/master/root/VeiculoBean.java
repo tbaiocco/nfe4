@@ -1,15 +1,26 @@
 package com.master.root;
 
-import java.sql.*;
-import java.util.*;
-import javax.servlet.http.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
-import auth.*;
-import com.master.rl.*;
-import com.master.util.*;
-import com.master.util.bd.*;
-import com.master.util.ed.Parametro_FixoED;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import com.master.iu.Opn039Bean;
+import com.master.util.Excecoes;
+import com.master.util.FormataData;
+import com.master.util.JavaUtil;
+import com.master.util.Utilitaria;
+import com.master.util.bd.ExecutaSQL;
+import com.master.util.bd.Transacao;
+import com.master.util.ed.Parametro_FixoED;
+
+import auth.OracleConnection2;
 
 public class VeiculoBean
     extends Transacao {
@@ -93,7 +104,7 @@ public VeiculoBean () {
   }
 
   /*
-   *---------------- Bloco Padrão para Todas Classes ------------------
+   *---------------- Bloco Padrï¿½o para Todas Classes ------------------
    */
   public String getUsuario_Stamp () {
     return Usuario_Stamp;
@@ -253,7 +264,7 @@ public VeiculoBean () {
       throw e;
     }
     /*
-     * Faz o commit e fecha a conexão.
+     * Faz o commit e fecha a conexï¿½o.
      */
     try {
       conn.commit ();
@@ -309,7 +320,7 @@ public VeiculoBean () {
       throw e;
     }
     /*
-     * Faz o commit e fecha a conexão.
+     * Faz o commit e fecha a conexï¿½o.
      */
     try {
       conn.commit ();
@@ -353,7 +364,7 @@ public VeiculoBean () {
       throw e;
     }
     /*
-     * Faz o commit e fecha a conexão.
+     * Faz o commit e fecha a conexï¿½o.
      */
     try {
       conn.commit ();
@@ -588,27 +599,21 @@ public VeiculoBean () {
   public VeiculoBean getByOID_DM_Tipo_Implemento (String oidVeiculo , String oidConjunto , String[] descTipoImplemento) throws Excecoes {
     try {
       VeiculoBean veiculo = getByOID (oidVeiculo);
-      //Valida se veículo existe
+      //Valida se veï¿½culo existe
       if (veiculo.getOID () != null && !"".equals (veiculo.getOID ())) {
         if (veiculo.getDM_Tipo_Implemento () == null) {
-          throw new Excecoes ("Tipo do implemento não informado! Informe no cadastro do Tipo de Veículo");
+          throw new Excecoes ("Tipo do implemento nï¿½o informado! Informe no cadastro do Tipo de Veï¿½culo");
         }
         String descTipoImplementoV = Tipo_VeiculoBean.getDescTipoImplemento (Integer.parseInt (veiculo.getDM_Tipo_Implemento ()));
         for (int i = 0; i < descTipoImplemento.length; i++) {
           if (descTipoImplemento[i].equals (descTipoImplementoV)) {
-            Conjunto_VeiculoBean conjunto = Conjunto_VeiculoBean.getByOIDTodosCampos (oidVeiculo);
-            if (conjunto != null && conjunto.getOID () != null && !"".equals (conjunto.getOID ())) {
-              if (!conjunto.getOID ().equals (oidConjunto) || oidVeiculo.equals (oidConjunto)) {
-                throw new Excecoes ("Este veículo faz parte do conjunto " + conjunto.getOID () + "!");
-              }
-            }
             return veiculo;
           }
         }
-        throw new Excecoes ("Veículo informado não é um " + descTipoImplemento[0] + "!");
+        throw new Excecoes ("Veï¿½culo informado nï¿½o ï¿½ um " + descTipoImplemento[0] + "!");
       }
       else {
-        throw new Excecoes ("Registro não encontrado!");
+        throw new Excecoes ("Registro nï¿½o encontrado!");
       }
     }
     catch (Excecoes e) {
@@ -879,9 +884,9 @@ public VeiculoBean () {
   public static final List getAll () throws Exception {
     Connection conn = null;
     try {
-      // Pede uma conexão ao gerenciador do driver
-      // passando como parâmetro o nome do DSN
-      // o nome de usuário e a senha do banco.
+      // Pede uma conexï¿½o ao gerenciador do driver
+      // passando como parï¿½metro o nome do DSN
+      // o nome de usuï¿½rio e a senha do banco.
       conn = OracleConnection2.getWEB ();
       conn.setAutoCommit (false);
     }
@@ -951,8 +956,6 @@ public VeiculoBean () {
   public void geraRelVeiculos (HttpServletRequest request , HttpServletResponse response) throws Excecoes {
     String DM_Layout = request.getParameter ("FT_DM_Layout");
     List lista = lista (request);
-    byte[] b = new VeiculoRL ().geraRelacaoVeiculos (lista , DM_Layout);
-    new EnviaPDF ().enviaBytes (request , response , b);
   }
 
   public byte[] Imprime_Check_List (HttpServletRequest request) throws Excecoes {
@@ -1010,8 +1013,6 @@ public VeiculoBean () {
       Statement stmt = conn.createStatement ();
       ResultSet cursor = stmt.executeQuery (sql);
 
-      VeiculoRL veiculoRL = new VeiculoRL ();
-      b = veiculoRL.Imprime_Check_List (request , cursor);
 
     }
     catch (Exception exc) {
@@ -1084,8 +1085,6 @@ public VeiculoBean () {
       Statement stmt = conn.createStatement ();
       ResultSet cursor = stmt.executeQuery (sql);
 
-      VeiculoRL veiculoRL = new VeiculoRL ();
-      b = veiculoRL.Imprime_Check_List_Coleta (request , cursor);
 
     }
     catch (Exception exc) {
@@ -1154,10 +1153,6 @@ public VeiculoBean () {
       Statement stmt = conn.createStatement ();
       ResultSet cursor = stmt.executeQuery (sql);
 
-      VeiculoRL veiculoRL = new VeiculoRL ();
-      byte[] b = veiculoRL.Imprime_Ficha (cursor , oid_Unidade);
-
-      new EnviaPDF ().enviaBytes (request , res , b);
 
     }
     catch (Exception exc) {
@@ -1219,12 +1214,6 @@ public VeiculoBean () {
       Statement stmt = conn.createStatement ();
       ResultSet cursor = stmt.executeQuery (sql);
 
-      VeiculoRL veiculoRL = new VeiculoRL ();
-
-      // System.out.println ("Impre Imprime_Ficha_Manutencao");
-      byte[] b = veiculoRL.Imprime_Ficha_Manutencao (cursor);
-
-      new EnviaPDF ().enviaBytes (request , res , b);
 
     }
     catch (Exception exc) {
@@ -1303,7 +1292,7 @@ public VeiculoBean () {
       }
     }
     else {
-      throw new Excecoes ("Veículo não informado!" , null , this.getClass ().getName () , "atualizaKMAtual(String oid_Veiculo, long kmAtual)");
+      throw new Excecoes ("Veï¿½culo nï¿½o informado!" , null , this.getClass ().getName () , "atualizaKMAtual(String oid_Veiculo, long kmAtual)");
     }
   }
 
@@ -1554,8 +1543,6 @@ public VeiculoBean () {
       ResultSet cursor = stmt.executeQuery (sql);
 
 
-      VeiculoRL veiculoRL = new VeiculoRL ();
-      b = veiculoRL.geraRelacaoOcorrencia_Veiculo(cursor , DM_Procedencia , DT_Ocorrencia_Inicial , DT_Ocorrencia_Final);
 
     }
     catch (Exception exc) {

@@ -1,12 +1,12 @@
 package com.master.ed;
  
 /**
- * @author Vinï¿½cius e Jeanine
+ * @author Vinícius e Jeanine
  * @serial Parametro Empresa
  * @serialData 02/04/2008
  */  
 
-public class Parametro_EmpresaED {
+public class Parametro_EmpresaED extends RelatorioBaseED {
 	
 	private static final long serialVersionUID = 1908134503863998704L;
 	
@@ -20,7 +20,7 @@ public class Parametro_EmpresaED {
 	private long oid_Moeda_Dollar;
 	private String dm_Situacao;
 	
-	//============ Aï¿½ï¿½es Gerais ===========\\ 
+	//============ Ações Gerais ===========\\ 
 	private String dm_Gera_Embarque_Viagem;
 	private String dm_Gera_Rateio_Custo_Ordem_Frete;
 	private String dm_Gera_Ocorrencia_Viagem;
@@ -139,7 +139,7 @@ public class Parametro_EmpresaED {
 	private long oid_Conta_Juridica_Ordem_Frete;
 	private long oid_Conta_Multa_Transito;
 	
-	//======== Tela Descriï¿½ï¿½o ==========\\  
+	//======== Tela Descrição ==========\\  
 	private String dm_Saldo_Programado;
 	private String texto_Imprimir_Campo_Nao_Validado;
 	private String dm_Multi_Moeda;
@@ -216,7 +216,7 @@ public class Parametro_EmpresaED {
 	private long oid_Historico_Liquidacao_Cobranca_Retorno;
 	private long oid_Historico_Bordero;
 	
-	//============ Tela Impressï¿½o ======\\
+	//============ Tela Impressão ======\\
 	private String dm_Tipo_Impressao_Fatura;
 	private String dm_Tipo_Impressao_Conhecimento_Nacional;
 	private String dm_Tipo_Impressao_Minuta;
@@ -257,12 +257,12 @@ public class Parametro_EmpresaED {
 	private long oid_Tipo_Faturamento_Consolidacao_MIC_CRT;
 	private long oid_Tipo_Faturamento_Real;
 	
-	//============ Tela Localizaï¿½ï¿½o ======\\ 
+	//============ Tela Localização ======\\ 
 	private long oid_Localizacao;
 	private long oid_Localizacao_Devolucao;
 	private long oid_Localizacao_Troca;
 	
-	//=========== Tela MODAL SERVIï¿½OS ======\\ 
+	//=========== Tela MODAL SERVIÇOS ======\\ 
 	private long oid_Modal;
 	private long oid_Modal_Aereo_Standard;
 	private long oid_Modal_Aereo_Expressa;
@@ -302,12 +302,12 @@ public class Parametro_EmpresaED {
 	private long oid_Tipo_Movimento_Ajuste_Canc;
 	private long oid_Tipo_Movimento_Ajuste_Exc;
 	
-	//====== Tela Natureza Operaï¿½ï¿½o ======\\ 
+	//====== Tela Natureza Operação ======\\ 
 	private long oid_Natureza_Operacao_Ordem_Frete;
 	private long oid_Natureza_Operacao_Entrega;
 	private long oid_Natureza_Operacao_Master;
 	
-	//============ Tela Numeraï¿½ï¿½es ======\\ 
+	//============ Tela Numerações ======\\ 
 	private String dm_Numera_Ordem_Frete;
 	private String dm_Numera_Coleta;
 	private String dm_Numera_Manifesto;
@@ -315,7 +315,7 @@ public class Parametro_EmpresaED {
 	private String dm_Numera_Frete_Internacional;
 	private String dm_Numera_Fatura;
 	
-	//========== Tela Ocorrï¿½ncias =========\\
+	//========== Tela Ocorrências =========\\
 	private long oid_Tipo_Ocorrencia_Desconto_CTRC;
 	private long oid_Tipo_Ocorrencia_Estorno_CTRC;
 	private long oid_Tipo_Ocorrencia_Cancelamento_CTRC;
@@ -332,7 +332,7 @@ public class Parametro_EmpresaED {
 	private String dm_Envia_Email_Eventos = "N";
 	private String geraCodigoCliente;
 	
-	//=========== Serviï¿½o ========================\\ 
+	//=========== Serviço ========================\\ 
 	private long oid_Tipo_Servico_Acerto_Contas;
 	private long oid_Tipo_Servico_Abastecimento;
 		
@@ -421,7 +421,7 @@ public class Parametro_EmpresaED {
 		this.oid_Moeda_Padrao = oid_Moeda_Padrao;
 	}
 	
-//============ Getters and Setters Tela Aï¿½ï¿½es Gerais =============================================================\\	
+//============ Getters and Setters Tela Ações Gerais =============================================================\\	
 	public String getDm_Gera_Compromisso_INSS_Ordem_Frete() {
 		return dm_Gera_Compromisso_INSS_Ordem_Frete;
 	}
@@ -1079,7 +1079,7 @@ public class Parametro_EmpresaED {
 		this.oid_Conta_Ordem_Frete_Adiantamento = oid_Conta_Ordem_Frete_Adiantamento;
 	}
 	
-//============ Getters and Setters Tela Descriï¿½ï¿½o ================================================================================\\	
+//============ Getters and Setters Tela Descrição ================================================================================\\	
 	public String getDm_Multi_Moeda() {
 		return dm_Multi_Moeda;
 	}
@@ -1523,7 +1523,7 @@ public class Parametro_EmpresaED {
 		this.oid_Historico_Transferencia_Caixa = oid_Historico_Transferencia_Caixa;
 	}
 	
-//============ Getters and Setters Impressï¿½o ================================================================================\\
+//============ Getters and Setters Impressão ================================================================================\\
 	public String getDm_Tipo_Impressao_Coleta() {
 		return dm_Tipo_Impressao_Coleta;
 	}
@@ -1720,7 +1720,7 @@ public class Parametro_EmpresaED {
 		this.tx_Via_Terceiro_Original_Pt = tx_Via_Terceiro_Original_Pt;
 	}
 
-//============ Getters and Setters Tela Localizaï¿½ï¿½o ===========================================================================\\
+//============ Getters and Setters Tela Localização ===========================================================================\\
 	
 	public long getOid_Localizacao() {
 		return oid_Localizacao;
@@ -1741,7 +1741,7 @@ public class Parametro_EmpresaED {
 		this.oid_Localizacao_Troca = oid_Localizacao_Troca;
 	}
 	
-//============ Getters and Setters Tela Modal Serviï¿½os  ===========================================================\\
+//============ Getters and Setters Tela Modal Serviços  ===========================================================\\
 	public long getOid_Modal() {
 		return oid_Modal;
 	}
@@ -1978,7 +1978,7 @@ public class Parametro_EmpresaED {
 		this.oid_Natureza_Operacao_Ordem_Frete = oid_Natureza_Operacao_Ordem_Frete;
 	}
 	
-//============ Getters and Setters Tela Numeraï¿½ï¿½es  ================================================================================\\
+//============ Getters and Setters Tela Numerações  ================================================================================\\
 	public String getDm_Numera_Coleta() {
 		return dm_Numera_Coleta;
 	}
@@ -2017,7 +2017,7 @@ public class Parametro_EmpresaED {
 		this.dm_Numera_Ordem_Frete = dm_Numera_Ordem_Frete;
 	}
 	
-//============ Getters and Setters Tela Ocorrï¿½ncia ==================================================================================\\
+//============ Getters and Setters Tela Ocorrência ==================================================================================\\
 	public long getOid_Tipo_Ocorrencia_Cancelamento_CTRC() {
 		return oid_Tipo_Ocorrencia_Cancelamento_CTRC;
 	}
@@ -2107,7 +2107,7 @@ public class Parametro_EmpresaED {
 		this.oid_Pessoa_Padrao_Tabela_Frete = oid_Pessoa_Padrao_Tabela_Frete;
 	}
 	
-//============ Getters and Setters Tela Serviï¿½o ===================================================================\\	
+//============ Getters and Setters Tela Serviço ===================================================================\\	
 	public long getOid_Tipo_Servico_Abastecimento() {
 		return oid_Tipo_Servico_Abastecimento;
 	}

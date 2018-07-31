@@ -1,11 +1,13 @@
 package com.master.ed;
 
+import com.master.util.Valores;
+
 /**
- * Tï¿½tulo: WMS_Item_Produto_ClienteED
- * Descriï¿½ï¿½o: Itens da Nota Fiscal - ED
- * Data da criaï¿½ï¿½o: 11/2003
+ * Título: WMS_Item_Produto_ClienteED
+ * Descrição: Itens da Nota Fiscal - ED
+ * Data da criação: 11/2003
  * Atualizado em: 12/2003
- * Empresa: ï¿½xitoLogï¿½stica Mastercom
+ * Empresa: ÊxitoLogística Mastercom
  * Autor: Carlos Eduardo de Holleben
 */  
 
@@ -112,7 +114,7 @@ public class WMS_Item_Produto_ClienteED extends MasterED{
 	}
 	public void setNr_Quantidade_Devolucao_TX(String nr_Quantidade_Devolucao_TX) {
 		this.nr_Quantidade_Devolucao_TX = nr_Quantidade_Devolucao_TX;
-		this.setNr_Quantidade_Devolucao(Double.parseDouble(nr_Quantidade_Devolucao_TX));
+		this.setNr_Quantidade_Devolucao(Valores.converteStringToDouble(nr_Quantidade_Devolucao_TX));
 	}
 	
 	public String getNr_Quantidade_Movimento_TX() {
@@ -120,7 +122,7 @@ public class WMS_Item_Produto_ClienteED extends MasterED{
 	}
 	public void setNr_Quantidade_Movimento_TX(String nr_Quantidade_Movimento_TX) {
 		this.nr_Quantidade_Movimento_TX = nr_Quantidade_Movimento_TX;
-		this.setNr_Quantidade_Movimento(Double.parseDouble(nr_Quantidade_Movimento_TX));
+		this.setNr_Quantidade_Movimento(Valores.converteStringToDouble(nr_Quantidade_Movimento_TX));
 	}
 	public String getOid_Item_Produto_Cliente() {
 		return oid_Item_Produto_Cliente;
@@ -205,21 +207,21 @@ public class WMS_Item_Produto_ClienteED extends MasterED{
 	}
 	public void setVl_Unitario_TX(String vl_Unitario_TX) {
 		this.vl_Unitario_TX = vl_Unitario_TX;
-		this.setVl_Unitario(Double.parseDouble(vl_Unitario_TX));
+		this.setVl_Unitario(Valores.converteStringToDouble(vl_Unitario_TX));
 	}
 	public String getVl_Produto_TX() {
 		return vl_Produto_TX;
 	}
 	public void setVl_Produto_TX(String vl_Produto_TX) {
 		this.vl_Produto_TX = vl_Produto_TX;
-		this.setVl_Produto(Double.parseDouble(vl_Produto_TX));
+		this.setVl_Produto(Valores.converteStringToDouble(vl_Produto_TX));
 	}
 	public String getVl_Ipi_TX() {
 		return vl_Ipi_TX;
 	}
 	public void setVl_Ipi_TX(String vl_Ipi_TX) {
 		this.vl_Ipi_TX = vl_Ipi_TX;
-		this.setVl_Ipi(Double.parseDouble(vl_Ipi_TX));
+		this.setVl_Ipi(Valores.converteStringToDouble(vl_Ipi_TX));
 	}
 	public int getNR_Nota_Fiscal() {
 		return NR_Nota_Fiscal;

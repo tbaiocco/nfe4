@@ -1,13 +1,20 @@
 package com.master.root;
 
-import java.sql.*;
-import java.util.*;
-import javax.servlet.http.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
-import auth.*;
-import com.master.rl.*;
-import com.master.util.*;
-import com.master.util.ed.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.master.util.Data;
+import com.master.util.Excecoes;
+import com.master.util.JavaUtil;
+
+import auth.OracleConnection2;
 
 public class MotoristaBean {
   private String CD_Motorista;
@@ -984,16 +991,6 @@ public class MotoristaBean {
 
         // // ("Liberacao Viagem=" + cursor.getString (28));
 
-        Seguro_MotoristaBean sm = Seguro_MotoristaBean.getByOID_Motorista(p.getOID_Motorista());
-        p.setNR_Liberacao_Seguradora(sm.getNR_Liberacao());
-        if(Parametro_FixoED.getInstancia().getDM_Exige_Validade_Lib_Seguradora_Motorista().equals("S")){
-        	p.setDT_Vencimento_Liberacao_Seguradora(sm.getDT_Validade());
-        	// // ("DATA LIB >"+p.getDT_Vencimento_Liberacao_Seguradora());
-        	if(!JavaUtil.doValida(p.getDT_Vencimento_Liberacao_Seguradora())) p.setDT_Vencimento_Liberacao_Seguradora("00/00/0000");
-        } else {
-        	p.setDT_Vencimento_Liberacao_Seguradora(Data.getDataDMY());
-        }
-
       }
       cursor.close ();
       stmt.close ();
@@ -1141,16 +1138,6 @@ public class MotoristaBean {
         p.setNR_Dependentes (cursor.getInt (45));
 
         p.setNR_Cartao_CFE(cursor.getString(46));
-
-        Seguro_MotoristaBean sm = Seguro_MotoristaBean.getByOID_Motorista(p.getOID_Motorista());
-        p.setNR_Liberacao_Seguradora(sm.getNR_Liberacao());
-        if(Parametro_FixoED.getInstancia().getDM_Exige_Validade_Lib_Seguradora_Motorista().equals("S")){
-        	p.setDT_Vencimento_Liberacao_Seguradora(sm.getDT_Validade());
-        	// // ("DATA LIB >"+p.getDT_Vencimento_Liberacao_Seguradora());
-        	if(!JavaUtil.doValida(p.getDT_Vencimento_Liberacao_Seguradora())) p.setDT_Vencimento_Liberacao_Seguradora("00/00/0000");
-        } else {
-        	p.setDT_Vencimento_Liberacao_Seguradora(Data.getDataDMY());
-        }
 
       }
       cursor.close ();
@@ -1664,10 +1651,6 @@ public class MotoristaBean {
     Statement stmt = conn.createStatement ();
     ResultSet cursor = stmt.executeQuery (sql);
 
-    MotoristaRL MotoristaRL = new MotoristaRL ();
-    byte[] b = MotoristaRL.Imprime_Ficha (cursor);
-
-    new EnviaPDF ().enviaBytes (request , res , b);
 
   }
 
@@ -1728,8 +1711,6 @@ public class MotoristaBean {
       Statement stmt = conn.createStatement ();
       ResultSet cursor = stmt.executeQuery (sql);
 
-      MotoristaRL motRL = new MotoristaRL ();
-      b = motRL.geraRelacaoMotoristas (cursor , DM_Situacao , DM_Tipo_Funcao, DM_Relatorio, DT_Inicial, DT_Final);
 
 
     }
@@ -1803,11 +1784,6 @@ public class MotoristaBean {
       Statement stmt = conn.createStatement ();
       ResultSet cursor = stmt.executeQuery (sql);
 
-      MotoristaRL motRL = new MotoristaRL ();
-      byte[] b = motRL.geraRelacaoOcorrencia_Motoristas (cursor ,
-          DM_Penalizacao , DT_Ocorrencia_Inicial , DT_Ocorrencia_Final);
-
-      new EnviaPDF ().enviaBytes (request , res , b);
 
     }
     catch (Exception exc) {

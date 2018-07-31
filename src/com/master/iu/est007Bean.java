@@ -6,7 +6,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.master.ed.Lancamento_ContabilED;
-import com.master.rl.Lancamento_ContabilRL;
 import com.master.rn.Lancamento_ContabilRN;
 import com.master.util.Data;
 import com.master.util.Excecoes;
@@ -792,19 +791,6 @@ public class est007Bean {
     String dt_fim = request.getParameter ("FT_DT_Final");
     String strUnidade = request.getParameter ("FT_NM_Fantasia");
 
-    Lancamento_ContabilRL lanRL = new Lancamento_ContabilRL ();
-
-    String edi = request.getParameter ("FT_CD_Tipo_Evento");
-
-    if (edi.equals ("EST")) {
-      lanRL.geraRelatorioExportacao ( (new Lancamento_ContabilRN ().GeraEDI_Notas (unidade , dt_inicio , dt_fim)) , "Relatório de Exportação (Notas Fiscais)" , strUnidade , dt_inicio , dt_fim , response);
-    }
-    if (edi.equals ("FRO")) {
-      lanRL.geraRelatorioExportacao ( (new Lancamento_ContabilRN ().GeraEDI_Acertos (unidade , dt_inicio , dt_fim)) , "Relatório de Exportação (Acertos)" , strUnidade , dt_inicio , dt_fim , response);
-    }
-    if (edi.equals ("CXN")) {
-      lanRL.geraRelatorioExportacao ( (new Lancamento_ContabilRN ().GeraEDI_Caixinha (unidade , dt_inicio , dt_fim)) , "Relatório de Exportação (Caixa)" , strUnidade , dt_inicio , dt_fim , response);
-    }
 
   }
 

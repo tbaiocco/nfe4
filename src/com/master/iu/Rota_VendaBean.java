@@ -27,17 +27,17 @@ public class Rota_VendaBean extends JavaUtil implements Serializable {
 		String DM_Dia = request.getParameter("FT_DM_Dia");
 		String DM_Situacao = request.getParameter("FT_DM_Situacao");
 		
-		//*** Validações
+		//*** Validaï¿½ï¿½es
 		if (!doValida(oid_Vendedor))
-            throw new Excecoes("Vendedor não informado!");
+            throw new Excecoes("Vendedor nï¿½o informado!");
         if (!doValida(oid_Cliente))
-            throw new Excecoes("Cliente não informado!");
+            throw new Excecoes("Cliente nï¿½o informado!");
         if (!doValida(NR_Sequencia))
-            throw new Excecoes("NR Sequencia não informada!");
+            throw new Excecoes("NR Sequencia nï¿½o informada!");
         if (!doValida(DM_Dia))
-            throw new Excecoes("DIA não informado!");
+            throw new Excecoes("DIA nï¿½o informado!");
         if (!doValida(DM_Situacao))
-            throw new Excecoes("Situação não informada!");
+            throw new Excecoes("Situaï¿½ï¿½o nï¿½o informada!");
 
         Rota_VendaED ed = new Rota_VendaED(oid_Vendedor, oid_Cliente);
         ed.setNR_Sequencia(Integer.parseInt(NR_Sequencia));
@@ -54,28 +54,28 @@ public class Rota_VendaBean extends JavaUtil implements Serializable {
 		//*** Referencia Original
         String NR_Sequencia_Orig = request.getParameter("FT_NR_Sequencia_Orig");
         String DM_Dia_Orig = request.getParameter("FT_DM_Dia_Orig");
-        //*** REFERENCIA COM POSSIVEL ALTERAÇÃO
+        //*** REFERENCIA COM POSSIVEL ALTERAï¿½ï¿½O
         String NR_Sequencia = request.getParameter("FT_NR_Sequencia");
         String DM_Dia = request.getParameter("FT_DM_Dia");
 		String DM_Situacao = request.getParameter("FT_DM_Situacao");
         
-		//*** Validações
+		//*** Validaï¿½ï¿½es
         if (!doValida(oid_Rota_Venda))
-            throw new Excecoes("Rota Venda não informada!");
+            throw new Excecoes("Rota Venda nï¿½o informada!");
         if (!doValida(oid_Vendedor))
-            throw new Excecoes("Vendedor não informado!");
+            throw new Excecoes("Vendedor nï¿½o informado!");
         if (!doValida(oid_Cliente))
-            throw new Excecoes("Cliente não informado!");
+            throw new Excecoes("Cliente nï¿½o informado!");
         if (!doValida(NR_Sequencia_Orig))
-            throw new Excecoes("NR Sequencia Origem não informada!");
+            throw new Excecoes("NR Sequencia Origem nï¿½o informada!");
         if (!doValida(DM_Dia_Orig))
-            throw new Excecoes("DIA Origem não informado!");
+            throw new Excecoes("DIA Origem nï¿½o informado!");
         if (!doValida(NR_Sequencia))
-            throw new Excecoes("NR Sequencia não informada!");
+            throw new Excecoes("NR Sequencia nï¿½o informada!");
         if (!doValida(DM_Dia))
-            throw new Excecoes("DIA não informado!");
+            throw new Excecoes("DIA nï¿½o informado!");
         if (!doValida(DM_Situacao))
-            throw new Excecoes("Situação não informada!");        
+            throw new Excecoes("Situaï¿½ï¿½o nï¿½o informada!");        
         
         //*** Se alterado Dia da Semana, exclui da Origem e inclui na nova ROTA
         if (DM_Dia.equals(DM_Dia_Orig))
@@ -103,15 +103,15 @@ public class Rota_VendaBean extends JavaUtil implements Serializable {
         String NR_Sequencia = request.getParameter("FT_NR_Sequencia_Orig");
         String DM_Dia = request.getParameter("FT_DM_Dia_Orig");
 
-		//*** Validações
+		//*** Validaï¿½ï¿½es
         if (!doValida(oid_Rota_Venda))
-            throw new Excecoes("oid_Rota_Venda não informado!");
+            throw new Excecoes("oid_Rota_Venda nï¿½o informado!");
         if (!doValida(oid_Vendedor))
-            throw new Excecoes("Vendedor não informado!");
+            throw new Excecoes("Vendedor nï¿½o informado!");
         if (!doValida(DM_Dia))
-            throw new Excecoes("DIA não informado!");
+            throw new Excecoes("DIA nï¿½o informado!");
         if (!doValida(NR_Sequencia))
-            throw new Excecoes("Sequencia não informada!");
+            throw new Excecoes("Sequencia nï¿½o informada!");
         
         Rota_VendaED ed = new Rota_VendaED();
         ed.setOid_Rota_Venda(Integer.parseInt(oid_Rota_Venda));
@@ -127,11 +127,11 @@ public class Rota_VendaBean extends JavaUtil implements Serializable {
         String oid_Vendedor = request.getParameter("oid_Vendedor");
         String DM_Dia = request.getParameter("FT_DM_Dia");
 
-        //*** Validações
+        //*** Validaï¿½ï¿½es
         if (!doValida(oid_Vendedor))
-            throw new Excecoes("Vendedor não informado!");
+            throw new Excecoes("Vendedor nï¿½o informado!");
         if (!doValida(DM_Dia))
-            throw new Excecoes("DIA não informado!");
+            throw new Excecoes("DIA nï¿½o informado!");
         
         Rota_VendaED ed = new Rota_VendaED();
         ed.setOid_Vendedor(oid_Vendedor);
@@ -139,16 +139,16 @@ public class Rota_VendaBean extends JavaUtil implements Serializable {
         new Rota_VendaRN().deletaByDia(ed);
     }
     
-    /** TRANSFERÊNCIA DE CLIENTES/ROTAS **/
+    /** TRANSFERï¿½NCIA DE CLIENTES/ROTAS **/
     public void tranfereByVendedor(HttpServletRequest request) throws Exception {
 
         String oid_Vendedor = request.getParameter("oid_Vendedor");
         String oid_Vendedor2 = request.getParameter("oid_Vendedor2");
         //*** Se informado DIA transfere Todas as Rotas daquele dia, caso contrario transfere tudo
         if (!doValida(oid_Vendedor))
-            throw new Excecoes("Vendedor não informado!");
+            throw new Excecoes("Vendedor nï¿½o informado!");
         if (!doValida(oid_Vendedor2))
-            throw new Excecoes("Vendedor de Destino não informado!");
+            throw new Excecoes("Vendedor de Destino nï¿½o informado!");
         
         ArrayList rotas = this.Lista_Rota_Venda(request);
         new Rota_VendaRN().tranfereRotasVendas(rotas, oid_Vendedor2);
@@ -158,7 +158,7 @@ public class Rota_VendaBean extends JavaUtil implements Serializable {
         //*** Vendedor de Destino
         String oid_Vendedor2 = request.getParameter("oid_Vendedor2");
         if (!doValida(oid_Vendedor2))
-            throw new Excecoes("Vendedor não informado!");
+            throw new Excecoes("Vendedor nï¿½o informado!");
         
         ArrayList lista = lista = (ArrayList) request.getSession(true).getAttribute("listaRotas"); 
         if (lista.size() < 1)
@@ -182,9 +182,9 @@ public class Rota_VendaBean extends JavaUtil implements Serializable {
 		String DM_Dia = request.getParameter("FT_DM_Dia");
         String DM_Situacao = request.getParameter("FT_DM_Situacao");
 		
-		//*** Validações
+		//*** Validaï¿½ï¿½es
         if (!doValida(oid_Vendedor))
-            throw new Excecoes("Vendedor não informado!");
+            throw new Excecoes("Vendedor nï¿½o informado!");
         
         Rota_VendaED ed = new Rota_VendaED();
         ed.setOid_Vendedor(oid_Vendedor);
@@ -196,9 +196,9 @@ public class Rota_VendaBean extends JavaUtil implements Serializable {
 	
 	public Rota_VendaED getByOidRota_Venda(int oid_Rota_Venda) throws Excecoes {
 
-        //*** Validações
+        //*** Validaï¿½ï¿½es
         if (oid_Rota_Venda < 1)
-            throw new Mensagens("Rota Venda não informada!");
+            throw new Mensagens("Rota Venda nï¿½o informada!");
 		Rota_VendaED ed = new Rota_VendaED();
 		ed.setOid_Rota_Venda(oid_Rota_Venda);
 		return new Rota_VendaRN().getByRecord(ed);
@@ -215,35 +215,21 @@ public class Rota_VendaBean extends JavaUtil implements Serializable {
         } else return ed;
     }
 
-	public int getPróximoRegistro(String oid_Vendedor, String DM_Dia) throws Excecoes {
- 
-		//*** Validações
-        if (!doValida(oid_Vendedor))
-            throw new Excecoes("Vendedor não informado!");
-        if (!doValida(DM_Dia))
-            throw new Excecoes("DIA não informado!");
-        
-        String strCampo = "NR_Sequencia";
-        String strFrom  = "rotas_vendas";
-        String strWhere = " oid_Vendedor = '" +oid_Vendedor +"'" +
-                          " and DM_Dia = '" +DM_Dia+"'";
-        return (new BancoUtil().getMaximo(strCampo, strFrom, strWhere) + 1);
-	}
 	
-    //*** Verifica se registro já existe!
+    //*** Verifica se registro jï¿½ existe!
     public boolean doExiste(HttpServletRequest request) throws Excecoes {
         
         String oid_Vendedor = request.getParameter("oid_Vendedor");
 		String oid_Cliente = request.getParameter("oid_Cliente");
 		String DM_Dia = request.getParameter("FT_DM_Dia");
 		
-		//*** Validações
+		//*** Validaï¿½ï¿½es
         if (!doValida(oid_Vendedor))
-            throw new Excecoes("Vendedor não informado!");
+            throw new Excecoes("Vendedor nï¿½o informado!");
         if (!doValida(oid_Cliente))
-            throw new Excecoes("Cliente não informado!");
+            throw new Excecoes("Cliente nï¿½o informado!");
         if (!doValida(DM_Dia))
-            throw new Excecoes("DIA não informado!");
+            throw new Excecoes("DIA nï¿½o informado!");
         
         String strFrom  = "rotas_vendas";
         String strWhere = " oid_Vendedor = '" +oid_Vendedor +"'" +

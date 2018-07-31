@@ -1,8 +1,8 @@
 package com.master.util;
 
 /**
- * Descriï¿½ï¿½o: Para Alerts ao cliente(!= de Excecoes q redireciona para pï¿½gina de erro)
- * @author Andrï¿½ Valadas
+ * Descrição: Para Alerts ao cliente(!= de Excecoes q redireciona para página de erro)
+ * @author André Valadas
  * 
  * ex.:	try {
        		PedidoBean.testaErro();
@@ -81,6 +81,10 @@ public class Mensagens extends Excecoes {
 
     public String getMessage() {
         return this.getMensagem();
+    }
+
+    public String getMessageJs() {
+        return JSUtil.processaString(getMensagem());
     }
 
     public void printStackTrace() {

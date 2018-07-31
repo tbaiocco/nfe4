@@ -296,23 +296,23 @@ public class SeparaEndereco {
           if (s >= 999) nome_real = nome_real + caracter;
           else {
             caracter_troca = " ";
-            if (String.valueOf (caracter).equals ("ï¿½")) caracter_troca = "A";
-            if (String.valueOf (caracter).equals ("ï¿½")) caracter_troca = "a";
-            if (String.valueOf (caracter).equals ("ï¿½")) caracter_troca = "a";
-            if (String.valueOf (caracter).equals ("ï¿½")) caracter_troca = "A";
-            if (String.valueOf (caracter).equals ("ï¿½")) caracter_troca = "a";
-            if (String.valueOf (caracter).equals ("ï¿½")) caracter_troca = "E";
-            if (String.valueOf (caracter).equals ("ï¿½")) caracter_troca = "e";
-            if (String.valueOf (caracter).equals ("ï¿½")) caracter_troca = "I";
-            if (String.valueOf (caracter).equals ("ï¿½")) caracter_troca = "i";
-            if (String.valueOf (caracter).equals ("ï¿½")) caracter_troca = "O";
-            if (String.valueOf (caracter).equals ("ï¿½")) caracter_troca = "o";
-            if (String.valueOf (caracter).equals ("ï¿½")) caracter_troca = "U";
-            if (String.valueOf (caracter).equals ("ï¿½")) caracter_troca = "u";
-            if (String.valueOf (caracter).equals ("ï¿½")) caracter_troca = "C";
-            if (String.valueOf (caracter).equals ("ï¿½")) caracter_troca = "C";
-            if (String.valueOf (caracter).equals ("ï¿½")) caracter_troca = "U";
-            if (String.valueOf (caracter).equals ("ï¿½")) caracter_troca = "u";
+            if (String.valueOf (caracter).equals ("Ã")) caracter_troca = "A";
+            if (String.valueOf (caracter).equals ("ã")) caracter_troca = "a";
+            if (String.valueOf (caracter).equals ("á")) caracter_troca = "a";
+            if (String.valueOf (caracter).equals ("Á")) caracter_troca = "A";
+            if (String.valueOf (caracter).equals ("á")) caracter_troca = "a";
+            if (String.valueOf (caracter).equals ("É")) caracter_troca = "E";
+            if (String.valueOf (caracter).equals ("é")) caracter_troca = "e";
+            if (String.valueOf (caracter).equals ("Í")) caracter_troca = "I";
+            if (String.valueOf (caracter).equals ("í")) caracter_troca = "i";
+            if (String.valueOf (caracter).equals ("Ó")) caracter_troca = "O";
+            if (String.valueOf (caracter).equals ("ó")) caracter_troca = "o";
+            if (String.valueOf (caracter).equals ("Ú")) caracter_troca = "U";
+            if (String.valueOf (caracter).equals ("ú")) caracter_troca = "u";
+            if (String.valueOf (caracter).equals ("Ç")) caracter_troca = "C";
+            if (String.valueOf (caracter).equals ("ç")) caracter_troca = "C";
+            if (String.valueOf (caracter).equals ("Ü")) caracter_troca = "U";
+            if (String.valueOf (caracter).equals ("ü")) caracter_troca = "u";
             if (String.valueOf (caracter).equals ("&")) caracter_troca = "e";
             if (String.valueOf (caracter).equals ("|")) caracter_troca = ";";
             nome_real = nome_real + caracter_troca;
@@ -406,6 +406,11 @@ public class SeparaEndereco {
       }
       return ret;
 }
+  
+  // Formata numerico para txt tipo assim : de 1234.56 para 000123456 ou de -1234.56 para 000123456
+  public static String formataNumeroParaTxt (double num,int tam, int dec) {
+	  return SeparaEndereco.preencheZeros(SeparaEndereco.corrigeNumero(FormataValor.formataValorBT(num,dec)), tam);
+  }
   
 }
 

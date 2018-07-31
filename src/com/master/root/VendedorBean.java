@@ -9,11 +9,10 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import auth.OracleConnection2;
-
 import com.master.ed.PessoaRelED;
-import com.master.rl.VendedorRL;
 import com.master.util.JavaUtil;
+
+import auth.OracleConnection2;
 
 public class VendedorBean extends JavaUtil {
 	
@@ -284,7 +283,7 @@ public class VendedorBean extends JavaUtil {
 	}
 
 	/*
-	 *---------------- Bloco Padrão para Todas Classes ------------------
+	 *---------------- Bloco Padrï¿½o para Todas Classes ------------------
 	 */
 	public String getUsuario_Stamp()
 	{
@@ -469,7 +468,7 @@ public class VendedorBean extends JavaUtil {
 			throw e;
 		}
 		/*
-		 * Faz o commit e fecha a conexão.
+		 * Faz o commit e fecha a conexï¿½o.
 		 */
 		try
 		{
@@ -485,14 +484,14 @@ public class VendedorBean extends JavaUtil {
 	public void update() throws Exception
 	{
 		/*
-		 * Abre a conexão com o banco
+		 * Abre a conexï¿½o com o banco
 		 */
 		Connection conn = null;
 		try
 		{
-			// Pede uma conexão ao gerenciador do driver
-			// passando como parâmetro o NM_Tipo_Documento do DSN
-			// o NM_Tipo_Documento de usuário e a senha do banco.
+			// Pede uma conexï¿½o ao gerenciador do driver
+			// passando como parï¿½metro o NM_Tipo_Documento do DSN
+			// o NM_Tipo_Documento de usuï¿½rio e a senha do banco.
 			conn = OracleConnection2.getWEB();
 			conn.setAutoCommit(false);
 		} catch (Exception e)
@@ -556,7 +555,7 @@ public class VendedorBean extends JavaUtil {
 			throw e;
 		}
 		/*
-		 * Faz o commit e fecha a conexão.
+		 * Faz o commit e fecha a conexï¿½o.
 		 */
 		try
 		{
@@ -572,14 +571,14 @@ public class VendedorBean extends JavaUtil {
 	public void delete() throws Exception
 	{
 		/*
-		 * Abre a conexão com o banco
+		 * Abre a conexï¿½o com o banco
 		 */
 		Connection conn = null;
 		try
 		{
-			// Pede uma conexão ao gerenciador do driver
-			// passando como parâmetro o NM_Tipo_Documento do DSN
-			// o NM_Tipo_Documento de usuário e a senha do banco.
+			// Pede uma conexï¿½o ao gerenciador do driver
+			// passando como parï¿½metro o NM_Tipo_Documento do DSN
+			// o NM_Tipo_Documento de usuï¿½rio e a senha do banco.
 			conn = OracleConnection2.getWEB();
 			conn.setAutoCommit(false);
 		} catch (Exception e)
@@ -610,7 +609,7 @@ public class VendedorBean extends JavaUtil {
 			throw e;
 		}
 		/*
-		 * Faz o commit e fecha a conexão.
+		 * Faz o commit e fecha a conexï¿½o.
 		 */
 		try
 		{
@@ -649,13 +648,13 @@ public class VendedorBean extends JavaUtil {
 
 	public static final VendedorBean getByOID_Vendedor(String oid) throws Exception{
 		/*
-		 * Abre a conexão com o banco
+		 * Abre a conexï¿½o com o banco
 		 */
 		Connection conn = null;
 		try{
-			// Pede uma conexão ao gerenciador do driver
-			// passando como parâmetro o NM_Tipo_Documento do DSN
-			// o NM_Tipo_Documento de usuário e a senha do banco.
+			// Pede uma conexï¿½o ao gerenciador do driver
+			// passando como parï¿½metro o NM_Tipo_Documento do DSN
+			// o NM_Tipo_Documento de usuï¿½rio e a senha do banco.
 			conn = OracleConnection2.getWEB();
 			conn.setAutoCommit(false);
 		} catch (Exception e)
@@ -770,14 +769,14 @@ public class VendedorBean extends JavaUtil {
 		throws Exception
 	{
 		/*
-		 * Abre a conexão com o banco
+		 * Abre a conexï¿½o com o banco
 		 */
 		Connection conn = null;
 		try
 		{
-			// Pede uma conexão ao gerenciador do driver
-			// passando como parâmetro o NM_Tipo_Documento do DSN
-			// o NM_Tipo_Documento de usuário e a senha do banco.
+			// Pede uma conexï¿½o ao gerenciador do driver
+			// passando como parï¿½metro o NM_Tipo_Documento do DSN
+			// o NM_Tipo_Documento de usuï¿½rio e a senha do banco.
 			conn = OracleConnection2.getWEB();
 			conn.setAutoCommit(false);
 		} catch (Exception e)
@@ -1004,14 +1003,14 @@ public class VendedorBean extends JavaUtil {
 		throws Exception
 	{
 		/*
-		 * Abre a conexão com o banco
+		 * Abre a conexï¿½o com o banco
 		 */
 		Connection conn = null;
 		try
 		{
-			// Pede uma conexão ao gerenciador do driver
-			// passando como parâmetro o NM_Tipo_Documento do DSN
-			// o NM_Tipo_Documento de usuário e a senha do banco.
+			// Pede uma conexï¿½o ao gerenciador do driver
+			// passando como parï¿½metro o NM_Tipo_Documento do DSN
+			// o NM_Tipo_Documento de usuï¿½rio e a senha do banco.
 			conn = OracleConnection2.getWEB();
 			conn.setAutoCommit(false);
 		} catch (Exception e)
@@ -1126,14 +1125,14 @@ public class VendedorBean extends JavaUtil {
 	
 	public static final List getByNM_Vendedor(String NM_Vendedor) throws Exception {
 		/*
-		 * Abre a conexão com o banco
+		 * Abre a conexï¿½o com o banco
 		 */
 		Connection conn = null;
 		try
 		{
-			// Pede uma conexão ao gerenciador do driver
-			// passando como parâmetro o NM_Tipo_Documento do DSN
-			// o NM_Tipo_Documento de usuário e a senha do banco.
+			// Pede uma conexï¿½o ao gerenciador do driver
+			// passando como parï¿½metro o NM_Tipo_Documento do DSN
+			// o NM_Tipo_Documento de usuï¿½rio e a senha do banco.
 			conn = OracleConnection2.getWEB();
 			conn.setAutoCommit(false);
 		} catch (Exception e)
@@ -1350,14 +1349,14 @@ public class VendedorBean extends JavaUtil {
 	throws Exception
 {
 	/*
-	 * Abre a conexão com o banco
+	 * Abre a conexï¿½o com o banco
 	 */
 	Connection conn = null;
 	try
 	{
-		// Pede uma conexão ao gerenciador do driver
-		// passando como parâmetro o NM_Tipo_Documento do DSN
-		// o NM_Tipo_Documento de usuário e a senha do banco.
+		// Pede uma conexï¿½o ao gerenciador do driver
+		// passando como parï¿½metro o NM_Tipo_Documento do DSN
+		// o NM_Tipo_Documento de usuï¿½rio e a senha do banco.
 		conn = OracleConnection2.getWEB();
 		conn.setAutoCommit(false);
 	} catch (Exception e)
@@ -1408,14 +1407,14 @@ public class VendedorBean extends JavaUtil {
 		throws Exception
 	{
 		/*
-		 * Abre a conexão com o banco
+		 * Abre a conexï¿½o com o banco
 		 */
 		Connection conn = null;
 		try
 		{
-			// Pede uma conexão ao gerenciador do driver
-			// passando como parâmetro o NM_Tipo_Documento do DSN
-			// o NM_Tipo_Documento de usuário e a senha do banco.
+			// Pede uma conexï¿½o ao gerenciador do driver
+			// passando como parï¿½metro o NM_Tipo_Documento do DSN
+			// o NM_Tipo_Documento de usuï¿½rio e a senha do banco.
 			conn = OracleConnection2.getWEB();
 			conn.setAutoCommit(false);
 		} catch (Exception e)
@@ -1759,7 +1758,7 @@ public class VendedorBean extends JavaUtil {
 	}
 	
 	
-	//*** RELATÓRIOS
+	//*** RELATï¿½RIOS
 	// Vendedor
     public void Rel_Vendedor(HttpServletRequest request, HttpServletResponse response) throws Exception {
         
@@ -1787,7 +1786,7 @@ public class VendedorBean extends JavaUtil {
             lista.add(ed);            
         } else {
             ArrayList listaVolta = (ArrayList) getByCD_Vendedor1("");
-            //*** Converte para fields do relatório
+            //*** Converte para fields do relatï¿½rio
             for (int i = 0; i < listaVolta.size(); i++){
 
                 PessoaRelED ed = new PessoaRelED();
@@ -1810,7 +1809,6 @@ public class VendedorBean extends JavaUtil {
             }
         }        
         
-        new VendedorRL().geraRelVendedor(lista, response);
         
     }
 

@@ -6,7 +6,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.master.ed.ContaED;
-import com.master.rl.JasperRL;
 import com.master.rn.ContaRN;
 import com.master.util.Excecoes;
 import com.master.util.JavaUtil;
@@ -394,12 +393,11 @@ public class Fin006Bean
 
     ContaED ed = new ContaED ();
     ArrayList listContasRel = new ArrayList ();
-    listContasRel = this.Conta_Lista (request); // Chama o método que retorna a lista
+    listContasRel = this.Conta_Lista (request); // Chama o mï¿½todo que retorna a lista
 
-    ed.setLista (listContasRel); // Joga a lista de contas no ed para enviar pro relatório
+    ed.setLista (listContasRel); // Joga a lista de contas no ed para enviar pro relatï¿½rio
     ed.setResponse (response);
-    ed.setNomeRelatorio ("Contas_Estrutural"); // Seta o nome do relatório
-    new JasperRL (ed).geraRelatorio (); // Chama o relatorio passando o ed
+    ed.setNomeRelatorio ("Contas_Estrutural"); // Seta o nome do relatï¿½rio
   }
 
 }

@@ -1,8 +1,8 @@
 package com.master.iu;
 
 /**
- * @author André Valadas
- * Módulo: Preços dos Produtos
+ * @author Andrï¿½ Valadas
+ * Mï¿½dulo: Preï¿½os dos Produtos
 */
 import java.util.ArrayList;
 
@@ -12,7 +12,6 @@ import com.master.ed.Preco_ProdutoED;
 import com.master.ed.Produto_ClienteED;
 import com.master.rn.Preco_ProdutoRN;
 import com.master.rn.Produto_ClienteRN;
-import com.master.root.Condicao_PagamentoBean;
 import com.master.util.BancoUtil;
 import com.master.util.Data;
 import com.master.util.Excecoes;
@@ -40,13 +39,13 @@ public class Pro004Bean extends JavaUtil {
         String PE_Acrescimo_30_Dias = request.getParameter("FT_PE_Acrescimo_30_Dias");
 	    
 	    if (!doValida(oid_Produto_Cliente))
-	        throw new Mensagens("Produto não informado!");
+	        throw new Mensagens("Produto nï¿½o informado!");
 	    if (!doValida(oid_Pessoa_Distribuidor))
-	        throw new Mensagens("Distribuidora não informada!");
+	        throw new Mensagens("Distribuidora nï¿½o informada!");
 	    if (!doValida(oid_Tabela_Venda))
-	        throw new Mensagens("Tabela de Venda não informada!");
+	        throw new Mensagens("Tabela de Venda nï¿½o informada!");
 	    if (!doValida(VL_Produto))
-	        throw new Mensagens("Valor do Produto não informado!");
+	        throw new Mensagens("Valor do Produto nï¿½o informado!");
 	    
         Preco_ProdutoED ed = new Preco_ProdutoED(Integer.parseInt(oid_Tabela_Venda));
         ed.setOid_Pessoa(oid_Pessoa_Distribuidor);
@@ -86,12 +85,12 @@ public class Pro004Bean extends JavaUtil {
         String oid_Produto = request.getParameter("oid_Produto");
         
         if (!doValida(oid_Produto))
-            throw new Mensagens("Produto não informado!");
+            throw new Mensagens("Produto nï¿½o informado!");
         if (!doValida(oid_Pessoa_Distribuidor))
-            throw new Mensagens("Distribuidora não informada!");
+            throw new Mensagens("Distribuidora nï¿½o informada!");
         if (!doValida(oid_Tabela_Venda))
-            throw new Mensagens("Tabela de Venda não informada!");
-        //*** Valida se já existe o Produto na Tabela
+            throw new Mensagens("Tabela de Venda nï¿½o informada!");
+        //*** Valida se jï¿½ existe o Produto na Tabela
         if (new BancoUtil().doExiste("Precos_Produtos","oid_Produto_Cliente = '"+(oid_Produto+oid_Pessoa_Distribuidor)+"'" +
                                      " AND oid_Tabela_Venda = "+oid_Tabela_Venda+
                                      " AND oid_Pessoa = '"+oid_Pessoa_Distribuidor+"'"))
@@ -100,7 +99,7 @@ public class Pro004Bean extends JavaUtil {
         Produto_ClienteED edProduto = new Produto_ClienteRN().getByRecord(new Produto_ClienteED(oid_Produto+oid_Pessoa_Distribuidor));
         
         if (!doValida(edProduto.getOID_Produto_Cliente()))
-            throw new Mensagens("Produto Cliente não encontrado!");
+            throw new Mensagens("Produto Cliente nï¿½o encontrado!");
         if (edProduto.getVL_Produto() <= 0)
             throw new Mensagens("Produto sem Valor de ULTIMA COMPRA!", "INCLUI");
         if (edProduto.getVL_Markup() <= 0)
@@ -138,9 +137,9 @@ public class Pro004Bean extends JavaUtil {
         String DM_Alterado = request.getParameter("FT_DM_Alterado");
 	    
 	    if (!doValida(oid_Preco_Produto))
-	        throw new Mensagens("ID Preço Produto não informado!");
+	        throw new Mensagens("ID Preï¿½o Produto nï¿½o informado!");
 	    if (!doValida(VL_Produto))
-	        throw new Mensagens("Valor do Produto não informado!");
+	        throw new Mensagens("Valor do Produto nï¿½o informado!");
 	    
         Preco_ProdutoED ed = new Preco_ProdutoED(Long.parseLong(oid_Preco_Produto));
         ed.setVL_Produto(Double.parseDouble(VL_Produto));
@@ -177,7 +176,7 @@ public class Pro004Bean extends JavaUtil {
 
 	    String oid_Preco_Produto = request.getParameter("oid_Preco_Produto");
 	    if (!doValida(oid_Preco_Produto))
-	        throw new Mensagens("ID Preço Produto não informado!");
+	        throw new Mensagens("ID Preï¿½o Produto nï¿½o informado!");
 	    
         new Preco_ProdutoRN().deleta(new Preco_ProdutoED(Long.parseLong(oid_Preco_Produto)));
 	}
@@ -230,46 +229,28 @@ public class Pro004Bean extends JavaUtil {
         return new Preco_ProdutoRN().lista(ed);
 	}
     
-    /** MÉTODOS AUXILIARES */
+    /** Mï¿½TODOS AUXILIARES */
 	public Preco_ProdutoED getPrecoByOIDCondPagamento(int oid_Condicao_Pagamento, long oid_Preco_Produto) throws Exception{
 
 	    if (oid_Condicao_Pagamento < 1)
-	        throw new Mensagens("ID Condição Pagamento não informado!");
+	        throw new Mensagens("ID Condiï¿½ï¿½o Pagamento nï¿½o informado!");
 	    if (oid_Preco_Produto < 1)
-	        throw new Mensagens("ID Preço Produto não informado!");
+	        throw new Mensagens("ID Preï¿½o Produto nï¿½o informado!");
 
 	    //*** Dados do Preco do Produto
         Preco_ProdutoED edPreco = new Preco_ProdutoRN().getByRecord(new Preco_ProdutoED(oid_Preco_Produto, false, false));
 	    
-	    //*** Dados da Condicão de Pagamento
-	    Condicao_PagamentoBean edCondicao = Condicao_PagamentoBean.getByOID(oid_Condicao_Pagamento);
-
-	    //*** Busca Preço
-        if (edCondicao.getNR_Dias_Vencimento1() > 0 && edCondicao.getNR_Dias_Vencimento2() < 1)
-        {
-            long dias = edCondicao.getNR_Dias_Vencimento1();
-            if (dias < 7)
-                edPreco.setVL_Venda(edPreco.getVL_Desconto_Avista());
-            else if (dias == 7)
-                edPreco.setVL_Venda(edPreco.getVL_Desconto_7_Dias());
-            else if (dias <= 14)
-                edPreco.setVL_Venda(edPreco.getVL_Produto());
-            else if (dias <= 21)
-                edPreco.setVL_Venda(edPreco.getVL_Acrescimo_21_Dias());
-            else if (dias <= 28)
-                edPreco.setVL_Venda(edPreco.getVL_Acrescimo_28_Dias());
-            else edPreco.setVL_Venda(edPreco.getVL_Acrescimo_30_Dias());
-        } else edPreco.setVL_Venda(edPreco.getVL_Desconto_Avista());
+	    //*** Dados da Condicï¿½o de Pagamento
 	    return edPreco;
 	}
     public Preco_ProdutoED getPrecoByTabela(int oid_Condicao_Pagamento, String oid_Produto, int oid_Tabela_Venda) throws Exception{
 
         if (oid_Condicao_Pagamento < 1)
-            throw new Mensagens("ID Condição Pagamento não informado!");
+            throw new Mensagens("ID Condiï¿½ï¿½o Pagamento nï¿½o informado!");
         if (!doValida(oid_Produto))
-            throw new Mensagens("ID Produto não informado!");
+            throw new Mensagens("ID Produto nï¿½o informado!");
         if (oid_Tabela_Venda < 1)
-            throw new Mensagens("ID Tabela Venda não informada!");
+            throw new Mensagens("ID Tabela Venda nï¿½o informada!");
         
         long oid_PrecoProduto = new BancoUtil().getTableIntValue("oid_Preco_Produto", "Precos_Produtos", 
                 "Precos_Produtos.oid_Produto_Cliente = Produtos_Clientes.oid_Produto_Cliente" +

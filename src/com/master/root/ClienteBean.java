@@ -1,16 +1,31 @@
 package com.master.root;
 
-import java.sql.*;
-import java.util.*;
-import javax.servlet.http.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
-import auth.*;
-import com.master.bd.*;
-import com.master.ed.*;
-import com.master.rl.*;
-import com.master.util.*;
-import com.master.util.bd.*;
-import com.master.util.ed.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.master.bd.DuplicataBD;
+import com.master.ed.RelatorioED;
+import com.master.util.BancoUtil;
+import com.master.util.Data;
+import com.master.util.Excecoes;
+import com.master.util.FormataData;
+import com.master.util.JavaUtil;
+import com.master.util.ManipulaArquivo;
+import com.master.util.Mensagens;
+import com.master.util.ModuloUtil;
+import com.master.util.Utilitaria;
+import com.master.util.bd.ExecutaSQL;
+import com.master.util.ed.Parametro_FixoED;
+
+import auth.OracleConnection2;
 
 public class ClienteBean {
   private ExecutaSQL executasql;
@@ -212,13 +227,13 @@ public class ClienteBean {
     CD_Cliente_Palm = "";
   }
 
-  // *** CRÉDITO
+  // *** CRï¿½DITO
   public String getDescDM_Credito () {
     if ("N".equals (DM_Credito)) {
       return "Ativo";
     }
     else if ("S".equals (DM_Credito)) {
-      return "Crédito Bloqueado";
+      return "Crï¿½dito Bloqueado";
     }
     else if ("B".equals (DM_Credito)) {
       return "Suspender Vendas";
@@ -227,11 +242,11 @@ public class ClienteBean {
       return "Desabilitado Sintegra";
     }
     else {
-      return "Não informado";
+      return "Nï¿½o informado";
     }
   }
 
-  // *** SITUAÇÃO
+  // *** SITUAï¿½ï¿½O
   public String getDescDM_Situacao () {
     if ("P".equals (DM_Situacao)) {
       return "Prospect";
@@ -240,13 +255,13 @@ public class ClienteBean {
       return "Inativo";
     }
     else if ("M".equals (DM_Situacao)) {
-      return "Manutenção";
+      return "Manutenï¿½ï¿½o";
     }
     else if ("R".equals (DM_Situacao)) {
       return "Reconquista";
     }
     else {
-      return "Não informada";
+      return "Nï¿½o informada";
     }
   }
 
@@ -683,7 +698,7 @@ public class ClienteBean {
   }
 
   /*
-   * ---------------- Bloco Padrão para Todas Classes ------------------
+   * ---------------- Bloco Padrï¿½o para Todas Classes ------------------
    */
   public String getUsuario_Stamp () {
     return Usuario_Stamp;
@@ -781,7 +796,7 @@ public class ClienteBean {
     }
   }
 
-  // *** Valida Código para o Cliente Baseado no Módulo 10
+  // *** Valida Cï¿½digo para o Cliente Baseado no Mï¿½dulo 10
   public void validaCodigoCliente (String codigo , String delimitador , String oidCliente) throws Exception {
     // *** Verifica se Gera Codigo p/ Cliente
     if (!JavaUtil.doValida (codigo) || !Parametro_FixoED.getInstancia ().isGeraCodigoCliente ()) {
@@ -795,11 +810,11 @@ public class ClienteBean {
       where += " AND oid_Cliente <> '" + oidCliente + "'";
     }
     if (util.doExiste ("Clientes" , where)) {
-      throw new Mensagens ("Código informado ja esxiste!");
+      throw new Mensagens ("Cï¿½digo informado ja esxiste!");
     }
   }
 
-  // *** Busca proximo Código p/ o Cliente
+  // *** Busca proximo Cï¿½digo p/ o Cliente
   public static String getNextCodigoCliente (int oid_Unidade) throws Exception {
     // *** Verifica se Gera Codigo p/ Cliente
     if (!Parametro_FixoED.getInstancia ().isGeraCodigoCliente ()) {
@@ -808,7 +823,7 @@ public class ClienteBean {
     if (oid_Unidade < 1) {
       oid_Unidade = Parametro_FixoED.getInstancia ().getOID_Unidade_Padrao ();
       if (oid_Unidade < 1) {
-        throw new Mensagens ("Unidade não informada!");
+        throw new Mensagens ("Unidade nï¿½o informada!");
       }
     }
     String codigo = JavaUtil.LFill (Integer.parseInt (JavaUtil.getValueDef (new BancoUtil ().getTableStringValue ("NR_Proximo_Codigo_Cliente" , "Parametros_Filiais" , "oid_Unidade = " + oid_Unidade) ,
@@ -816,7 +831,7 @@ public class ClienteBean {
     return codigo + "-" + ModuloUtil.getDigitoVerificador (codigo);
   }
 
-  // *** Atualiza Código
+  // *** Atualiza Cï¿½digo
   public void updateNextCodigoCliente (int oid_Unidade , String codigo , String delimitador) throws Exception {
     // *** Verifica se Gera Codigo p/ Cliente
     if (!JavaUtil.doValida (codigo) || !Parametro_FixoED.getInstancia ().isGeraCodigoCliente ()) {
@@ -825,7 +840,7 @@ public class ClienteBean {
     if (oid_Unidade < 1) {
       oid_Unidade = Parametro_FixoED.getInstancia ().getOID_Unidade_Padrao ();
       if (oid_Unidade < 1) {
-        throw new Mensagens ("Unidade não informada!");
+        throw new Mensagens ("Unidade nï¿½o informada!");
       }
     }
     if (JavaUtil.doValida (delimitador)) {
@@ -937,7 +952,7 @@ public class ClienteBean {
       pstmt.setInt (4 , getOID_Ramo_Atividade ());
       pstmt.setInt (5 , getOID_Grupo_Economico ());
       pstmt.setInt (6 , getOID_Segmento ());
-      // *** Se Cliente for Pessoa Física, Cobrança somente A VISTA('V')
+      // *** Se Cliente for Pessoa Fï¿½sica, Cobranï¿½a somente A VISTA('V')
       if (getOID_Cliente ().length () < 14) {
         pstmt.setString (7 , "V");
       }
@@ -1567,13 +1582,13 @@ public class ClienteBean {
   // /### Transito
   public void update_cobranca () throws Exception {
     /*
-     * Abre a conexão com o banco
+     * Abre a conexï¿½o com o banco
      */
     Connection conn = null;
     try {
-      // Pede uma conexão ao gerenciador do driver
-      // passando como parâmetro o NM_Tipo_Documento do DSN
-      // o NM_Tipo_Documento de usuário e a senha do banco.
+      // Pede uma conexï¿½o ao gerenciador do driver
+      // passando como parï¿½metro o NM_Tipo_Documento do DSN
+      // o NM_Tipo_Documento de usuï¿½rio e a senha do banco.
       conn = OracleConnection2.getWEB ();
       conn.setAutoCommit (false);
     }
@@ -1663,7 +1678,7 @@ public class ClienteBean {
       throw e;
     }
     /*
-     * Faz o commit e fecha a conexão.
+     * Faz o commit e fecha a conexï¿½o.
      */
     try {
       conn.commit ();
@@ -1803,13 +1818,13 @@ public class ClienteBean {
 
   public void delete () throws Exception {
     /*
-     * Abre a conexão com o banco
+     * Abre a conexï¿½o com o banco
      */
     Connection conn = null;
     try {
-      // Pede uma conexão ao gerenciador do driver
-      // passando como parâmetro o NM_Tipo_Documento do DSN
-      // o NM_Tipo_Documento de usuário e a senha do banco.
+      // Pede uma conexï¿½o ao gerenciador do driver
+      // passando como parï¿½metro o NM_Tipo_Documento do DSN
+      // o NM_Tipo_Documento de usuï¿½rio e a senha do banco.
       conn = OracleConnection2.getWEB ();
       conn.setAutoCommit (false);
     }
@@ -1856,7 +1871,7 @@ public class ClienteBean {
       throw e;
     }
     /*
-     * Faz o commit e fecha a conexão.
+     * Faz o commit e fecha a conexï¿½o.
      */
     try {
       conn.commit ();
@@ -3533,88 +3548,6 @@ public class ClienteBean {
     return Cliente_Lista;
   }
 
-  public static final List getAduanaByNR_CNPJ_CPF (String oidPessoa) throws Exception {
-    Connection conn = null;
-    try {
-      conn = OracleConnection2.getWEB ();
-      conn.setAutoCommit (false);
-    }
-    catch (Exception e) {
-      e.printStackTrace ();
-      throw e;
-    }
-    List Cliente_Lista = new ArrayList ();
-    try {
-      StringBuffer buff = new StringBuffer ();
-      buff.append ("SELECT A.OID_Aduana, ");
-      buff.append ("	A.CD_Aduana, ");
-      buff.append ("	A.NM_Aduana, ");
-      buff.append ("	A.NR_Aduana ");
-      buff.append ("FROM Aduanas A, aduanas_clientes AC ");
-      buff.append ("WHERE A.oid_aduana = AC.oid_aduana ");
-      buff.append ("AND AC.oid_cliente = '");
-      buff.append (oidPessoa);
-      buff.append ("'");
-      Statement stmt = conn.createStatement ();
-      ResultSet cursor = stmt.executeQuery (buff.toString ());
-      while (cursor.next ()) {
-        AduanaBean p = new AduanaBean ();
-        p.setOID (cursor.getInt (1));
-        p.setCD_Aduana (cursor.getString (2));
-        p.setNM_Aduana (cursor.getString (3));
-        p.setNR_Aduana (cursor.getString (4));
-        Cliente_Lista.add (p);
-      }
-      cursor.close ();
-      stmt.close ();
-      conn.close ();
-    }
-    catch (Exception e) {
-      e.printStackTrace ();
-    }
-    return Cliente_Lista;
-  }
-
-  public static final List getTipoStatusByNR_CNPJ_CPF (String oidPessoa) throws Exception {
-    Connection conn = null;
-    try {
-      conn = OracleConnection2.getWEB ();
-      conn.setAutoCommit (false);
-    }
-    catch (Exception e) {
-      e.printStackTrace ();
-      throw e;
-    }
-    List Cliente_Lista = new ArrayList ();
-    try {
-      StringBuffer buff = new StringBuffer ();
-      buff.append ("SELECT TS.oid_tipo_status, ");
-      buff.append ("	TS.cd_tipo_status, ");
-      buff.append ("	TS.nm_tipo_status ");
-      buff.append ("FROM tipo_status TS, status_clientes SC ");
-      buff.append ("WHERE TS.oid_tipo_Status = SC.oid_tipo_status ");
-      buff.append ("AND SC.oid_cliente = '");
-      buff.append (oidPessoa);
-      buff.append ("'");
-      Statement stmt = conn.createStatement ();
-      ResultSet cursor = stmt.executeQuery (buff.toString ());
-      while (cursor.next ()) {
-        TipoStatusBean p = new TipoStatusBean ();
-        p.setOidTipoStatus (String.valueOf (cursor.getInt (1)));
-        p.setCdTipoStatus (cursor.getString (2));
-        p.setNmTipoStatus (cursor.getString (3));
-        Cliente_Lista.add (p);
-      }
-      cursor.close ();
-      stmt.close ();
-      conn.close ();
-    }
-    catch (Exception e) {
-      e.printStackTrace ();
-    }
-    return Cliente_Lista;
-  }
-
   public static final List getAll () throws Exception {
     Connection conn = null;
     ExecutaSQL executasql = new ExecutaSQL ();
@@ -3798,9 +3731,9 @@ public class ClienteBean {
         + "and Cidades.OID_Regiao_Estado = Regioes_Estados.OID_Regiao_Estado " + "and Regioes_Estados.OID_Estado = Estados.OID_Estado " + "Order by NM_Razao_Social";
     Connection conn = null;
     try {
-      // Pede uma conexão ao gerenciador do driver
-      // passando como parâmetro o NM_Tipo_Documento do DSN
-      // o NM_Tipo_Documento de usuário e a senha do banco.
+      // Pede uma conexï¿½o ao gerenciador do driver
+      // passando como parï¿½metro o NM_Tipo_Documento do DSN
+      // o NM_Tipo_Documento de usuï¿½rio e a senha do banco.
       conn = OracleConnection2.getWEB ();
       conn.setAutoCommit (false);
     }
@@ -3808,15 +3741,7 @@ public class ClienteBean {
       e.printStackTrace ();
       throw e;
     }
-    try {
-      stmt = conn.createStatement ();
-      cursor = stmt.executeQuery (sql);
-      new ClienteRL().geraRelacaoClientes (cursor, res);
-    }
-    catch (Exception e) {
-      e.printStackTrace ();
-      throw e;
-    }finally{
+    finally{
       cursor.close ();
       stmt.close ();
       conn.close ();
@@ -3831,9 +3756,9 @@ public class ClienteBean {
         + "Order by NM_Razao_Social";
     Connection conn = null;
     try {
-      // Pede uma conexão ao gerenciador do driver
-      // passando como parâmetro o NM_Tipo_Documento do DSN
-      // o NM_Tipo_Documento de usuário e a senha do banco.
+      // Pede uma conexï¿½o ao gerenciador do driver
+      // passando como parï¿½metro o NM_Tipo_Documento do DSN
+      // o NM_Tipo_Documento de usuï¿½rio e a senha do banco.
       conn = OracleConnection2.getWEB ();
       conn.setAutoCommit (false);
     }
@@ -3879,9 +3804,9 @@ public class ClienteBean {
         + "and Regioes_Estados.OID_Estado = Estados.OID_Estado " + "Order by NM_Razao_Social";
     Connection conn = null;
     try {
-      // Pede uma conexão ao gerenciador do driver
-      // passando como parâmetro o NM_Tipo_Documento do DSN
-      // o NM_Tipo_Documento de usuário e a senha do banco.
+      // Pede uma conexï¿½o ao gerenciador do driver
+      // passando como parï¿½metro o NM_Tipo_Documento do DSN
+      // o NM_Tipo_Documento de usuï¿½rio e a senha do banco.
       conn = OracleConnection2.getWEB ();
       conn.setAutoCommit (false);
     }
@@ -3891,12 +3816,9 @@ public class ClienteBean {
     }
     Statement stmt = conn.createStatement ();
     ResultSet cursor = stmt.executeQuery (sql);
-    ClienteRL clienteRL = new ClienteRL ();
-    byte[] b = clienteRL.geraEtiqueta (cursor);
-    new EnviaPDF ().enviaBytes (req , res , b);
   }
 
-  // *** RELATÓRIOS
+  // *** RELATï¿½RIOS
   // Cliente
   public void Rel_Cliente (HttpServletRequest request , HttpServletResponse response) throws Exception {
     ArrayList lista = new ArrayList ();
@@ -3950,7 +3872,7 @@ public class ClienteBean {
     }
     else {
       ArrayList listaVolta = (ArrayList) getAll ();
-      // *** Converte para fields do relatório
+      // *** Converte para fields do relatï¿½rio
       for (int i = 0; i < listaVolta.size (); i++) {
         RelatorioED ed = new RelatorioED ();
         ClienteBean edVolta = (ClienteBean) listaVolta.get (i);
@@ -3998,7 +3920,6 @@ public class ClienteBean {
         lista.add (ed);
       }
     }
-    new ClienteRL ().geraRelCliente (lista , response);
   }
 
 //Cliente Bloqueado
@@ -4065,7 +3986,7 @@ public class ClienteBean {
     	//update_Movimentacao_total();
 
       ArrayList listaVolta = (ArrayList) getListByRecord(request);
-      // *** Converte para fields do relatório
+      // *** Converte para fields do relatï¿½rio
       for (int i = 0; i < listaVolta.size (); i++) {
         RelatorioED ed = new RelatorioED ();
         ClienteBean edVolta = (ClienteBean) listaVolta.get (i);
@@ -4109,18 +4030,17 @@ public class ClienteBean {
         }
       }
     }
-    new ClienteRL ().geraRelCliente_Bloqueado(lista , response);
   }
 
   public static final List getByNM_Razao_Social_Endereco (String NM_Razao_Social) throws Exception {
     /*
-     * Abre a conexão com o banco
+     * Abre a conexï¿½o com o banco
      */
     Connection conn = null;
     try {
-      // Pede uma conexão ao gerenciador do driver
-      // passando como parâmetro o NM_Razao_Social do DSN
-      // o NM_Razao_Social de usuário e a senha do banco.
+      // Pede uma conexï¿½o ao gerenciador do driver
+      // passando como parï¿½metro o NM_Razao_Social do DSN
+      // o NM_Razao_Social de usuï¿½rio e a senha do banco.
       conn = OracleConnection2.getWEB ();
       conn.setAutoCommit (false);
     }
