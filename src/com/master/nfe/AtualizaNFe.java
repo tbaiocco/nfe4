@@ -23,7 +23,7 @@ import br.com.samuelweb.nfe.exception.NfeException;
 import br.com.samuelweb.nfe.util.ConstantesUtil;
 import br.com.samuelweb.nfe.util.Estados;
 import br.inf.portalfiscal.nfe.schema_4.retConsSitNFe.TRetConsSitNFe;
-import br.model.Empresa;
+import br.cte.model.Empresa;
 
 /**
  * Servlet implementation class for Servlet: AtualizaNFe
@@ -41,6 +41,12 @@ import br.model.Empresa;
 	
 	private void consultaNfe(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 		try{
+			
+			empresa.setDbDriver("org.postgresql.Driver");
+			   empresa.setDbURL("jdbc:postgresql://127.0.0.1:5432/miro");
+			   empresa.setDbUser("postgres");
+			   empresa.setDbPass("");
+			
 //			if(JavaUtil.doValida(request.getParameter("emissor"))){
 //				empresa = new br.core.base.EmpresaDb().getEmpresa(request.getParameter("emissor"));
 //				if(!JavaUtil.doValida(empresa.getRazaosocial())){
@@ -110,7 +116,7 @@ System.out.println("CHAVE nf:" + ed.getNfe_chave_acesso());
 
         ed.setOid_nota_fiscal(oid_Nota_Fiscal);
 System.out.println("consulta nf:" + oid_Nota_Fiscal);
-        return new Nota_Fiscal_EletronicaRN().getByRecord(ed);
+        return new Nota_Fiscal_EletronicaRN(empresa).getByRecord(ed);
     }
 	
 	/* (non-Java-doc)
