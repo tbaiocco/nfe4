@@ -68,6 +68,7 @@ import br.servicos.NfeServicos;
 public class Nota_Fiscal_EletronicaRN extends Transacao {
 
     public Nota_Fiscal_EletronicaRN() {
+    	super();
     }
     
     public Nota_Fiscal_EletronicaRN(Empresa empresa) {
