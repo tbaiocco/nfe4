@@ -41,24 +41,25 @@ import br.model.Empresa;
 	
 	private void consultaNfe(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 		try{
-			if(JavaUtil.doValida(request.getParameter("emissor"))){
-				empresa = new br.core.base.EmpresaDb().getEmpresa(request.getParameter("emissor"));
-				if(!JavaUtil.doValida(empresa.getRazaosocial())){
-					throw new Excecoes("A empresa emitente nao foi encontrada no sistema!");
-				}
-			} else {
-				throw new Excecoes("A empresa emitente nao foi informada!");
-			}
+//			if(JavaUtil.doValida(request.getParameter("emissor"))){
+//				empresa = new br.core.base.EmpresaDb().getEmpresa(request.getParameter("emissor"));
+//				if(!JavaUtil.doValida(empresa.getRazaosocial())){
+//					throw new Excecoes("A empresa emitente nao foi encontrada no sistema!");
+//				}
+//			} else {
+//				throw new Excecoes("A empresa emitente nao foi informada!");
+//			}
 
 			if(JavaUtil.doValida(request.getParameter("oid_Nota_Fiscal"))){
-
+				String certPath = "/data/nfe4/certificados/miro_cac.pfx";
+		    	String certPass = "1444";
 	             try{
 	            	 Certificado certificado = CertificadoService.certificadoPfx(
-	 	             		empresa.getCertificado(), 
-	 	             		empresa.getSenha());
+	 	             		certPath, 
+	 	             		certPass);
 	 	             //Esse Objeto Voce pode guardar em uma Session.
 	 	             ConfiguracoesWebNfe config = ConfiguracoesWebNfe.iniciaConfiguracoes(Estados.RS,
-	 	                     empresa.getAmbiente(),
+	 	            		 ConstantesUtil.AMBIENTE.HOMOLOGACAO,
 	 	                     certificado,
 	 	                     MethodHandles.lookup().lookupClass().
 	 	                     getResource("/schemas").getPath(), //PEGAR SCHEMAS EM AMBIENTE WEB ESTA PASTA ESTA DENTRO DE RESOURCES

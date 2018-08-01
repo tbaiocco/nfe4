@@ -2313,7 +2313,7 @@ public class Nota_Fiscal_EletronicaBD extends BancoUtil {
 			if (doValida(edV.getDm_tipo_nota_fiscal()))
 				sql += "   AND Notas_Fiscais.DM_Tipo_Nota_Fiscal = "
 						+ getSQLString(edV.getDm_tipo_nota_fiscal());
-// .println(sql);
+System.out.println(sql);
 			res = this.executasql.executarConsulta(sql);
 			while (res.next()) {
 				ed.setOid_nota_fiscal(res.getString("oid_nota_fiscal"));
@@ -2450,6 +2450,7 @@ public class Nota_Fiscal_EletronicaBD extends BancoUtil {
 			}
 			return ed;
 		} catch (Exception exc) {
+			exc.printStackTrace();
 			throw new Excecoes(exc.getMessage(), exc,
 					this.getClass().getName(), "getByRecord()");
 		} finally {
