@@ -12,6 +12,39 @@
 		<servlet-name>StatusServico</servlet-name>
 		<url-pattern>/StatusServico</url-pattern>
 	</servlet-mapping>
+	<servlet>
+		<description>
+		</description>
+		<display-name>CancelaNFe</display-name>
+		<servlet-name>CancelaNFe</servlet-name>
+		<servlet-class>com.master.nfe.CancelaNFe</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>CancelaNFe</servlet-name>
+		<url-pattern>/CancelaNFe</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<description>
+		</description>
+		<display-name>EnviaNFe</display-name>
+		<servlet-name>EnviaNFe</servlet-name>
+		<servlet-class>com.master.nfe.EnviaNFe</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>EnviaNFe</servlet-name>
+		<url-pattern>/EnviaNFe</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<description>
+		</description>
+		<display-name>AtualizaNFe</display-name>
+		<servlet-name>AtualizaNFe</servlet-name>
+		<servlet-class>com.master.nfe.AtualizaNFe</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>AtualizaNFe</servlet-name>
+		<url-pattern>/AtualizaNFe</url-pattern>
+	</servlet-mapping>
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>
 		<welcome-file>index.htm</welcome-file>

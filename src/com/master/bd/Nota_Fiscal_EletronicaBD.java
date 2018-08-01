@@ -87,6 +87,9 @@ import br.inf.portalfiscal.nfe.schema.retEnvEventoCancNFe.TRetEvento;
 
 import br.com.samuelweb.nfe.util.ConstantesUtil;
 import br.com.samuelweb.nfe.util.XmlUtil;
+import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe.InfNFe.Det.Imposto.ICMS.ICMS00;
+import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe.InfNFe.Det.Imposto.ICMS.ICMS10;
+import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe.InfNFe.Det.Imposto.ICMS.ICMS90;
 import br.inf.portalfiscal.nfe.schema_4.enviNFe.*;
 import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe.InfNFe;
 import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe.InfNFe.*;
@@ -99,6 +102,7 @@ import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe.InfNFe.Det.Imposto.PIS;
 import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe.InfNFe.Det.Imposto.PIS.PISAliq;
 import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe.InfNFe.Det.Prod;
 import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe.InfNFe.Total.ICMSTot;
+import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe.InfNFe.Transp.Transporta;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -3406,7 +3410,7 @@ public class Nota_Fiscal_EletronicaBD extends BancoUtil {
      *  @return NfeNotaFiscal nota para ser impressa ou NfeNotaFiscal vazio no caso de algum erro
      *  @throws Excecoes
      * */
-    public TNFe geraNFe(ArrayList listaNotasFiscais, String dtSaida, String hrSaida) throws Excecoes {
+    public TNFe geraNFe(Nota_Fiscal_EletronicaED nota, String dtSaida, String hrSaida) throws Excecoes {
 
     	TNFe nfeReturn = new TNFe();
         try {
@@ -3441,11 +3445,12 @@ public class Nota_Fiscal_EletronicaBD extends BancoUtil {
                   ,totalPIS = 0
                   ,totalCOFINS = 0;
 
-            ArrayList infNFes = new ArrayList();
-            Iterator iterator = listaNotasFiscais.iterator();
-            while (iterator.hasNext())
+            
+            
+//            Iterator iterator = this.lista(edV).iterator();
+//            while (iterator.hasNext())
             {
-                Nota_Fiscal_EletronicaED ed = (Nota_Fiscal_EletronicaED) iterator.next();
+                Nota_Fiscal_EletronicaED ed = this.getByRecord(nota);
  System.out.println("NFe OID:"+ed.getOid_nota_fiscal());
 
                 isSaida = ("D".equals(ed.getDm_tipo_nota_fiscal()) || "R".equals(ed.getDm_tipo_nota_fiscal()) || "S".equals(ed.getDm_tipo_nota_fiscal()));//*** Tipo de NOTA
@@ -3570,8 +3575,19 @@ public class Nota_Fiscal_EletronicaBD extends BancoUtil {
                 nrNotaAtual++;
 //              Nota Fiscal
                 TNFe.InfNFe infNFe = new InfNFe();
+                CidadeBean orig = CidadeBean.getByOID((int)unidade.getOid_Cidade());
+    			String uIBGE_UF = getTableStringValue("nm_codigo_ibge", "estados", "oid_estado="+orig.getOID_Estado());
+                
+                String rnd = String.valueOf(System.currentTimeMillis());
+                CidadeBean origem = CidadeBean.getByOID((int)unidade.getOid_Cidade());
+    			String cIBGE_UF = getTableStringValue("nm_codigo_ibge", "estados", "oid_estado="+origem.getOID_Estado());
+    			CidadeBean destino = CidadeBean.getByOID((int)edPessoa.getOid_Cidade());
+    			String dIBGE_UF = getTableStringValue("nm_codigo_ibge", "estados", "oid_estado="+destino.getOID_Estado());
+    	        if(!JavaUtil.doValida(edCliente.getOid_Pessoa())){
+    				throw new Excecoes("Problemas com o destinatário: "+edPessoa.getNM_Razao_Social()+".\nDeve ser cadastrado como cliente...");
+    			}
 
-                infNFe.setId("xxx");
+//                infNFe.setId("xxx");
                 infNFe.setVersao("4.00");
                 
                 String ser = doValida(ed.getNm_serie())&&"NF1".equals(ed.getNm_serie())?"1" :
@@ -3585,150 +3601,102 @@ public class Nota_Fiscal_EletronicaBD extends BancoUtil {
                 
              // Dados Nfe
                 Ide ide = new Ide();
-                ide.setCUF("xxx");
-                ide.setCNF("xxx");
+                ide.setCUF(cIBGE_UF);
+                ide.setCNF(rnd);
                 ide.setNatOp(edCFOP.getNm_Natureza_Operacao());
                 ide.setMod("55");
                 ide.setSerie(ser);
                 ide.setNNF(String.valueOf(ed.getNr_nota_fiscal()));
-                ide.setDhEmi(Data.strToDate(ed.getDt_emissao()));
+                ide.setDhEmi(ed.getDt_emissao());
+                ide.setDhSaiEnt(getValueDef(dtSaida, ed.getDt_emissao()));
                 ide.setTpNF(isSaida ? "1" : "0");
-                ide.setIdDest("xxx");
-                ide.setCMunFG("xxx");
-                ide.setTpImp("xxx");
+                if(origem.getOID_Estado() != destino.getOID_Estado()){
+                	ide.setIdDest("2");//fora do estado... //10-4-14 - VER 3.10
+    	        } else {
+    	        	ide.setIdDest("1");//dentro do estado... //10-4-14 - VER 3.10
+    	        }
+//                ide.setCMunFG("xxx"); mun fato gerador
+                ide.setTpImp("1");
                 ide.setTpEmis("1");
-                ide.setCDV("xxx");
-                ide.setTpAmb("xxx");
+//                ide.setCDV("xxx"); dig chave acesso
+                ide.setTpAmb("2");
                 ide.setFinNFe("1");
-                ide.setIndFinal("xxx");
-                ide.setIndPres("xxx");
-                ide.setProcEmi("xxx");
-                ide.setVerProc("xxx");
+                ide.setIndFinal("0");
+                ide.setIndPres("2");
+                ide.setProcEmi("0");
+                ide.setVerProc("8.00");
                 infNFe.setIde(ide);
 
 //                notafiscal.setIndPag(0);//indicador da forma de pagamento
 //                if(ed.edModelo.getOid_Modelo_Nota_Fiscal()==8){
 //                	notafiscal.setIndPag(1);
 //                }
-                
-//                notafiscal.setDSaiEnt(Data.strToDate(getValueDef(dtSaida, ed.getDt_emissao())));//data de sa�da ou entrada da mercadoria
-                if(ed.getOid_modelo_nota_fiscal() == 13 || ed.getOid_modelo_nota_fiscal() == 15 || ed.getOid_modelo_nota_fiscal() == 22){
-                	notafiscal.setFinNfe(3);//Finalidade de emiss�o da NF-E >> AJUSTE
-                	String NF_Ref = getTableStringValue("nm_ch_referenciada",	"Notas_Fiscais", "oid_nota_fiscal = '"	+ ed.getOid_nota_fiscal() + "'");
-                	if(ed.getOid_modelo_nota_fiscal() == 22){
-                		if(!JavaUtil.doValida(NF_Ref)){
-                			throw new Excecoes("Para NFe de ajuste � necess�rio informar a chave da nota de referenciada!");
-                		}
-	                	NfeReferenciada nfref = new NfeReferenciada();
-	                	ArrayList nfsref = new ArrayList();
-	                	nfref.setRefNfe(NF_Ref);
-	                	nfsref.add(nfref);
-	                	notafiscal.setNfeReferenciadaCollection(nfsref);
-                	}
-                }
-
-                if(Parametro_FixoED.getInstancia().getNM_Empresa().equals("TSG")){
-                	if(ed.getOid_modelo_nota_fiscal() == 11){
-                    	notafiscal.setFinNfe(3);//Finalidade de emiss�o da NF-E >> AJUSTE
-                    } else {
-                    	notafiscal.setFinNfe(1);//Finalidade de emiss�o da NF-E >> NORMAL
-                    }
-                }
 
                 //NOTAS DE DEVOLUCAO
-                if("D".equals(ed.getDm_tipo_nota_fiscal()) || edCFOP.getDM_Tipo_Operacao().equalsIgnoreCase("S")){
-                	if(edCFOP.getOid_Natureza_Operacao() == 43 || edCFOP.getOid_Natureza_Operacao() == 99 || edCFOP.getOid_Natureza_Operacao() == 6)
-                		notafiscal.setFinNfe(1);//Finalidade de emiss�o da NF-E >> SAIDA/REMESSA
-                	else {
-                		notafiscal.setFinNfe(4);//Finalidade de emiss�o da NF-E >> DEVOLUCAO
-	                	String NF_Ref = getTableStringValue("nm_ch_referenciada",	"Notas_Fiscais", "oid_nota_fiscal = '"	+ ed.getOid_nota_fiscal() + "'");
-	                	if(!JavaUtil.doValida(NF_Ref)){
-	                		throw new Excecoes("Para NFe de devolu��o � necess�rio informar a chave da nota de entrada referenciada!");
-	                	}
-	                	NfeReferenciada nfref = new NfeReferenciada();
-	                	ArrayList nfsref = new ArrayList();
-	                	nfref.setRefNfe(NF_Ref);
-	                	nfsref.add(nfref);
-	                	notafiscal.setNfeReferenciadaCollection(nfsref);
-                	}
-                } 
-                if("E".equals(ed.getDm_tipo_nota_fiscal()) && edCFOP.getOid_Natureza_Operacao() == 116){
-                	notafiscal.setFinNfe(4);//Finalidade de emiss�o da NF-E >> DEVOLUCAO
-                	String NF_Ref = getTableStringValue("nm_ch_referenciada",	"Notas_Fiscais", "oid_nota_fiscal = '"	+ ed.getOid_nota_fiscal() + "'");
-                	if(!JavaUtil.doValida(NF_Ref)){
-                		throw new Excecoes("Para NFe de devolu��o de Venda � necess�rio informar a chave da nota de venda referenciada!");
-                	}
-                	NfeReferenciada nfref = new NfeReferenciada();
-                	ArrayList nfsref = new ArrayList();
-                	nfref.setRefNfe(NF_Ref);
-                	nfsref.add(nfref);
-                	notafiscal.setNfeReferenciadaCollection(nfsref);
-                }
+//                if("D".equals(ed.getDm_tipo_nota_fiscal()) || edCFOP.getDM_Tipo_Operacao().equalsIgnoreCase("S")){
+//                	if(edCFOP.getOid_Natureza_Operacao() == 43 || edCFOP.getOid_Natureza_Operacao() == 99 || edCFOP.getOid_Natureza_Operacao() == 6)
+//                		ide.setFinNFe("1");//Finalidade de emiss�o da NF-E >> SAIDA/REMESSA
+//                	else {
+//                		ide.setFinNFe("4");//Finalidade de emiss�o da NF-E >> DEVOLUCAO
+//	                	String NF_Ref = getTableStringValue("nm_ch_referenciada",	"Notas_Fiscais", "oid_nota_fiscal = '"	+ ed.getOid_nota_fiscal() + "'");
+//	                	if(!JavaUtil.doValida(NF_Ref)){
+//	                		throw new Excecoes("Para NFe de devolução é necessário informar a chave da nota de entrada referenciada!");
+//	                	}
+//	                	NfeReferenciada nfref = new NfeReferenciada();
+//	                	ArrayList nfsref = new ArrayList();
+//	                	nfref.setRefNfe(NF_Ref);
+//	                	nfsref.add(nfref);
+//	                	notafiscal.setNfeReferenciadaCollection(nfsref);
+//                	}
+//                } 
+//                if("E".equals(ed.getDm_tipo_nota_fiscal()) && edCFOP.getOid_Natureza_Operacao() == 116){
+//                	ide.setFinNFe("4");//Finalidade de emiss�o da NF-E >> DEVOLUCAO
+//                	String NF_Ref = getTableStringValue("nm_ch_referenciada",	"Notas_Fiscais", "oid_nota_fiscal = '"	+ ed.getOid_nota_fiscal() + "'");
+//                	if(!JavaUtil.doValida(NF_Ref)){
+//                		throw new Excecoes("Para NFe de devolução de Venda é necessário informar a chave da nota de venda referenciada!");
+//                	}
+//                	NfeReferenciada nfref = new NfeReferenciada();
+//                	ArrayList nfsref = new ArrayList();
+//                	nfref.setRefNfe(NF_Ref);
+//                	nfsref.add(nfref);
+//                	notafiscal.setNfeReferenciadaCollection(nfsref);
+//                }
 
-                notafiscal.setVersaoNfe("3.10");
-
-    			CidadeBean origem = CidadeBean.getByOID((int)unidade.getOid_Cidade());
-
-    			String cIBGE_UF = getTableStringValue("nm_codigo_ibge", "estados", "oid_estado="+origem.getOID_Estado());
-//    			System.out.println("estado ORIG:"+cIBGE_UF);
-
-//    			Emitente
-    			NfeEmitente emitente = new NfeEmitente();
-    	        emitente.setXNome(unidade.getNM_Razao_Social());//Raz�o Social/Nome
-    	        emitente.setXFant(unidade.getNM_Fantasia());//Nome fantasia
-    	        emitente.setIe(unidade.getNM_Inscricao_Estadual());//Inscri��o Estadual
-    	        emitente.setIest(null);//IE do Substituto Tribut�rio
-    	        emitente.setIm(null);//inscri��o municipal
-    	        emitente.setCnae(null);//CMAE fiscal
-    	        emitente.setCnpj(JavaUtil.formataCNPJ_CPF(unidade.getNR_CNPJ_CPF()));//CNPJ emitente
-    	        String endereco = unidade.getNM_Endereco();
+              //Emitente
+                Emit emit = new Emit();
+                emit.setCNPJ(JavaUtil.formataCNPJ_CPF(unidade.getNR_CNPJ_CPF()));
+                emit.setXNome(unidade.getNM_Razao_Social());
+                emit.setXFant(unidade.getNM_Fantasia());
+                
+                String endereco = unidade.getNM_Endereco();
     			String numero = endereco.substring (endereco.lastIndexOf (",") + 1);
     			endereco = endereco.substring (0 , endereco.lastIndexOf (","));
-    	        emitente.setXLgr(endereco);//Logradouro
-    	        emitente.setNro(ManipulaString.limpaCampo(numero));//N�mero do endere�o
-    	        emitente.setXCpl("");//complemento do endere�o
-    	        emitente.setXBairro(unidade.getNM_Bairro());//Bairro
-    	        emitente.setCMun(Integer.parseInt(ManipulaString.limpaCampo((doValida(cIBGE_UF)?cIBGE_UF:"") + origem.getNM_Codigo_IBGE())));//C�digo do munic�pio no IBGE
-    	        emitente.setXMun(unidade.getNM_Cidade());
-    	        CidadeBean orig = CidadeBean.getByOID((int)unidade.getOid_Cidade());
-    			cIBGE_UF = getTableStringValue("nm_codigo_ibge", "estados", "oid_estado="+orig.getOID_Estado());
-    	        emitente.setCUf(Integer.parseInt(cIBGE_UF));//C�digo do Estado
-    	        emitente.setUf(unidade.getCD_Estado());//sigla UF
-    	        emitente.setCep(Integer.parseInt(unidade.getNR_CEP()));//C�digo do CEP
-    	        emitente.setCPais(1058);//C�digo do Pa�s
-    	        emitente.setXPais("BRASIL");//Nome do Pa�s
-    	        emitente.setFone(ManipulaString.limpaCampo(unidade.getNR_Telefone()));//Telefone
-    	        emitente.setEmail("cristiana.fiscal@transmiro.com.br");//E-mail do emitente
-    	        emitente.setSite("WWW.TRANSMIRO.COM.BR");//Site do NfeEmitente
-    	        emitente.setCrt(3);//C�digo de Regime Tribut�rio
-    	        notafiscal.setEmitente(emitente);
+                TEnderEmi enderEmit = new TEnderEmi();
+                enderEmit.setXLgr(endereco);
+                enderEmit.setNro(ManipulaString.limpaCampo(numero));
+                enderEmit.setXCpl("");
+                enderEmit.setXBairro(unidade.getNM_Bairro());
+                enderEmit.setCMun(ManipulaString.limpaCampo((doValida(cIBGE_UF)?cIBGE_UF:"") + origem.getNM_Codigo_IBGE()));
+                enderEmit.setXMun(unidade.getNM_Cidade());
+                enderEmit.setUF(TUfEmi.valueOf(unidade.getCD_Estado()));
+                enderEmit.setCEP(unidade.getNR_CEP());
+                enderEmit.setCPais("1058");
+                enderEmit.setXPais("BRASIL");
+                enderEmit.setFone(unidade.getNR_Telefone());
+                emit.setEnderEmit(enderEmit);
+                emit.setIE(unidade.getNM_Inscricao_Estadual());
+                emit.setCRT("3");
+                infNFe.setEmit(emit);
 
-    	        if(notafiscal.getTpAmbiente()==2){
-    	        	emitente.setXNome("NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL");
-    	        	emitente.setXFant("NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL");
-    	        }
-
-    	        notafiscal.setCnpj(emitente.getCnpj());//CNPJ emitente
-    	        EmpresaDb eDb = new EmpresaDb();
-    	        Empresa e = eDb.getEmpresa(emitente.getCnpj());
-    	        notafiscal.setEmpresa(e);
-
-//    			Destinatario
-    	        CidadeBean destino = CidadeBean.getByOID((int)edPessoa.getOid_Cidade());
-    			cIBGE_UF = getTableStringValue("nm_codigo_ibge", "estados", "oid_estado="+destino.getOID_Estado());
-    	        if(!JavaUtil.doValida(edCliente.getOid_Pessoa())){
-    				throw new Excecoes("Problemas com o destinat�rio: "+edPessoa.getNM_Razao_Social()+".\nDeve ser cadastrado como cliente...");
-    			}
-    	        NfeDestinatario destinatario = new NfeDestinatario();
-    	        destinatario.setXNome(edCliente.getNM_Razao_Social());//Raz�o Social/Nome
-    	        destinatario.setCnpj(JavaUtil.formataCNPJ_CPF(edCliente.getNR_CNPJ_CPF()));//CNPJ destinat�rio
-    	        destinatario.setIe(JavaUtil.getValueDif(edPessoa.getNM_Inscricao_Estadual(),"ISENTO"));//Inscri��o Estadual
-    	        destinatario.setISuf(null);//Inscri��o na SUFRAMA
-    	        if(edCliente.getNR_CNPJ_CPF().length()<14)
-    	        	destinatario.setTipoPessoa("F");//
-    	        else
-    	        	destinatario.setTipoPessoa("J");//
-    	        endereco = edPessoa.getNM_Endereco();
+              //Destinatario
+                Dest dest = new Dest();
+                if(edCliente.getNR_CNPJ_CPF().length()<14)
+                	dest.setCPF(JavaUtil.formataCNPJ_CPF(edCliente.getNR_CNPJ_CPF()));
+                else
+                	dest.setCNPJ(JavaUtil.formataCNPJ_CPF(edCliente.getNR_CNPJ_CPF()));
+                
+                dest.setXNome(edCliente.getNM_Razao_Social());
+                endereco = edPessoa.getNM_Endereco();
     			String cpl = "";
     			if(endereco.lastIndexOf(',')>0){
     				numero = endereco.substring (endereco.lastIndexOf (",") + 1);
@@ -3737,48 +3705,40 @@ public class Nota_Fiscal_EletronicaBD extends BancoUtil {
         				cpl = numero.substring (numero.lastIndexOf (" ") + 1);
         			}
     			} else {
-    				throw new Excecoes("problemas com endere�o do cliente: "+edCliente.getNM_Razao_Social()+".\nDeve ter o n�mero separado por v�rgula...");
+    				throw new Excecoes("problemas com endereco do cliente: "+edCliente.getNM_Razao_Social()+".\nDeve ter o numero separado por virgula...");
     			}
-    	        destinatario.setXLgr(endereco);//Logradouro
-    	        destinatario.setNro(ManipulaString.limpaCampo(numero));//N�mero do endere�o
-    	        destinatario.setXCpl(cpl);//complemento do endere�o
-    	        if(!JavaUtil.doValida(edPessoa.getNM_Bairro())){
-    				throw new Excecoes("Problemas com o destinat�rio: "+edPessoa.getNM_Razao_Social()+".\nO campo BAIRRO � obrigat�rio...");
+                TEndereco enderDest = new TEndereco();
+                enderDest.setXLgr(endereco);
+                enderDest.setNro(ManipulaString.limpaCampo(numero));
+                if(!JavaUtil.doValida(edPessoa.getNM_Bairro())){
+    				throw new Excecoes("Problemas com o destinatario: "+edPessoa.getNM_Razao_Social()+".\nO campo BAIRRO eh obrigat�oio...");
     			}
-    	        destinatario.setXBairro(edPessoa.getNM_Bairro());//Bairro
-    	        destinatario.setCMun(Integer.parseInt(ManipulaString.limpaCampo((doValida(cIBGE_UF)?cIBGE_UF:"") + destino.getNM_Codigo_IBGE())));//C�digo do munic�pio no IBGE
-    	        destinatario.setXMun(edPessoa.getNM_Cidade());//Nome do munic�pio
-    	        destinatario.setCUf(Integer.parseInt(cIBGE_UF));//C�digo do Estado
-    	        destinatario.setUf(edPessoa.getCD_Estado());//sigla UF
-    	        destinatario.setCep(Integer.parseInt(ManipulaString.limpaCampo(JavaUtil.doValida(edPessoa.getNR_CEP())?edPessoa.getNR_CEP():"0")));//C�digo do CEP
-    	        destinatario.setCPais(1058);//C�digo do Pa�s
-    	        destinatario.setXPais("BRASIL");//Nome do Pa�s
-    	        destinatario.setFone(ManipulaString.limpaCampo(edPessoa.getNR_Telefone()));//Telefone
-    	        destinatario.setEmail(null);//E-mail do Destinat�rio
+                enderDest.setXBairro(edPessoa.getNM_Bairro());
+                enderDest.setXCpl(cpl);
+                enderDest.setCMun(ManipulaString.limpaCampo((doValida(cIBGE_UF)?cIBGE_UF:"") + destino.getNM_Codigo_IBGE()));
+                enderDest.setXMun(edPessoa.getNM_Cidade());
+                enderDest.setUF(TUf.valueOf(edPessoa.getCD_Estado()));
+                enderDest.setCEP(ManipulaString.limpaCampo(JavaUtil.doValida(edPessoa.getNR_CEP())?edPessoa.getNR_CEP():"0"));
+                enderDest.setCPais("1058");
+                enderDest.setXPais("BRASIL");
+                enderDest.setFone(ManipulaString.limpaCampo(edPessoa.getNR_Telefone()));
+                dest.setEnderDest(enderDest);
+                dest.setEmail("");
+                dest.setIndIEDest(JavaUtil.getValueDif(edPessoa.getNM_Inscricao_Estadual(),"ISENTO"));
+                infNFe.setDest(dest);
+    	        
+//    	        if(!JavaUtil.doValida(edPessoa.getNM_Inscricao_Estadual())){
+//    	        	destinatario.setIndIEDest(9);//10-4-14 - VER 3.10
+//    	        } else if(edPessoa.getNM_Inscricao_Estadual().equalsIgnoreCase("ISENTO")){
+//    	        	destinatario.setIndIEDest(2);//10-4-14 - VER 3.10
+//    	        	destinatario.setIndIEDest(9);//10-4-14 - VER 3.10
+//    	        } else {
+//    	        	destinatario.setIndIEDest(1);//10-4-14 - VER 3.10
+//    	        }
 
-    	        if(!JavaUtil.doValida(edPessoa.getNM_Inscricao_Estadual())){
-    	        	destinatario.setIndIEDest(9);//10-4-14 - VER 3.10
-    	        } else if(edPessoa.getNM_Inscricao_Estadual().equalsIgnoreCase("ISENTO")){
-    	        	destinatario.setIndIEDest(2);//10-4-14 - VER 3.10
-    	        	destinatario.setIndIEDest(9);//10-4-14 - VER 3.10
-    	        } else {
-    	        	destinatario.setIndIEDest(1);//10-4-14 - VER 3.10
-    	        }
+    	        
 
-    	        if(notafiscal.getTpAmbiente()==2){
-    	        	destinatario.setXNome("NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL");
-    	        }
-
-    	        notafiscal.setDestinatario(destinatario);
-    			//...
-
-    	        if(origem.getOID_Estado() != destino.getOID_Estado()){
-    	        	notafiscal.setIdDest(2);//fora do estado... //10-4-14 - VER 3.10
-    	        } else {
-    	        	notafiscal.setIdDest(1);//dentro do estado... //10-4-14 - VER 3.10
-    	        }
-
-                /** ---- M�ximo de Itens ---- **/
+                /** ---- Maximo de Itens ---- **/
                 peAliquota = 0;
                 int nrItens = lista.size();
                 boolean isCFOPNormal = true;
@@ -3796,28 +3756,9 @@ public class Nota_Fiscal_EletronicaBD extends BancoUtil {
                     }
                     peAliquota = edItem.getPE_Aliquota_ICMS();
                 }
-            	// System.out.println("printNotaFiscalSaida 11");
 
                 //*** FISCAL
 
-                notafiscal.setVBc(ed.getVL_Base_Calculo_ICMS());//Valor total do ICMS
-                notafiscal.setVIcms(ed.getVl_icms());//Valor total do ICMS
-                notafiscal.setVBcst(ed.getVL_Base_Calculo_ICMS_Subst());//base de calculo do ICMS st
-                notafiscal.setVSt(ed.getVL_ICMS_Subst());//valor total do ICMS st
-                notafiscal.setVProd(ed.getVl_nota_fiscal());//valor total dos produtos e servi�os
-                notafiscal.setVFrete(0);//valor total do frete
-                notafiscal.setVSeg(0);//valor total do seguro
-                notafiscal.setVDesc(ed.getVL_Desconto_Itens());//valor total do desconto
-                notafiscal.setVIi(0);//valor total do II
-                notafiscal.setVIpi(ed.getVl_ipi());//valor total do ipi
-                notafiscal.setVPis(0d);//valor do pis
-                notafiscal.setVCofins(0d);//valor do confins
-                notafiscal.setVOutro(0d);//outras despesas acess�rias
-                notafiscal.setVNf(ed.getVl_liquido_nota_fiscal());//valor total da nf-e
-
-                notafiscal.setvTotTrib(notafiscal.getVIcms()+notafiscal.getVSt()+notafiscal.getVIpi()+notafiscal.getVCofins()+notafiscal.getVPis());
-
-                ArrayList cdsFiscais = new ArrayList();
                 ArrayList msgFiscal = new ArrayList();
 
                 nrNotaAtual = 0;
@@ -3840,9 +3781,6 @@ public class Nota_Fiscal_EletronicaBD extends BancoUtil {
 
                     countItens = 0;
 
-                    //DADOS DO PRODUTO ** LINHA 8 **
-                    ArrayList<NfeNotaItem> listaItens = new ArrayList<NfeNotaItem>();
-        			ArrayList produtos = new ArrayList();
                     if (lista.size() > 0)
                     {
                     	long volumes = 0;
@@ -3851,188 +3789,188 @@ public class Nota_Fiscal_EletronicaBD extends BancoUtil {
                     		countItens++;
                         	Item_Nota_Fiscal_TransacoesED edItem = (Item_Nota_Fiscal_TransacoesED) lista.get(i);
                         	ProdutoED edProduto = new ProdutoBD(executasql).getByRecord(new ProdutoED(edItem.getOID_Produto()));
-//                        	Produtos
-                            NfeNotaItem notaitem = new NfeNotaItem();
-                            notaitem.setNota(notafiscal);
-                            notaitem.setCProd(JavaUtil.doValida(edProduto.getCD_Fornecedor()) ? edProduto.getCD_Fornecedor() : edProduto.getCD_Produto());//C�digo do produto ou servi�o
-                            notaitem.setCEan("");//c�digo de barras
-                            notaitem.setXProd(edProduto.getNM_Produto());//descri��o do produto ou servi�o
-                            notaitem.setNcm(ManipulaString.limpaCampo(edProduto.getCD_Fiscal()));//c�digo NCM
-                            notaitem.setExtipi("");//EX_TIPI
-                            notaitem.setGenero(null);//G�nero do produto ou servi�o
-                            Natureza_OperacaoED edCFOPDif = new Natureza_OperacaoBD(executasql).getByRecord(new Natureza_OperacaoED(new Integer((int)edItem.getOid_natureza_operacao())));
-                            notaitem.setCfop(new Integer(edCFOPDif.getCd_Natureza_Operacao()).intValue());//c�digo fiscal de opera��es e presta��es
-
-                            notaitem.setUCom(edProduto.getCD_Unidade_Produto());
-                            notaitem.setQCom(edItem.getNR_QT_Atendido());//quantidade comercial
-                            notaitem.setVUnCom(edItem.getVL_Unitario());//valor unit�rio de comercializa��o
-                            notaitem.setXvProd(edItem.getVL_Item());//valor total bruto
+                        	Det det = new Det();
+                            det.setNItem(String.valueOf(countItens));
                             
-//                            notaitem.setXvProd(Valores.trataDouble(edItem.getVL_Item(), 2));//valor total bruto
-//                            notaitem.setVUnCom(notaitem.getXvProd() / notaitem.getQCom());//valor unit�rio de comercializa��o
-System.out.println(notaitem.getCProd()+":"+notaitem.getVUnCom()+"*"+notaitem.getQCom()+"="+(notaitem.getVUnCom()*notaitem.getQCom()));
-System.out.println(" ----- "+notaitem.getXvProd());
-                            notaitem.setCEanTrib("");//c�digo de barras
-                            notaitem.setUTrib(edProduto.getCD_Unidade_Produto());//unidade tribut�vel
-                            notaitem.setQTrib(edItem.getNR_QT_Atendido());//quantidade tribut�vel
-//                            notaitem.setVUnTrib(edItem.getVL_Unitario());//valor unit�rio de tributa��o
-                            notaitem.setVUnTrib(notaitem.getVUnCom());
+                            //Produto
+                            Prod prod = new Prod();
+                            prod.setCProd(JavaUtil.doValida(edProduto.getCD_Fornecedor()) ? edProduto.getCD_Fornecedor() : edProduto.getCD_Produto());
+                            prod.setCEAN("");
+                            prod.setXProd(edProduto.getNM_Produto());
+                            prod.setNCM(ManipulaString.limpaCampo(edProduto.getCD_Fiscal()));
+                            prod.setCEST("");
+                            prod.setIndEscala("");
+                            Natureza_OperacaoED edCFOPDif = new Natureza_OperacaoBD(executasql).getByRecord(new Natureza_OperacaoED(new Integer((int)edItem.getOid_natureza_operacao())));
+                            prod.setCFOP(edCFOPDif.getCd_Natureza_Operacao());
+                            prod.setUCom(edProduto.getCD_Unidade_Produto());
+                            prod.setQCom(""+edItem.getNR_QT_Atendido());
+                            prod.setVUnCom(""+edItem.getVL_Unitario());
+                            prod.setVProd(""+edItem.getVL_Item());
+                            prod.setCEANTrib("");
+                            prod.setUTrib(edProduto.getCD_Unidade_Produto());
+                            prod.setQTrib(""+edItem.getNR_QT_Atendido());
+                            prod.setVUnTrib(prod.getVUnCom());
+                            prod.setVDesc(""+edItem.getVL_Desconto());
+                            prod.setIndTot("1");
+                            det.setProd(prod);
+                        	
+                          //Impostos
+                            Imposto imposto = new Imposto();
+                            ICMS icms = new ICMS();
+                            if("000".equals(edProduto.getCD_Situacao_Tributaria())){
+                            	ICMS00 icms00 = new ICMS00();
+                            	icms00.setOrig("0");
+                            	icms00.setCST("00");
+                            	icms00.setModBC("3");
+                            	icms00.setVBC(""+edItem.getVL_Base_Calculo_ICMS());
+                            	icms00.setPICMS(""+edItem.getPE_Aliquota_ICMS());
+                            	icms00.setVICMS(""+edItem.getVL_ICMS_Aprov());
+                            	icms.setICMS00(icms00);
+                            } else if("090".equals(edProduto.getCD_Situacao_Tributaria())) {
+                            	ICMS90 icms90 = new ICMS90();
+                            	icms90.setOrig("0");
+                            	icms90.setCST("90");
+                            	icms90.setModBC("3");
+                            	icms90.setVBC("0");
+                            	icms90.setPICMS(""+edItem.getPE_Aliquota_ICMS());
+                            	icms90.setVICMS(""+edItem.getVL_ICMS_Aprov());
+                            	icms90.setPRedBC("0.01");//percentual da redu��o da BC
+                            	icms.setICMS90(icms90);
+                            	
+                            	prod.setVProd(""+edItem.getVL_ICMS_Aprov());
+//                				 notafiscal.setVProd(ed.getVl_icms());//valor total dos produtos e servi�os
+                            } else {
+                            	ICMS10 icms10 = new ICMS10();
+                            	icms10.setOrig("0");
+                            	icms10.setCST("10");
+//                            	icms10.setModBC("3");
+//                            	icms10.setVBC(""+edItem.getVL_Base_Calculo_ICMS());
+//                            	icms10.setPICMS(""+edItem.getPE_Aliquota_ICMS());
+//                            	icms10.setVICMS(""+edItem.getVL_ICMS_Aprov());
+                            	icms10.setModBCST("4");
+//                            	icms10.setVBCST(""+edItem.getVL_Base_Calculo_ICMS());
+                            	icms10.setPICMSST(""+edItem.getPE_Aliquota_ICMS());
+//                            	icms10.setVICMSST((""+edItem.getVL_ICMS_Aprov());
+                            	icms10.setPRedBCST("0");
+                            	icms.setICMS10(icms10);
+                				
+                            }
+                          
+                            PIS pis = new PIS();
+                            PISAliq pisAliq = new PISAliq();
+                            pisAliq.setCST("7");
+                            pisAliq.setVBC("0");
+                            pisAliq.setPPIS("0");
+                            pisAliq.setVPIS("0");
+                            pis.setPISAliq(pisAliq);
 
-                            notaitem.setVFrete(0d);//valor total do frete
-                            notaitem.setVSeg(0d);//valor total do seguro
-                            notaitem.setVDesc(edItem.getVL_Desconto());//valor do desconto
-                            notaitem.setVOutro(0d);//Outras despesas acess�rias
-                            notaitem.setIndTot(1);//Indica se valor do Item (vProd) entra no valor total da NF-e
-                            notaitem.setOrig(0);//Origem da mercadoria
+                            COFINS cofins = new COFINS();
+                            COFINSAliq cofinsAliq = new COFINSAliq();
+                            cofinsAliq.setCST("7");
+                            cofinsAliq.setVBC("0");
+                            cofinsAliq.setPCOFINS("0");
+                            cofinsAliq.setVCOFINS("0");
+                            cofins.setCOFINSAliq(cofinsAliq);
 
-                            Situacao_TributariaED edSituacao = new Situacao_TributariaBD(executasql).getByOidSituacao_Tributaria(edProduto.getOid_Situacao_Tributaria());
-                            notaitem.setCst(Integer.parseInt(edProduto.getCD_Situacao_Tributaria()));//tributa��o ICMS
+                            JAXBElement<ICMS> icmsElement = new JAXBElement<ICMS>(new QName("ICMS"), ICMS.class, icms);
+                            imposto.getContent().add(icmsElement);
 
-                            notaitem.setModBc(3);//modalidade de determina��o da BC do icms
-//                			icms00.setModBC(edSituacao.getDM_Modalidade_BC());
-                			notaitem.setVBc(edItem.getVL_Base_Calculo_ICMS());
-                			notaitem.setPIcms(edItem.getPE_Aliquota_ICMS());
-                			notaitem.setVIcms(edItem.getVL_ICMS_Aprov());
+                            JAXBElement<PIS> pisElement = new JAXBElement<PIS>(new QName("PIS"), PIS.class, pis);
+                            imposto.getContent().add(pisElement);
 
-                			notaitem.setVICMSDeson(0d);  //10-4-14 - VER 3.10
-            		        notaitem.setvTotTrib(10d);  //10-4-14 - VER 3.10
-            		        notaitem.setVICMSDeson(0d);//10-4-14 - VER 3.10
-            		        notaitem.setMotDesICMS(0);//10-4-14 - VER 3.10
-            		        notaitem.setVICMSOp(10d);//10-4-14 - VER 3.10
-            		        notaitem.setPDif(50d);//10-4-14 - VER 3.10
-            		        notaitem.setVICMSDif(0d);//10-4-14 - VER 3.10
-            		        notaitem.setNFCI("");//10-4-14 - VER 3.10
-            		        notaitem.setXPed("");//10-4-14 - VER 3.10
-            		        notaitem.setNItemPed(countItens);     //10-4-14 - VER 3.10
+                            JAXBElement<COFINS> cofinsElement = new JAXBElement<COFINS>(new QName("COFINS"), COFINS.class, cofins);
+                            imposto.getContent().add(cofinsElement);
 
-                			 if("000".equals(edProduto.getCD_Situacao_Tributaria())){
-                				 notaitem.setPRedBc(0d);//percentual da redu��o da BC
-
-                			 } else if("090".equals(edProduto.getCD_Situacao_Tributaria())) {
-//                				 notaitem.setVIcms(0D);
-//                				 notaitem.setVBc(edItem.getVL_ICMS_Aprov());
-                				 notaitem.setXvProd(edItem.getVL_ICMS_Aprov());//valor total bruto
-                				 notaitem.setPRedBc(0.01);//percentual da redu��o da BC
-                				 notafiscal.setVProd(ed.getVl_icms());//valor total dos produtos e servi�os
-//                				 notaitem.setIndTot(0);
-                			 } else {
-
-                			 //CST 010 ou TODOS menos 000...
-//                			 if("010".equals(edProduto.getCD_Situacao_Tributaria())){
-//                				icms10.setOrig(edSituacao.getDM_Procedencia());
-                				notaitem.setModBcSt(4);
-//                				notaitem.setVBcSt(edItem.getVL_Base_Calculo_ICMS());
-//                				notaitem.setVBcSt(edItem.getVL_Base_Calculo_ICMS());
-                				notaitem.setPlcmsSt(edItem.getPE_Aliquota_ICMS());
-//                				notaitem.setVIcmsSt(edItem.getVL_ICMS_Subs());
-
-                				//NOVIDADES de 01/10/09
-//                				double pe_magem_valor_agregado = getTableDoubleValue("classificacoes_fiscais.pe_magem_valor_agregado","classificacoes_fiscais, Produtos","classificacoes_fiscais.oid_classificacao_fiscal = Produtos.oid_classificacao_fiscal AND Produtos.oid_Produto="+getSQLString(edItem.getOID_Produto()));
-//                				notaitem.setPMvaSt(pe_magem_valor_agregado);
-//                				double pe_reducao_base_calculo = getTableDoubleValue("classificacoes_fiscais.pe_reducao_base_calculo","classificacoes_fiscais, Produtos","classificacoes_fiscais.oid_classificacao_fiscal = Produtos.oid_classificacao_fiscal AND Produtos.oid_Produto="+getSQLString(edItem.getOID_Produto()));
-//                				notaitem.setPRedBcSt(pe_reducao_base_calculo);
-
-                				notaitem.setPRedBc(0d);//percentual da redu��o da BC
-                			}
-
-                            notaitem.setIpiCenq(999);//Enquadramento Legal do IPI
-                            notaitem.setIpiCst(53);//c�digo sit trib ipi
-                            notaitem.setIpiVBc(edItem.getVL_Item());//Valor da BC do IPI
-                            notaitem.setIpiPIpi(0d);//aliquota ipi
-                            notaitem.setIpiVUnid(0);//valor por unidade tributavel
-                            notaitem.setIpiQUnid(0);//Qtd ? prod trib por unidade
-                            notaitem.setVIpi(edItem.getVL_IPI());//valor do ipi
-                            notaitem.setIiVBc(0);//valor da bc do imposto de importa��o
-                            notaitem.setIiDespAdu(0);//vlr despesas aduaneiras
-                            notaitem.setIiVii(0);//valor imposto importa��o
-                            notaitem.setPisCst(7);//situa��o trib pis
-                            notaitem.setPisVBc(0);//Valor da Base de C�lculo pis
-                            notaitem.setPPIS(0);//Al�quota do PIS
-                            notaitem.setVPIS(0);//Valor do PIS
-                            notaitem.setPisQBCProd(0);//Pis Quantidade Vendida
-                            notaitem.setPisVAliqProd(0);//PIS Al�quota do PIS (em reais)
-                            notaitem.setCofinsCst(7);//situa��o trib cofins
-                            notaitem.setConfinsVbc(0);//valor da BC do cofins
-                            notaitem.setPCofins(0);//aliq.cofins
-                            notaitem.setVCofins(0);//valor cofins
-                            notaitem.setCofinsQBCProd(0);//Cofins Quantidade Vendida
-                            notaitem.setCofinsVAliqProd(0);//Cofins Al�quota do PIS (em reais)
-                            notaitem.setDDI(null);//Data de Registro
-                            notaitem.setDDesemb(null);//Data do Desembara�o
-                            notaitem.setIssqnVbc(0);//valor da Bc do issqn
-                            notaitem.setIssqnVAliq(0);//aliq. Do issqn
-                            notaitem.setVIssqn(0);//valor do issqn
-                            notaitem.setCMunFg(0);//cod. Mun ocorrencia do fato gerador
-                            notaitem.setCListServ(0);//cod lista de servicos
-                            notaitem.setCSitTrib("I");//codigo da tributacao do issqn
-
-                            notaitem.setvTotTrib(notaitem.getVIcms()+notaitem.getVIcmsSt()+notaitem.getVIpi()+notaitem.getVIssqn()+notaitem.getVCofins()+notaitem.getVPIS());
-
-                            listaItens.add(notaitem);
+                            det.setImposto(imposto);
+                            infNFe.getDet().add(det);
 
                             i++;
                         }
-                    	notafiscal.setNfeNotaItemCollection(listaItens);
 
                     } else {
                     	canList = false;
-                    	notafiscal.setNfeNotaItemCollection(listaItens);
                     }
+                    
+                 // TOTAIS
+                    Total total = new Total();
 
-//                  aleatorio
-        	        String rnd = String.valueOf(System.currentTimeMillis());
-        	        Integer nr = new Integer(rnd.substring(rnd.length()-6));
-//System.out.println("CNf:"+nr);
-        	        notafiscal.setCNf(nr);
+                    ICMSTot icmstot = new ICMSTot();
+                    icmstot.setVBC(""+ed.getVL_Base_Calculo_ICMS());
+                    icmstot.setVICMS(""+ed.getVl_icms());
+//                    icmstot.setVICMSDeson("xxx");
+//                    icmstot.setVFCP("xxx");
+//                    icmstot.setVFCPST("xxx");
+//                    icmstot.setVFCPSTRet("xxx");
+                    icmstot.setVBCST(""+ed.getVL_Base_Calculo_ICMS_Subst());
+                    icmstot.setVST(""+ed.getVL_ICMS_Subst());
+                    icmstot.setVProd(""+ed.getVl_nota_fiscal());
+                    icmstot.setVFrete("0");
+                    icmstot.setVSeg("0");
+                    icmstot.setVDesc(""+ed.getVL_Desconto_Itens());
+                    icmstot.setVII("0");
+                    icmstot.setVIPI(""+ed.getVl_ipi());
+                    icmstot.setVIPIDevol("0");
+                    icmstot.setVPIS("0");
+                    icmstot.setVCOFINS("0");
+                    icmstot.setVOutro("0");
+                    icmstot.setVNF(""+ed.getVl_liquido_nota_fiscal());
+                    total.setICMSTot(icmstot);
+                    infNFe.setTotal(total);
 
 //        			Transporte
-                    NfeTransporte transporte = new NfeTransporte();
-                    transporte.setModFrete(0);//Modalidade do frete
+                    Transp transp = new Transp();
+                    transp.setModFrete("0");//Modalidade do frete
                     if (ed.getDM_Frete().equals("1")){
-                    	transporte.setModFrete(0);
+                    	transp.setModFrete("0");
                     } else if (ed.getDM_Frete().equals("2")){
-                    	transporte.setModFrete(1);
+                    	transp.setModFrete("1");
                     } else if (ed.getDM_Frete().equals("3")){
-                    	transporte.setModFrete(2);
+                    	transp.setModFrete("2");
                     } else if (ed.getDM_Frete().equals("9")){
-                    	transporte.setModFrete(9);
+                    	transp.setModFrete("9");
                     }
-//System.out.println("1>"+transporte.getEsp()+"|"+transporte.getModFrete());
-                    transporte.setXNome(edTransportador.getNM_Razao_Social());//Raz�o Social/Nome
-                    transporte.setIe(edTransportador.getNM_Inscricao_Estadual());//Inscri��o Estadual
-                    transporte.setXEnder(edTransportador.getNM_Endereco());//Endere�o Completo
-                    transporte.setUf(edTransportador.getCD_Estado());//sigla UF
-                    transporte.setXMun(JavaUtil.getValueDef(edTransportador.getNM_Cidade(),"").trim());//Nome do munic�pio
-                    transporte.setTipoPessoa("J");//
+
+                    Transporta trasnporta = new Transporta();
+                    trasnporta.setXNome(edTransportador.getNM_Razao_Social());//Raz�o Social/Nome
+                    trasnporta.setIE(edTransportador.getNM_Inscricao_Estadual());//Inscri��o Estadual
+                    trasnporta.setXEnder(edTransportador.getNM_Endereco());//Endere�o Completo
+                    trasnporta.setUF(TUf.valueOf(edTransportador.getCD_Estado()));//sigla UF
+                    trasnporta.setXMun(JavaUtil.getValueDef(edTransportador.getNM_Cidade(),"").trim());//Nome do munic�pio
                     if(edTransportador.getNR_CNPJ_CPF().length()<14){
-                    	transporte.setTipoPessoa("F");
-                    }
-                    transporte.setCnpj(JavaUtil.formataCNPJ_CPF(edTransportador.getNR_CNPJ_CPF()));//CNPJ ou CPF
-                    transporte.setPlaca(getTableStringValue("NR_Placa", "Veiculos","oid_Veiculo = '"+ed.getOid_Veiculo()+"'"));//Placa do ve�culo
-                    if(JavaUtil.doValida(transporte.getPlaca())){
-                    	transporte.setUfVeiculo("RS");
+                    	trasnporta.setCPF(JavaUtil.formataCNPJ_CPF(edTransportador.getNR_CNPJ_CPF()));//CNPJ ou CPF
+                    } else 
+                    	trasnporta.setCNPJ(JavaUtil.formataCNPJ_CPF(edTransportador.getNR_CNPJ_CPF()));//CNPJ ou CPF
+                    transp.setTransporta(trasnporta);
+                    
+                    br.inf.portalfiscal.nfe.schema_4.enviNFe.TVeiculo veicTransp = new TVeiculo();
+                    veicTransp.setPlaca(getTableStringValue("NR_Placa", "Veiculos","oid_Veiculo = '"+ed.getOid_Veiculo()+"'"));//Placa do ve�culo
+                    if(JavaUtil.doValida(veicTransp.getPlaca())){
+                    	veicTransp.setUF(TUf.valueOf("RS"));
         			} else {
-        				transporte.setUfVeiculo("");//sigla UF
+//        				veicTransp.setUF("");//sigla UF
         			}
+                    transp.setVeicTransp(veicTransp);
 
-                    transporte.setRntc("");//ANTT
-                    transporte.setRPlaca("");//Placa do reboque
-                    transporte.setRUf("");//UF do reboque
-                    transporte.setRRntc("");//ANTT do reboque
-                    transporte.setQVol((double)ed.getNr_volumes_nota());//Quantidade de volumes transportados
-                    transporte.setEsp("EMB.GERAL");//especie dos volumes transportados
-                    transporte.setMarca("MARCA");//marca dos volumes transportados
-                    transporte.setNVol("");//numera��o dos volumes transportados
-                    transporte.setPesoL(ed.getNR_Peso());//peso liquido em kg
-                    transporte.setPesoB(ed.getNR_Peso());//peso bruto em kg
-                    transporte.setNLacre("");
+//                    transp.setRntc("");//ANTT
+//                    transp.setRPlaca("");//Placa do reboque
+//                    transp.setRUf("");//UF do reboque
+//                    transp.setRRntc("");//ANTT do reboque
+//                    transp.setQVol((double)ed.getNr_volumes_nota());//Quantidade de volumes transportados
+//                    transp.setEsp("EMB.GERAL");//especie dos volumes transportados
+//                    transp.setMarca("MARCA");//marca dos volumes transportados
+//                    transp.setNVol("");//numera��o dos volumes transportados
+//                    transp.setPesoL(ed.getNR_Peso());//peso liquido em kg
+//                    transp.setPesoB(ed.getNR_Peso());//peso bruto em kg
+//                    transp.setNLacre("");
 
-                    notafiscal.setTransporte(transporte);
+                    infNFe.setTransp(transp);
 
         			//Cobranca
         			String txt_dpl = "";
         			if (doValida(ed.getOid_nota_fiscal())){
-        				NfeFaturamento cob = new NfeFaturamento();
+        				
+//        				Pag pag = new Pag();
+        				InfNFe.Cobr cob = new InfNFe.Cobr();
         				try {
         					sqlBusca =" SELECT Duplicatas.NR_Duplicata,Duplicatas.DT_Vencimento,Duplicatas.vl_Duplicata " +
         							  " FROM Origens_Duplicatas, Notas_Fiscais, Unidades, " +
@@ -4047,22 +3985,23 @@ System.out.println(" ----- "+notaitem.getXvProd());
         					}
         					resLocal = sql.executarConsulta (sqlBusca);
         					if(resLocal.next ()) {
-        						cob.setNDup(resLocal.getString(1));
-//        						cob.setDVenc(FormataDataBean.getFormatDate(resLocal.getString(2)));
-//        						cob.setVDup1(resLocal.getDouble(3));
-        						cob.setVDup(resLocal.getDouble(3));
+        						InfNFe.Cobr.Dup dup = new InfNFe.Cobr.Dup();
+//        						Pag.DetPag detPag = new Pag.DetPag();
+//                	            detPag.setTPag("99");
+//                	            detPag.setVPag(""+resLocal.getDouble(3));
+//                	            pag.getDetPag().add(detPag);
+        						dup.setNDup(resLocal.getString(1));
+        						dup.setDVenc(resLocal.getString(2));
+        						dup.setVDup(resLocal.getString(3));
+        						cob.getDup().add(dup);
         						txt_dpl = "- Fatura: " + resLocal.getString(1) + " - Venc: " + FormataDataBean.getFormatDate(resLocal.getString(2));
         					}
         				}
         				finally {
         					util.closeResultset (resLocal);
         				}
-        				notafiscal.setFaturamento(cob);
+        				infNFe.setCobr(cob);
         			}
-
-        	        notafiscal.setUFEmbarq("");//UF de Embarque dos produtos
-        	        notafiscal.setXLocEmbarq("");//Local do embarque
-
 
 //        			INF ADICIONAL
         			String inf = "";
@@ -4075,7 +4014,9 @@ System.out.println(" ----- "+notaitem.getXvProd());
                             }
                         }
                     }
-        			notafiscal.setInfAdFisco(inf);
+        			InfAdic infAdic = new InfAdic();
+                    infAdic.setInfAdFisco(inf);
+                    
         			inf = "";
         			if("D".equals(ed.getDm_tipo_nota_fiscal())){
                     	if (doValida(ed.getNm_complemento()))
@@ -4090,9 +4031,11 @@ System.out.println(" ----- "+notaitem.getXvProd());
 
 //        			inf += " ****** SR. CLIENTE: PARA ACESSAR OS ARQUIVOS ELETRONICOS (XML) DE SUAS NF-E ACESSE http://201.66.254.114:8180/DisponibilizadorNFe/login.jsp,";
 //        			inf += " utilizando o login CLIENTE com a senha DEST e informe corretamente APENAS OS NUMEROS de seu CNPJ/CPF. ******  ";
-    				String infTrib = "\n\nLei da Transpar�ncia - O valor aproximado de tributos incidentes sobre o pre�o deste Documento � de R$ "+new DecimalFormat("#,##0.00").format(notafiscal.getvTotTrib());
-        			notafiscal.setInfCpl(ManipulaString.corrigeString(ManipulaString.Enter2BR(inf + txt_dpl))+infTrib);
+//    				String infTrib = "\n\nLei da Transparencia - O valor aproximado de tributos incidentes sobre o preco deste Documento e de R$ "+new DecimalFormat("#,##0.00").format(notafiscal.getvTotTrib());
+//        			notafiscal.setInfCpl(ManipulaString.corrigeString(ManipulaString.Enter2BR(inf + txt_dpl))+infTrib);
+        			infAdic.setInfCpl(ManipulaString.corrigeString(ManipulaString.Enter2BR(inf + txt_dpl)));
         			//...
+        			infNFe.setInfAdic(infAdic);
             }
 
         } catch (Excecoes e) {
@@ -4100,7 +4043,7 @@ System.out.println(" ----- "+notaitem.getXvProd());
             throw e;
         } catch (Exception e) {
         	e.printStackTrace();
-            throw new Excecoes(e.getMessage()+ "\n\r" +JavaUtil.getErrors(servico.getErros()).toUpperCase(), this.getClass().getName(), "geraNFe()");
+            throw new Excecoes(e.getMessage(), this.getClass().getName(), "geraNFe()");
         }
 
         return nfeReturn;

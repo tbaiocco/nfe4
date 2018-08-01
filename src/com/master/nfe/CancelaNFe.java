@@ -35,7 +35,6 @@ import br.servicos.NfeServicos;
 	}
 
 	private void cancelaNfe(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-		NfeServicos servico = new NfeServicos();
 		try{
 			if(JavaUtil.doValida(request.getParameter("emissor"))){
 				empresa = new br.core.base.EmpresaDb().getEmpresa(request.getParameter("emissor"));
@@ -58,7 +57,7 @@ import br.servicos.NfeServicos;
 	                     certificado,
 	                     MethodHandles.lookup().lookupClass().
 	                     getResource("/schemas").getPath(), //PEGAR SCHEMAS EM AMBIENTE WEB ESTA PASTA ESTA DENTRO DE RESOURCES
-	                     false);
+	                     true);
 
 	             Nota_Fiscal_EletronicaED ed = this.getByRecord(request.getParameter("oid_Nota_Fiscal"));
 	             try{

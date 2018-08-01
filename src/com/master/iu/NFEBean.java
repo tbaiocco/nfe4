@@ -83,11 +83,11 @@ public class NFEBean extends BancoUtil {
         String NR_Peso_Cubado = request.getParameter("FT_NR_Peso_Cubado");
         String NR_Volumes = request.getParameter("FT_NR_Volumes");
 
-        //Pessoa Fornecedor é o destinatário ou o remetente dependendo do tipo de nf
+        //Pessoa Fornecedor ï¿½ o destinatï¿½rio ou o remetente dependendo do tipo de nf
         String oid_Pessoa_Fornecedor="";
         if (doValida(oid_Pessoa_Remetente) && "E".equals(DM_Tipo_Nota_Fiscal)) //Preenchido quando nf Entrada
         	oid_Pessoa_Fornecedor = oid_Pessoa_Remetente;
-        if (doValida(oid_Pessoa_Destinatario) && !"E".equals(DM_Tipo_Nota_Fiscal)) //Preenchido quando nf Saída/Devolucao
+        if (doValida(oid_Pessoa_Destinatario) && !"E".equals(DM_Tipo_Nota_Fiscal)) //Preenchido quando nf Saï¿½da/Devolucao
         	oid_Pessoa_Fornecedor = oid_Pessoa_Destinatario;
 
         Nota_Fiscal_EletronicaED ed = new Nota_Fiscal_EletronicaED();
@@ -188,7 +188,7 @@ public class NFEBean extends BancoUtil {
         //*** Valor Adicional
         if (doValida(VL_Adicional))
             ed.setVL_Adicional(Double.parseDouble(VL_Adicional));
-        //*** Valor Diferença Aliquota ICMS
+        //*** Valor Diferenï¿½a Aliquota ICMS
         if (doValida(VL_Diferenca_Aliq_ICMS))
             ed.setVL_Diferenca_Aliq_ICMS(Double.parseDouble(VL_Diferenca_Aliq_ICMS));
         //*** Valor do Servico
@@ -294,7 +294,7 @@ public class NFEBean extends BancoUtil {
         String dm_Devolvido = request.getParameter("dm_Devolvido");
 
         if (!doValida(oid_Nota_Fiscal))
-            throw new Excecoes("Nota Fiscal não informada!");
+            throw new Excecoes("Nota Fiscal nï¿½o informada!");
         Nota_Fiscal_EletronicaED ed = new Nota_Fiscal_EletronicaED(oid_Nota_Fiscal);
         ed.setUpdatePrecosByCond("true".equals(request.getParameter("updatePrecosByCond")));
         ed.setUpdatePrecosByTabela("true".equals(request.getParameter("updatePrecosByTabela")));
@@ -389,7 +389,7 @@ public class NFEBean extends BancoUtil {
         //*** Valor Adicional
         if (doValida(VL_Adicional))
             ed.setVL_Adicional(Double.parseDouble(VL_Adicional));
-        //*** Valor Diferença Aliquota ICMS
+        //*** Valor Diferenï¿½a Aliquota ICMS
         if (doValida(VL_Diferenca_Aliq_ICMS))
             ed.setVL_Diferenca_Aliq_ICMS(Double.parseDouble(VL_Diferenca_Aliq_ICMS));
         //*** Valor do Servico
@@ -446,7 +446,7 @@ public class NFEBean extends BancoUtil {
         String DM_Observacao = request.getParameter("FT_DM_Observacao");
 
         if (!doValida(oid_Nota_Fiscal))
-            throw new Excecoes("Nota Fiscal não informada!");
+            throw new Excecoes("Nota Fiscal nï¿½o informada!");
         Nota_Fiscal_EletronicaED ed = new Nota_Fiscal_EletronicaED(oid_Nota_Fiscal);
         if (doValida(oid_Natureza_Operacao))
             ed.setOid_natureza_operacao(Long.parseLong(oid_Natureza_Operacao));
@@ -468,9 +468,9 @@ public class NFEBean extends BancoUtil {
         String DM_Tipo_Nota_Fiscal = request.getParameter("FT_DM_Tipo_Nota_Fiscal");
 
         if (!doValida(oid_Nota_Fiscal))
-            throw new Excecoes("ID Nota Fiscal não informado!");
+            throw new Excecoes("ID Nota Fiscal nï¿½o informado!");
         if (!doValida(DM_Tipo_Nota_Fiscal))
-            throw new Excecoes("Tipo de Nota Fiscal não informado!");
+            throw new Excecoes("Tipo de Nota Fiscal nï¿½o informado!");
 
         Nota_Fiscal_EletronicaED ed = new Nota_Fiscal_EletronicaED(oid_Nota_Fiscal);
         ed.setDm_tipo_nota_fiscal(DM_Tipo_Nota_Fiscal);
@@ -597,7 +597,7 @@ public class NFEBean extends BancoUtil {
         String oid_Unidade = request.getParameter("oid_Unidade");
         String NR_Nota_Fiscal = request.getParameter("FT_NR_Nota_Fiscal");
         if (!doValida(NR_Nota_Fiscal))
-            throw new Mensagens("Informe o Nº da Nota Fiscal!");
+            throw new Mensagens("Informe o Nï¿½ da Nota Fiscal!");
 
         Nota_Fiscal_EletronicaED ed = new Nota_Fiscal_EletronicaED();
         if (doValida(oid_Unidade))
@@ -607,7 +607,7 @@ public class NFEBean extends BancoUtil {
         return new Nota_Fiscal_EletronicaRN().getByRecord(ed);
     }
 
-    //*** Não pode existir duas Notas de ENTRADA Com mesmo Numero para o mesmo Fornecedor
+    //*** Nï¿½o pode existir duas Notas de ENTRADA Com mesmo Numero para o mesmo Fornecedor
     public boolean existeNR_Nota_Fiscal(HttpServletRequest request) throws Excecoes {
 
     	String DM_Tipo_Nota_Fiscal = request.getParameter("FT_DM_Tipo_Nota_Fiscal");
@@ -626,11 +626,11 @@ public class NFEBean extends BancoUtil {
         oid_Pessoa_Fornecedor = oid_Pessoa_Remetente;
 
         if (!doValida(oid_Pessoa_Fornecedor))
-            throw new Mensagens("ID Fornecedor não informado!");
+            throw new Mensagens("ID Fornecedor nï¿½o informado!");
         if (!doValida(NR_Nota_Fiscal))
-            throw new Mensagens("Numero da Nota Fiscal não informado!");
+            throw new Mensagens("Numero da Nota Fiscal nï¿½o informado!");
         if (!doValida(oid_Modelo_Nota_Fiscal))
-            throw new Mensagens("Modelo da Nota Fiscal não informado!");
+            throw new Mensagens("Modelo da Nota Fiscal nï¿½o informado!");
         String query = "oid_Pessoa = '"+oid_Pessoa_Fornecedor+"'" +
 				       " AND NR_Nota_Fiscal = "+NR_Nota_Fiscal+
 				       " AND oid_Modelo_Nota_Fiscal = "+oid_Modelo_Nota_Fiscal+
@@ -654,7 +654,7 @@ public class NFEBean extends BancoUtil {
     public String getOid_Pedido(String oid_Nota_Fiscal) throws Excecoes {
 
         if (!doValida(oid_Nota_Fiscal))
-            throw new Excecoes("ID Nota Fiscal não informado!");
+            throw new Excecoes("ID Nota Fiscal nï¿½o informado!");
 
         return super.getTableStringValue("DISTINCT Pedidos.oid_Pedido",
                 						 "Pedidos, Notas_Fiscais, Itens_Notas_Fiscais, Itens_Pedidos",
@@ -665,12 +665,12 @@ public class NFEBean extends BancoUtil {
                 						 " AND Itens_Notas_Fiscais.oid_Nota_Fiscal = '"+oid_Nota_Fiscal+"'");
     }
 
-    //*** Não deixa ALTERAR ou EXCLUIR caso exista
+    //*** Nï¿½o deixa ALTERAR ou EXCLUIR caso exista
     //    algum item relacionado a Item do Pedido
     public boolean doExisteItensPedido(String oid_Nota_Fiscal) throws Excecoes {
 
         if (!doValida(oid_Nota_Fiscal))
-            throw new Mensagens("Nota Fiscal não informada!");
+            throw new Mensagens("Nota Fiscal nï¿½o informada!");
 
         return super.doExiste("Itens_Notas_Fiscais, Notas_Fiscais",
                 			  "(Itens_Notas_Fiscais.oid_Item_Pedido > 0 OR Itens_Notas_Fiscais.oid_Item_Pedido IS NULL) " +
@@ -680,7 +680,7 @@ public class NFEBean extends BancoUtil {
     public boolean doExisteItensNF(String oid_Nota_Fiscal) throws Excecoes {
 
         if (!doValida(oid_Nota_Fiscal))
-            throw new Mensagens("Nota Fiscal não informada!");
+            throw new Mensagens("Nota Fiscal nï¿½o informada!");
         return super.doExiste("Itens_Notas_Fiscais", "oid_Nota_Fiscal = '"+oid_Nota_Fiscal+"'");
     }
 
@@ -688,11 +688,11 @@ public class NFEBean extends BancoUtil {
     public void finalizaNF_VendaDireta(String oid_Nota_Fiscal, String oid_Conhecimento) throws Exception {
 
         if (!doValida(oid_Nota_Fiscal))
-            throw new Mensagens("ID Nota Fiscal não informada!");
+            throw new Mensagens("ID Nota Fiscal nï¿½o informada!");
         if (!doValida(oid_Conhecimento))
-            throw new Mensagens("ID Conhecimento não informado!");
+            throw new Mensagens("ID Conhecimento nï¿½o informado!");
 
-        new Nota_Fiscal_EletronicaRN().finalizaNF_VendaDireta(oid_Nota_Fiscal, oid_Conhecimento);
+//        new Nota_Fiscal_EletronicaRN().finalizaNF_VendaDireta(oid_Nota_Fiscal, oid_Conhecimento);
     }
 
     //*** Finaliza Nota Fiscal de Entrada
@@ -700,18 +700,18 @@ public class NFEBean extends BancoUtil {
 
         String oid_Nota_Fiscal = request.getParameter("oid_Nota_Fiscal");
         if (!doValida(oid_Nota_Fiscal))
-            throw new Excecoes("Nota Fiscal não informada!");
+            throw new Excecoes("Nota Fiscal nï¿½o informada!");
 
         Nota_Fiscal_EletronicaED ed = new Nota_Fiscal_EletronicaRN().getByRecord(new Nota_Fiscal_EletronicaED(oid_Nota_Fiscal));
         return new Nota_Fiscal_EletronicaRN().finalizaNF_Entrada(ed);
     }
 
-    //*** Finaliza Nota Fiscal de Saida (+ impressão)
+    //*** Finaliza Nota Fiscal de Saida (+ impressï¿½o)
     public void finalizaNF_Saida(HttpServletRequest request) throws Excecoes {
 
         String oid_Nota_Fiscal = request.getParameter("oid_Nota_Fiscal");
         if (!doValida(oid_Nota_Fiscal))
-            throw new Mensagens("Nota Fiscal não informada!");
+            throw new Mensagens("Nota Fiscal nï¿½o informada!");
 
         Nota_Fiscal_EletronicaED ed = new Nota_Fiscal_EletronicaED();
         //.getByRecord(new Nota_Fiscal_TransacoesED(oid_Nota_Fiscal));
@@ -722,19 +722,19 @@ public class NFEBean extends BancoUtil {
         // System.out.println("Sai Da nOOOOOOO IUUUUUUUUUU 1");
         stkOK = new Nota_Fiscal_EletronicaRN().finalizaNF_Saida(ed);
         // System.out.println("Sai Da nOOOOOOO IUUUUUUUUUU 2");
-        if (!stkOK) throw new Mensagens("Nota Fiscal não Finalizada ! Consulte as Ocorrencias!	");
+        if (!stkOK) throw new Mensagens("Nota Fiscal nï¿½o Finalizada ! Consulte as Ocorrencias!	");
         // System.out.println("Sai Da nOOOOOOO IUUUUUUUUUU 3");
     }
 
 //  *** Finaliza Lote de Nota Fiscal de Saida (pelo Manifesto)
     public void finalizaLote_NF_Saida(HttpServletRequest request) throws Excecoes {
 
-    	String arquivo = "finalizaLote_NF.log"; //arquivo que vai conter os erros na finalização
+    	String arquivo = "finalizaLote_NF.log"; //arquivo que vai conter os erros na finalizaï¿½ï¿½o
     	FileUtil.renameLogFile(arquivo); //renomeia para 'finalizaLote_NF.log_DATA_DE_HOJE(AAAAMMDD)'
 
         String oid_Manifesto = request.getParameter("oid_Manifesto");
         if (!doValida(oid_Manifesto))
-            throw new Mensagens("Manifesto não informado!");
+            throw new Mensagens("Manifesto nï¿½o informado!");
 
         Iterator iterador = this.Nota_Fiscal_Lista_em_Viagem(request).iterator();
 
@@ -752,7 +752,7 @@ public class NFEBean extends BancoUtil {
         		FileUtil.saveStrToFile(arquivo, msg);
         	}
             if (!stkOK){
-            	String msg = "NF: "+ed.getNr_nota_fiscal() + ". Erro: Nota Fiscal não Finalizada ! Consulte as Ocorrencias!/";
+            	String msg = "NF: "+ed.getNr_nota_fiscal() + ". Erro: Nota Fiscal nï¿½o Finalizada ! Consulte as Ocorrencias!/";
         		FileUtil.saveStrToFile(arquivo, msg);
             }
         }
@@ -761,19 +761,19 @@ public class NFEBean extends BancoUtil {
 
     }
 
-    //*** Finaliza Nota Fiscal de Saida (+ impressão)
+    //*** Finaliza Nota Fiscal de Saida (+ impressï¿½o)
     public void finalizaNF_Devolucao(HttpServletRequest request) throws Excecoes {
 
         String oid_Nota_Fiscal = request.getParameter("oid_Nota_Fiscal");
         if (!doValida(oid_Nota_Fiscal))
-            throw new Mensagens("Nota Fiscal não informada!");
+            throw new Mensagens("Nota Fiscal nï¿½o informada!");
 
         Nota_Fiscal_EletronicaED ed = new Nota_Fiscal_EletronicaRN().getByRecord(new Nota_Fiscal_EletronicaED(oid_Nota_Fiscal));
         boolean finaliza = new Nota_Fiscal_EletronicaRN().finalizaNF_Devolucao(ed,true);
-        if (!finaliza) throw new Mensagens("Nota Fiscal não pode ser Finalizada! Veja ocorrencias da NF!");
+        if (!finaliza) throw new Mensagens("Nota Fiscal nï¿½o pode ser Finalizada! Veja ocorrencias da NF!");
     }
 
-    //*** Busca lista de Notas Fiscais para Finalização
+    //*** Busca lista de Notas Fiscais para Finalizaï¿½ï¿½o
     public ArrayList getListNFFinalizar(HttpServletRequest request) throws Excecoes{
 
         String oid_Carga_Entrega = request.getParameter("oid_Carga_Entrega");
@@ -794,7 +794,7 @@ public class NFEBean extends BancoUtil {
 
         Nota_Fiscal_EletronicaED ed = new Nota_Fiscal_EletronicaED();
         if (!doValida(DM_Tipo_Nota_Fiscal))
-            throw new Excecoes("Tipo de NF não informado!", this.getClass().getName(), "getListNFFinalizar()");
+            throw new Excecoes("Tipo de NF nï¿½o informado!", this.getClass().getName(), "getListNFFinalizar()");
         ed.setDm_tipo_nota_fiscal(DM_Tipo_Nota_Fiscal);
 
         if (doValida(oid_Carga_Entrega))
@@ -835,22 +835,22 @@ public class NFEBean extends BancoUtil {
         if (lista.size() < 1)
             throw new Mensagens("Lista de Notas vazia! Execute novamente a consulta!");
         if (!doValida(dmTipoNF))
-            throw new Mensagens("Tipo de Nota não informada!");
+            throw new Mensagens("Tipo de Nota nï¿½o informada!");
 
-        new Nota_Fiscal_EletronicaRN().finalizaListaNF(lista
-                                                      ,dmTipoNF
-                                                      ,getValueDef(request.getParameter("oid_Carga_Entrega"),0)
-                                                      ,request.getParameter("FT_DT_Saida")
-                                                      ,request.getParameter("FT_HR_Saida"));
+//        new Nota_Fiscal_EletronicaRN().finalizaListaNF(lista
+//                                                      ,dmTipoNF
+//                                                      ,getValueDef(request.getParameter("oid_Carga_Entrega"),0)
+//                                                      ,request.getParameter("FT_DT_Saida")
+//                                                      ,request.getParameter("FT_HR_Saida"));
     }
 
     //*** EXCLUI Nota Fiscal de COMPRA
     public void excluiNFCompra(String oid_Nota_Fiscal, String dmTipo_Nota_Fiscal) throws Exception {
 
         if (!JavaUtil.doValida(oid_Nota_Fiscal))
-            throw new Mensagens("Nota Fiscal não informada para Exclusão!");
+            throw new Mensagens("Nota Fiscal nï¿½o informada para Exclusï¿½o!");
         if (!JavaUtil.doValida(dmTipo_Nota_Fiscal))
-            throw new Mensagens("Tipo de Nota não informado!");
+            throw new Mensagens("Tipo de Nota nï¿½o informado!");
 
         Nota_Fiscal_EletronicaED edNota = new Nota_Fiscal_EletronicaED(oid_Nota_Fiscal);
         edNota.setDm_tipo_nota_fiscal(dmTipo_Nota_Fiscal);
@@ -860,37 +860,37 @@ public class NFEBean extends BancoUtil {
     public void cancelaNFCompra(String oid_Nota_Fiscal, String dmTipo_Nota_Fiscal) throws Exception {
 
         if (!JavaUtil.doValida(oid_Nota_Fiscal))
-            throw new Mensagens("Nota Fiscal não informada para Cancelamento!");
+            throw new Mensagens("Nota Fiscal nï¿½o informada para Cancelamento!");
         if (!JavaUtil.doValida(dmTipo_Nota_Fiscal))
-            throw new Mensagens("Tipo de Nota não informado!");
+            throw new Mensagens("Tipo de Nota nï¿½o informado!");
 
         Nota_Fiscal_EletronicaED edNota = new Nota_Fiscal_EletronicaED(oid_Nota_Fiscal);
         edNota.setDm_tipo_nota_fiscal(dmTipo_Nota_Fiscal);
-        new Nota_Fiscal_EletronicaRN().cancelaNFCompra(edNota);
+//        new Nota_Fiscal_EletronicaRN().cancelaNFCompra(edNota);
     }
 
     //*** CANCELA Nota Fiscal de Venda
     public void cancelaNFVenda(String oid_Nota_Fiscal, String reabrePedido) throws Exception {
 
         if (!doValida(oid_Nota_Fiscal))
-            throw new Mensagens("ID Nota Fiscal não informada para Cancelamento!");
+            throw new Mensagens("ID Nota Fiscal nï¿½o informada para Cancelamento!");
         Nota_Fiscal_EletronicaED edNota = new Nota_Fiscal_EletronicaED(oid_Nota_Fiscal);
         edNota.setDM_Tipo_Devolucao("true".equals(reabrePedido) ? "R" : "C"); //*** Tipo "R" Reabre Pedido de Venda
-        new Nota_Fiscal_EletronicaRN().cancelaNFVenda(edNota);
+//        new Nota_Fiscal_EletronicaRN().cancelaNFVenda(edNota);
     }
     public void cancelaNFVenda(ArrayList listaNotas, String reabrePedido) throws Exception {
 
         if (listaNotas.size() < 1)
-            throw new Mensagens("Não foram informadas Notas Fiscais para serem Canceladas! Lista Vazia!");
+            throw new Mensagens("Nï¿½o foram informadas Notas Fiscais para serem Canceladas! Lista Vazia!");
         for (int i=0; i<listaNotas.size(); i++)
         {
             Nota_Fiscal_EletronicaED edNota = (Nota_Fiscal_EletronicaED) listaNotas.get(i);
             edNota.setDM_Tipo_Devolucao("true".equals(reabrePedido) ? "R" : "C"); //*** Tipo "R" Reabre Pedido de Venda
-            new Nota_Fiscal_EletronicaRN().cancelaNFVenda(edNota);
+//            new Nota_Fiscal_EletronicaRN().cancelaNFVenda(edNota);
         }
     }
 
-    //*** Devolução Nota Fiscal de Venda
+    //*** Devoluï¿½ï¿½o Nota Fiscal de Venda
     public Nota_Fiscal_EletronicaED geraNFDevolucaoVenda(HttpServletRequest request) throws Exception {
 
         String oid_Nota_Fiscal = request.getParameter("oid_Nota_Fiscal");
@@ -902,19 +902,19 @@ public class NFEBean extends BancoUtil {
         String TX_Observacao = request.getParameter("FT_TX_Observacao");
 
         if (!doValida(oid_Nota_Fiscal))
-            throw new Mensagens("Nota Fiscal não informada!");
+            throw new Mensagens("Nota Fiscal nï¿½o informada!");
         if (!doValida(oid_Modelo_Nota_Fiscal))
-            throw new Mensagens("Modelo da Nota Fiscal não informado!");
+            throw new Mensagens("Modelo da Nota Fiscal nï¿½o informado!");
         if (!doValida(oid_Natureza_Operacao))
-            throw new Mensagens("Natureza de Operação não informada!");
+            throw new Mensagens("Natureza de Operaï¿½ï¿½o nï¿½o informada!");
         if (!doValida(oid_Pessoa_Fornecedor))
-            throw new Mensagens("Fornecedor não informado!");
+            throw new Mensagens("Fornecedor nï¿½o informado!");
         if (!doValida(DM_Tipo_Devolucao))
-            throw new Mensagens("Tipo de Devolução não informada!");
+            throw new Mensagens("Tipo de Devoluï¿½ï¿½o nï¿½o informada!");
         if (!doValida(oid_Tipo_Ocorrencia))
-            throw new Mensagens("Tipo de Ocorrência não informada!");
+            throw new Mensagens("Tipo de Ocorrï¿½ncia nï¿½o informada!");
 
-        //*** Ocorrência para NF de Origem
+        //*** Ocorrï¿½ncia para NF de Origem
         Ocorrencia_Nota_FiscalED edOcorrencia = new Ocorrencia_Nota_FiscalED();
         edOcorrencia.setOID_Nota_Fiscal(oid_Nota_Fiscal);
         edOcorrencia.setOID_Tipo_Ocorrencia(Long.parseLong(oid_Tipo_Ocorrencia));
@@ -932,14 +932,14 @@ public class NFEBean extends BancoUtil {
         edDevolucao.setDT_Entrega(Data.getDataDMY());
         edDevolucao.setOid_natureza_operacao(Long.parseLong(oid_Natureza_Operacao));
         edDevolucao.setOid_modelo_nota_fiscal(Long.parseLong(oid_Modelo_Nota_Fiscal));
-        edDevolucao.setOid_Pessoa_Consignatario(edDevolucao.getOid_pessoa_fornecedor());//Será o Vendedor p/ Saida
+        edDevolucao.setOid_Pessoa_Consignatario(edDevolucao.getOid_pessoa_fornecedor());//Serï¿½ o Vendedor p/ Saida
         edDevolucao.setOid_pessoa_fornecedor(oid_Pessoa_Fornecedor);
         edDevolucao.setDM_Tipo_Devolucao(DM_Tipo_Devolucao);
         edDevolucao.setDm_observacao(TX_Observacao);
         edDevolucao.setOid_Centro_Custo(new Integer(Parametro_FixoED.getInstancia().getOID_Centro_Custo_Entrega()));
         edDevolucao.setMasterDetails(request);
-
-        return new Nota_Fiscal_EletronicaRN().geraNFDevolucaoVenda(edDevolucao, edOcorrencia);
+return null;
+//        return new Nota_Fiscal_EletronicaRN().geraNFDevolucaoVenda(edDevolucao, edOcorrencia);
     }
 
     /**
@@ -955,28 +955,28 @@ public class NFEBean extends BancoUtil {
         String NR_Nota_Fiscal_Final = request.getParameter("FT_NR_Nota_Fiscal_Final");
         String NM_Serie = request.getParameter("FT_NM_Serie");
         String dmTipoNF = request.getParameter("FT_DM_Tipo_Nota_Fiscal");
-        //*** Campos p/ alterações
+        //*** Campos p/ alteraï¿½ï¿½es
         String oid_Entregador = request.getParameter("oid_Entregador");
         String oid_Entregador2 = request.getParameter("oid_Entregador2");
         String oid_Vendedor = request.getParameter("oid_Vendedor");
         String oid_Vendedor2 = request.getParameter("oid_Vendedor2");
         String oid_Veiculo = request.getParameter("oid_Veiculo");
         String oid_Veiculo2 = request.getParameter("oid_Veiculo2");
-        //*** Validações
+        //*** Validaï¿½ï¿½es
         if (!doValida(oid_Unidade))
-            throw new Mensagens("Unidade não informada!");
+            throw new Mensagens("Unidade nï¿½o informada!");
         if (!doValida(NR_Nota_Fiscal) && !doValida(NR_Nota_Fiscal_Final))
-            throw new Mensagens("Notas Fiscais não informadas!");
+            throw new Mensagens("Notas Fiscais nï¿½o informadas!");
         if (!doValida(dmTipoNF))
-            throw new Mensagens("Tipo de Notas Fiscal não informado!");
+            throw new Mensagens("Tipo de Notas Fiscal nï¿½o informado!");
         if (!doValida(dmOperacao))
-            throw new Mensagens("Tipo de Operação não informada!");
+            throw new Mensagens("Tipo de Operaï¿½ï¿½o nï¿½o informada!");
         if ("V".equals(dmOperacao) && (!doValida(oid_Vendedor) || !doValida(oid_Vendedor2)))
-            throw new Mensagens("Vendedores não informados para Alterações!");
+            throw new Mensagens("Vendedores nï¿½o informados para Alteraï¿½ï¿½es!");
         else if ("E".equals(dmOperacao) && (!doValida(oid_Entregador) || !doValida(oid_Entregador2)))
-            throw new Mensagens("Entregadores não informados para Alterações!");
+            throw new Mensagens("Entregadores nï¿½o informados para Alteraï¿½ï¿½es!");
         else if ("P".equals(dmOperacao) && (!doValida(oid_Veiculo) || !doValida(oid_Veiculo2)))
-            throw new Mensagens("Veículos não informados para Alterações!");
+            throw new Mensagens("Veï¿½culos nï¿½o informados para Alteraï¿½ï¿½es!");
 
         //*** Filtro
         Nota_Fiscal_EletronicaED filter = new Nota_Fiscal_EletronicaED();
@@ -997,9 +997,9 @@ public class NFEBean extends BancoUtil {
 
         ArrayList lista = new Nota_Fiscal_EletronicaRN().lista(filter);
         if (lista.isEmpty())
-            throw new Mensagens("Não foram encontradas Notas Fiscais para Alteração!");
+            throw new Mensagens("Nï¿½o foram encontradas Notas Fiscais para Alteraï¿½ï¿½o!");
 
-        //*** Alterações
+        //*** Alteraï¿½ï¿½es
         ArrayList returnList = new ArrayList();
         Iterator iterator = lista.iterator();
         while (iterator.hasNext())
@@ -1071,7 +1071,7 @@ public class NFEBean extends BancoUtil {
 
     }
 
-    /** ------------ RELATÓRIOS ---------------- */
+    /** ------------ RELATï¿½RIOS ---------------- */
     public String imprime_NotasFiscaisMatricial(HttpServletRequest request) throws Excecoes {
 
         ArrayList lista = new ArrayList();
@@ -1081,7 +1081,7 @@ public class NFEBean extends BancoUtil {
         else lista = (ArrayList) request.getSession(true).getAttribute("listaNotas");
 
         try{
-        	//Melhorar isso... ver questão de edModelo.getDM_Permite_Servico()...
+        	//Melhorar isso... ver questï¿½o de edModelo.getDM_Permite_Servico()...
 	        if(request.getParameter("oid_Modelo_Nota_Fiscal").equals("14") || request.getParameter("oid_Modelo_Nota_Fiscal").equals("17")){
 	        	return new Nota_Fiscal_EletronicaRN().imprime_NotasFiscaisServicoMatricial(lista
                         ,request.getParameter("FT_DT_Saida")
@@ -1142,7 +1142,7 @@ public class NFEBean extends BancoUtil {
         String oid_Supervisor = request.getParameter("oid_Supervisor");
 
         if (!doValida(Relatorio))
-            throw new Mensagens("Nome do Relatório não informado!");
+            throw new Mensagens("Nome do Relatï¿½rio nï¿½o informado!");
 
         RelatorioED ed = new RelatorioED(response, Relatorio);
         if (doValida(DM_Tipo_Nota_Fiscal))
@@ -1202,7 +1202,7 @@ public class NFEBean extends BancoUtil {
         new Nota_Fiscal_EletronicaRN().relNF_Venda(ed);
     }
 
-    //*** Notas Fiscais de ENTRADA Conferência
+    //*** Notas Fiscais de ENTRADA Conferï¿½ncia
     public void relNFConferencia(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         String Relatorio = request.getParameter("Relatorio");
@@ -1218,9 +1218,9 @@ public class NFEBean extends BancoUtil {
         String DT_Entrada_Final = request.getParameter("FT_DT_Entrada_Final");
 
         if (!doValida(Relatorio))
-            throw new Mensagens("Nome do Relatório não informado!");
+            throw new Mensagens("Nome do Relatï¿½rio nï¿½o informado!");
         if (!doValida(DT_Emissao_Inicial) && !doValida(DT_Emissao_Final) && !doValida(DT_Entrada) && !doValida(DT_Entrada_Final))
-            throw new Mensagens("Informe a Data de Emissão para Consulta!");
+            throw new Mensagens("Informe a Data de Emissï¿½o para Consulta!");
 
         RelatorioED ed = new RelatorioED(response, Relatorio);
         if (doValida(NR_Nota_Fiscal))
@@ -1262,9 +1262,9 @@ public class NFEBean extends BancoUtil {
         String DT_Entrada_Final = request.getParameter("FT_DT_Entrada_Final");
 
         if (!doValida(Relatorio))
-            throw new Mensagens("Nome do Relatório não informado!");
+            throw new Mensagens("Nome do Relatï¿½rio nï¿½o informado!");
         if (!doValida(DT_Emissao_Inicial) && !doValida(DT_Emissao_Final) && !doValida(DT_Entrada) && !doValida(DT_Entrada_Final))
-            throw new Mensagens("Informe a Data de Emissão para Consulta!");
+            throw new Mensagens("Informe a Data de Emissï¿½o para Consulta!");
 
         RelatorioED ed = new RelatorioED(response, Relatorio);
         if (doValida(NR_Nota_Fiscal))
@@ -1307,9 +1307,9 @@ public class NFEBean extends BancoUtil {
         String NR_Cnpj_Cpf = request.getParameter("FT_NR_CNPJ_CPF");
 
         if (!doValida(Relatorio))
-            throw new Mensagens("Nome do Relatório não informado!");
+            throw new Mensagens("Nome do Relatï¿½rio nï¿½o informado!");
         if (!doValida(DT_Emissao_Inicial) && !doValida(DT_Emissao_Final) && !doValida(DT_Entrada) && !doValida(DT_Entrada_Final))
-            throw new Mensagens("Informe a Data de Emissão para Consulta!");
+            throw new Mensagens("Informe a Data de Emissï¿½o para Consulta!");
         if (!doValida(NR_Cnpj_Cpf))
             throw new Mensagens("Informe o Fornecedor!");
 
@@ -1357,7 +1357,7 @@ public class NFEBean extends BancoUtil {
         String NR_Cnpj_Cpf = request.getParameter("FT_NR_CNPJ_CPF");
 
         if (!doValida(Relatorio))
-            throw new Mensagens("Nome do Relatório não informado!");
+            throw new Mensagens("Nome do Relatï¿½rio nï¿½o informado!");
         if (!doValida(DT_Entrada) && !doValida(DT_Entrada_Final))
             throw new Mensagens("Informe a Data de Entrada para Consulta!");
 
@@ -1387,7 +1387,7 @@ public class NFEBean extends BancoUtil {
 
         new Nota_Fiscal_EletronicaRN().relNFEntradaNT(ed);
     }
-    //*** Relatório da Evolução dos Vendedores em     Valores /(vendas - Devoluções)
+    //*** Relatï¿½rio da Evoluï¿½ï¿½o dos Vendedores em     Valores /(vendas - Devoluï¿½ï¿½es)
     public void relNFEvolucaoVendedor(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         String Relatorio = request.getParameter("Relatorio");
@@ -1403,9 +1403,9 @@ public class NFEBean extends BancoUtil {
         String DT_Entrada_Final = request.getParameter("FT_DT_Entrada_Final");
 
         if (!doValida(Relatorio))
-            throw new Mensagens("Nome do Relatório não informado!");
+            throw new Mensagens("Nome do Relatï¿½rio nï¿½o informado!");
         if (!doValida(DT_Emissao_Inicial) && !doValida(DT_Emissao_Final) && !doValida(DT_Entrada) && !doValida(DT_Entrada_Final))
-            throw new Mensagens("Informe a Data de Emissão para Consulta!");
+            throw new Mensagens("Informe a Data de Emissï¿½o para Consulta!");
 
         RelatorioED ed = new RelatorioED(response, Relatorio);
         if (doValida(NR_Nota_Fiscal))
@@ -1433,7 +1433,7 @@ public class NFEBean extends BancoUtil {
     }
 
     /**
-     * Devolução Simbólica Nota Fiscal de Venda
+     * Devoluï¿½ï¿½o Simbï¿½lica Nota Fiscal de Venda
      */
     public void geraNFDevolucaoSimbolica(HttpServletRequest request) throws Exception {
 
@@ -1444,14 +1444,14 @@ public class NFEBean extends BancoUtil {
         String nr_Nota_Fiscal = request.getParameter("nr_Nota_Fiscal");
 
         if (!doValida(oid_Pessoa))
-            throw new Mensagens("Cliente não informado!");
+            throw new Mensagens("Cliente nï¿½o informado!");
         if (!doValida(oid_Unidade))
-            throw new Mensagens("Unidade não informada!");
+            throw new Mensagens("Unidade nï¿½o informada!");
         if (!doValida(nr_Nota_Fiscal)) {
         	if (!doValida(dt_Emissao_Inicial))
-        		throw new Mensagens("Data inicial não informada!");
+        		throw new Mensagens("Data inicial nï¿½o informada!");
         	if (!doValida(dt_Emissao_Final))
-        		throw new Mensagens("Data final não informada!");
+        		throw new Mensagens("Data final nï¿½o informada!");
         }
 
         Nota_Fiscal_EletronicaED edDevolucao = new Nota_Fiscal_EletronicaED();
@@ -1464,7 +1464,7 @@ public class NFEBean extends BancoUtil {
         edDevolucao.setOid_pessoa(oid_Pessoa);
         edDevolucao.setOID_Unidade_Contabil(Long.parseLong(oid_Unidade));
         boolean finalizado = new Nota_Fiscal_EletronicaRN().geraNFDevolucaoSimbolica(edDevolucao);
-        if (!finalizado) throw new Mensagens("Nota Geradas com erros! Veja notas de Devolução Pendentes !");
+        if (!finalizado) throw new Mensagens("Nota Geradas com erros! Veja notas de Devoluï¿½ï¿½o Pendentes !");
     }
 
     public ArrayList listaNFparaFaturamento(HttpServletRequest request) throws Excecoes {
@@ -1618,7 +1618,7 @@ public class NFEBean extends BancoUtil {
         String oid_Nota_Fiscal = request.getParameter("oid_Nota_Fiscal");
 
         if (!doValida(oid_Nota_Fiscal))
-            throw new Excecoes("Nota Fiscal não informada!");
+            throw new Excecoes("Nota Fiscal nï¿½o informada!");
         Nota_Fiscal_EletronicaED ed = new Nota_Fiscal_EletronicaED(oid_Nota_Fiscal);
     	ed.setDM_Pendencia("N");
         ed.setDM_Situacao("A");
@@ -1627,7 +1627,7 @@ public class NFEBean extends BancoUtil {
     }
 
 
-    public void geraNFe(HttpServletRequest request, HttpServletResponse response) throws Excecoes {
+    public void geraNFe_old(HttpServletRequest request, HttpServletResponse response) throws Excecoes {
 
         ArrayList lista = new ArrayList();
         if (request.getSession(true).getAttribute("listaNotas") == null)
@@ -1639,9 +1639,9 @@ public class NFEBean extends BancoUtil {
             {
             	Nota_Fiscal_EletronicaED ed = (Nota_Fiscal_EletronicaED) iterator.next();
             	if(JavaUtil.doValida(ed.getNfe_chave_acesso()) && JavaUtil.doValida(ed.getNfe_cstat()) && ed.getNfe_cstat().equals("100"))
-            		throw new Excecoes("NFe já enviada, consulte novamente para atualizar os dados...");
+            		throw new Excecoes("NFe jï¿½ enviada, consulte novamente para atualizar os dados...");
             }
-        	new Nota_Fiscal_EletronicaRN().geraNFe(lista
+        	new Nota_Fiscal_EletronicaRN().geraNFe_old(lista
 //        	String arquivo = new Nota_Fiscal_TransacoesRN().geraNotaFiscal_to_NFe(lista
                         ,request.getParameter("FT_DT_Saida")
                         ,request.getParameter("FT_HR_Saida"), response);
@@ -1670,18 +1670,18 @@ public class NFEBean extends BancoUtil {
         }
     }
 
-    public void enviaNFE_cancelada(HttpServletRequest request, HttpServletResponse response) throws Excecoes {
-
-    	Nota_Fiscal_EletronicaED ed = this.getByRecord(request);
-        try{
-        	new Nota_Fiscal_EletronicaRN().enviaNFE_cancelada(ed);
-        } catch (Excecoes e) {
-            e.printStackTrace();
-            throw e;
-        } catch(Exception e){
-        	e.printStackTrace();
-        	throw new Excecoes();
-        }
-    }
+//    public void enviaNFE_cancelada(HttpServletRequest request, HttpServletResponse response) throws Excecoes {
+//
+//    	Nota_Fiscal_EletronicaED ed = this.getByRecord(request);
+//        try{
+//        	new Nota_Fiscal_EletronicaRN().enviaNFE_cancelada(ed);
+//        } catch (Excecoes e) {
+//            e.printStackTrace();
+//            throw e;
+//        } catch(Exception e){
+//        	e.printStackTrace();
+//        	throw new Excecoes();
+//        }
+//    }
 
 }

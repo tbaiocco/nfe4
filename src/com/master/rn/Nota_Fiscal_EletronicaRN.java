@@ -55,6 +55,7 @@ import com.master.util.ed.Parametro_FixoED;
 
 import br.com.samuelweb.nfe.dom.ConfiguracoesWebNfe;
 import br.cte.model.Empresa;
+import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe;
 import br.nfe.core.BeanDanfeItens;
 import br.nfe.model.NfeInutilizacao;
 import br.nfe.model.NfeLote;
@@ -906,85 +907,14 @@ public class Nota_Fiscal_EletronicaRN extends Transacao {
         }
     }
 
-
-    public void geraNFe(ArrayList listaNotasFiscais, String dtSaida, String hrSaida, HttpServletResponse response) throws Excecoes {
-
-        try {
+    public TNFe geraNFe(String oid_nota_fiscal, String dtSaida, String hrSaida) throws Excecoes {
+    	try {
             this.inicioTransacao();
-            NfeNotaFiscal nota = new Nota_Fiscal_EletronicaBD(this.sql).geraNFe(listaNotasFiscais, dtSaida, hrSaida);
+            TNFe nota = new Nota_Fiscal_EletronicaBD(this.sql).geraNFe(new Nota_Fiscal_EletronicaED(oid_nota_fiscal), dtSaida, hrSaida);
             this.fimTransacao(true);
-            if(nota.getcStat().intValue()==100){
-
-            	String arqPDF = this.imprimeDANFE(nota);
-
-            	//envio e-mail
-            	String cliente = ManipulaString.limpaCampo(nota.getDestinatario().getCnpj());
-            	PessoaBean pes = PessoaBean.getByOID(cliente);
-            	System.out.print(pes.getEMail()+"....");
-            	if(JavaUtil.doValida(pes.getEMail())){
-            		if(Parametro_FixoED.getInstancia().getNM_Empresa().equals("TSG")){
-            			System.out.println("EMAIL....");
-                    	String caminho = "/data/doc-e/nfe/"+ManipulaString.limpaCampo(nota.getEmitente().getCnpj())+"/";
-                    	String arq = nota.getChaveAcesso()+"-procNFe.xml";
-                    	//Aqui manda o e-mail...
-                    	EmailED mail = new EmailED();
-                    	mail.setNM_Host("smtp.transmiro.com.br"); //host
-                    	mail.setNM_Email_Origem("nfe@silveiragomes.com.br"); //sender
-                    	mail.setNM_Username("nfe@transmiro.com.br"); //user
-                    	mail.setNM_Protocolo("smtp");
-                    	mail.setNM_Senha("tr20nf15"); //pass
-                    	mail.setNM_Subject("TSG, arquivos XML e PDF de emissao da NFE "+nota.getNNF()); //subject
-                    	mail.setNM_Email_Destino(pes.getEMail()+";nfe@silveiragomes.com.br"); //to
-//                    	mail.setNM_Email_Destino("teo@nalthus.com.br"); //to
-                    	mail.setTX_Mensagem(" </br><strong>A TRANSPORTES SILVEIRA GOMES acaba de EMITIR a NFe acima para sua empresa.</strong></br> Em anexo os arquivos XML e PDF desta NFe.</br>" +
-                    			"<font color=red>*** Esta eh uma mensagem automatica, <strong>NAO RESPONDA ESTA MENSAGEM!</strong> ***</font></br></br></br></br>"); //message
-                    	mail.setNM_Path(caminho); //path of attachment
-                    	mail.setNM_File(arq); //file to attach
-                    	mail.setNM_Path2(Configuracoes.getInstance().getAppDir() + "/relatorios/out/"); //path of attachment
-                    	mail.setNM_File2("DANFE" + nota.getNNF() + ".pdf"); //file to attach
-                    	mail.setNR_Porta("25"); //port to server
-                    	mail.setDM_Autenticacao("S"); //auth: S / N
-//                    	Mailer.sendMail(mail);
-            		} else {
-            			System.out.println("EMAIL....");
-                    	String caminho = "/data/doc-e/nfe/"+ManipulaString.limpaCampo(nota.getEmitente().getCnpj())+"/";
-                    	String arq = nota.getChaveAcesso()+"-procNFe.xml";
-                    	//Aqui manda o e-mail...
-                    	EmailED mail = new EmailED();
-                    	mail.setNM_Host("smtp.mirolog.com.br"); //host
-                    	mail.setNM_Email_Origem("nfe@mirolog.com.br"); //sender
-                    	mail.setNM_Username("nfe@mirolog.com.br"); //user
-                    	mail.setNM_Protocolo("smtp");
-                    	mail.setNM_Senha("tr20nf15"); //pass
-                    	mail.setNM_Subject("TRANSMIRO, arquivos XML e PDF de emissao da NFE "+nota.getNNF()); //subject
-                    	mail.setNM_Email_Destino(pes.getEMail()+";nfe@mirolog.com.br"); //to
-//                    	mail.setNM_Email_Destino("teo@nalthus.com.br"); //to
-                    	mail.setTX_Mensagem(" </br><strong>A TRANSMIRO acaba de EMITIR a NFe acima para sua empresa.</strong></br> Em anexo os arquivos XML e PDF desta NFe.</br>" +
-                    			"<font color=red>*** Esta eh uma mensagem automatica, <strong>NAO RESPONDA ESTA MENSAGEM!</strong> ***</font></br></br></br></br>"); //message
-                    	mail.setNM_Path(caminho); //path of attachment
-                    	mail.setNM_File(arq); //file to attach
-                    	mail.setNM_Path2(Configuracoes.getInstance().getAppDir() + "/relatorios/out/"); //path of attachment
-                    	mail.setNM_File2("DANFE" + nota.getNNF() + ".pdf"); //file to attach
-                    	mail.setNR_Porta("25"); //port to server
-                    	mail.setDM_Autenticacao("S"); //auth: S / N
-//                    	Mailer.sendMail(mail);
-            		}
-            	}
-            	response.setHeader("application/pdf", "Content-Type");
-                response.setHeader("Content-Disposition:","inline; filename=" + "DANFE" + nota.getNNF() + ".pdf");
-                response.setContentType("application/pdf");
-                new EnviaPDF().enviaArquivo(response, arqPDF);
-
-//            	this.imprimeDANFE(nota, response);
-
-            } else if(nota.getcStat().intValue()==110){
-            	
-//            	this.denegacaoNFVenda((Nota_Fiscal_EletronicaED)listaNotasFiscais.get(0));
-            }
-            else {
-            	throw new Excecoes("NF RECUSADA! C�d. "+nota.getcStat().intValue()+" | Desc.:"+nota.getxMotivo());
-            }
-        } catch (Excecoes e) {
+            return nota;
+            
+    	} catch (Excecoes e) {
             this.abortaTransacao();
             e.printStackTrace();
             throw e;
@@ -997,6 +927,98 @@ public class Nota_Fiscal_EletronicaRN extends Transacao {
             e.printStackTrace();
             throw new Excecoes();
         }
+    }
+
+    public void geraNFe_old(ArrayList listaNotasFiscais, String dtSaida, String hrSaida, HttpServletResponse response) throws Excecoes {
+
+//        try {
+//            this.inicioTransacao();
+//            TNFe nota = new Nota_Fiscal_EletronicaBD(this.sql).geraNFe(listaNotasFiscais, dtSaida, hrSaida);
+//            this.fimTransacao(true);
+////            if(nota.getcStat().intValue()==100){
+////
+////            	String arqPDF = this.imprimeDANFE(nota);
+////
+////            	//envio e-mail
+////            	String cliente = ManipulaString.limpaCampo(nota.getDestinatario().getCnpj());
+////            	PessoaBean pes = PessoaBean.getByOID(cliente);
+////            	System.out.print(pes.getEMail()+"....");
+////            	if(JavaUtil.doValida(pes.getEMail())){
+////            		if(Parametro_FixoED.getInstancia().getNM_Empresa().equals("TSG")){
+////            			System.out.println("EMAIL....");
+////                    	String caminho = "/data/doc-e/nfe/"+ManipulaString.limpaCampo(nota.getEmitente().getCnpj())+"/";
+////                    	String arq = nota.getChaveAcesso()+"-procNFe.xml";
+////                    	//Aqui manda o e-mail...
+////                    	EmailED mail = new EmailED();
+////                    	mail.setNM_Host("smtp.transmiro.com.br"); //host
+////                    	mail.setNM_Email_Origem("nfe@silveiragomes.com.br"); //sender
+////                    	mail.setNM_Username("nfe@transmiro.com.br"); //user
+////                    	mail.setNM_Protocolo("smtp");
+////                    	mail.setNM_Senha("tr20nf15"); //pass
+////                    	mail.setNM_Subject("TSG, arquivos XML e PDF de emissao da NFE "+nota.getNNF()); //subject
+////                    	mail.setNM_Email_Destino(pes.getEMail()+";nfe@silveiragomes.com.br"); //to
+//////                    	mail.setNM_Email_Destino("teo@nalthus.com.br"); //to
+////                    	mail.setTX_Mensagem(" </br><strong>A TRANSPORTES SILVEIRA GOMES acaba de EMITIR a NFe acima para sua empresa.</strong></br> Em anexo os arquivos XML e PDF desta NFe.</br>" +
+////                    			"<font color=red>*** Esta eh uma mensagem automatica, <strong>NAO RESPONDA ESTA MENSAGEM!</strong> ***</font></br></br></br></br>"); //message
+////                    	mail.setNM_Path(caminho); //path of attachment
+////                    	mail.setNM_File(arq); //file to attach
+////                    	mail.setNM_Path2(Configuracoes.getInstance().getAppDir() + "/relatorios/out/"); //path of attachment
+////                    	mail.setNM_File2("DANFE" + nota.getNNF() + ".pdf"); //file to attach
+////                    	mail.setNR_Porta("25"); //port to server
+////                    	mail.setDM_Autenticacao("S"); //auth: S / N
+//////                    	Mailer.sendMail(mail);
+////            		} else {
+////            			System.out.println("EMAIL....");
+////                    	String caminho = "/data/doc-e/nfe/"+ManipulaString.limpaCampo(nota.getEmitente().getCnpj())+"/";
+////                    	String arq = nota.getChaveAcesso()+"-procNFe.xml";
+////                    	//Aqui manda o e-mail...
+////                    	EmailED mail = new EmailED();
+////                    	mail.setNM_Host("smtp.mirolog.com.br"); //host
+////                    	mail.setNM_Email_Origem("nfe@mirolog.com.br"); //sender
+////                    	mail.setNM_Username("nfe@mirolog.com.br"); //user
+////                    	mail.setNM_Protocolo("smtp");
+////                    	mail.setNM_Senha("tr20nf15"); //pass
+////                    	mail.setNM_Subject("TRANSMIRO, arquivos XML e PDF de emissao da NFE "+nota.getNNF()); //subject
+////                    	mail.setNM_Email_Destino(pes.getEMail()+";nfe@mirolog.com.br"); //to
+//////                    	mail.setNM_Email_Destino("teo@nalthus.com.br"); //to
+////                    	mail.setTX_Mensagem(" </br><strong>A TRANSMIRO acaba de EMITIR a NFe acima para sua empresa.</strong></br> Em anexo os arquivos XML e PDF desta NFe.</br>" +
+////                    			"<font color=red>*** Esta eh uma mensagem automatica, <strong>NAO RESPONDA ESTA MENSAGEM!</strong> ***</font></br></br></br></br>"); //message
+////                    	mail.setNM_Path(caminho); //path of attachment
+////                    	mail.setNM_File(arq); //file to attach
+////                    	mail.setNM_Path2(Configuracoes.getInstance().getAppDir() + "/relatorios/out/"); //path of attachment
+////                    	mail.setNM_File2("DANFE" + nota.getNNF() + ".pdf"); //file to attach
+////                    	mail.setNR_Porta("25"); //port to server
+////                    	mail.setDM_Autenticacao("S"); //auth: S / N
+//////                    	Mailer.sendMail(mail);
+////            		}
+////            	}
+////            	response.setHeader("application/pdf", "Content-Type");
+////                response.setHeader("Content-Disposition:","inline; filename=" + "DANFE" + nota.getNNF() + ".pdf");
+////                response.setContentType("application/pdf");
+////                new EnviaPDF().enviaArquivo(response, arqPDF);
+////
+//////            	this.imprimeDANFE(nota, response);
+////
+////            } else if(nota.getcStat().intValue()==110){
+////            	
+//////            	this.denegacaoNFVenda((Nota_Fiscal_EletronicaED)listaNotasFiscais.get(0));
+////            }
+////            else {
+////            	throw new Excecoes("NF RECUSADA! C�d. "+nota.getcStat().intValue()+" | Desc.:"+nota.getxMotivo());
+////            }
+//        } catch (Excecoes e) {
+//            this.abortaTransacao();
+//            e.printStackTrace();
+//            throw e;
+//        } catch(RuntimeException e) {
+//            this.abortaTransacao();
+//            e.printStackTrace();
+//            throw e;
+//        } catch(Exception e){
+//        	this.abortaTransacao();
+//            e.printStackTrace();
+//            throw new Excecoes();
+//        }
     }
 
     public String imprimeDANFE(NfeNotaFiscal nota) throws Exception {
