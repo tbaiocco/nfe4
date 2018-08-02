@@ -55,7 +55,9 @@ import com.master.util.ed.Parametro_FixoED;
 
 import br.com.samuelweb.nfe.dom.ConfiguracoesWebNfe;
 import br.cte.model.Empresa;
+import br.inf.portalfiscal.nfe.schema_4.enviNFe.TEnviNFe;
 import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe;
+import br.inf.portalfiscal.nfe.schema_4.enviNFe.TRetEnviNFe;
 import br.nfe.core.BeanDanfeItens;
 import br.nfe.model.NfeInutilizacao;
 import br.nfe.model.NfeLote;
@@ -66,13 +68,24 @@ import br.servicos.NfeServicos;
 
 
 public class Nota_Fiscal_EletronicaRN extends Transacao {
+	
+	Empresa empresa;
 
-    public Nota_Fiscal_EletronicaRN() {
+    public Empresa getEmpresa() {
+		return empresa;
+	}
+
+	public void setEmpresa(Empresa empresa) {
+		this.empresa = empresa;
+	}
+
+	public Nota_Fiscal_EletronicaRN() {
     	super();
     }
     
     public Nota_Fiscal_EletronicaRN(Empresa empresa) {
 		super(empresa);
+		this.empresa = empresa;
 	}
 
     public Nota_Fiscal_EletronicaED inclui(Nota_Fiscal_EletronicaED ed) throws Excecoes {
@@ -799,12 +812,12 @@ public class Nota_Fiscal_EletronicaRN extends Transacao {
 	                CidadeBean edCidade_Dest = new CidadeBean();
 	                try{
 		                //*** Estado ORIGEM
-	                	edCidade_Orig = CidadeBean.getByOID(bancoUtil.getTableIntValue("oid_Cidade",
+	                	edCidade_Orig = CidadeBean.getByOID(null, bancoUtil.getTableIntValue("oid_Cidade",
                                                                                     "Pessoas",
                                                                                     "oid_Pessoa = '"+oidPessoaOrigem+"'"));
 
 	                	//*** Estado DESTINO
-	                	edCidade_Dest = CidadeBean.getByOID(bancoUtil.getTableIntValue("oid_Cidade",
+	                	edCidade_Dest = CidadeBean.getByOID(null, bancoUtil.getTableIntValue("oid_Cidade",
 	                        														"Pessoas",
 	                        														"oid_Pessoa = '"+oidPessoaDestino+"'"));
 	                } catch(Exception exc) {
@@ -911,7 +924,7 @@ public class Nota_Fiscal_EletronicaRN extends Transacao {
     public TNFe geraNFe(String oid_nota_fiscal, String dtSaida, String hrSaida) throws Excecoes {
     	try {
             this.inicioTransacao();
-            TNFe nota = new Nota_Fiscal_EletronicaBD(this.sql).geraNFe(new Nota_Fiscal_EletronicaED(oid_nota_fiscal), dtSaida, hrSaida);
+            TNFe nota = new Nota_Fiscal_EletronicaBD(this.sql).geraNFe(empresa, new Nota_Fiscal_EletronicaED(oid_nota_fiscal), dtSaida, hrSaida);
             this.fimTransacao(true);
             return nota;
             
@@ -1083,11 +1096,11 @@ public class Nota_Fiscal_EletronicaRN extends Transacao {
         }
     }
 
-    public String updateRetornoNFE(Nota_Fiscal_EletronicaED ed, NfeLote retorno, NfeRetornoEnvioLote ret) throws Excecoes {
+    public String updateRetornoNFE(Nota_Fiscal_EletronicaED ed, TRetEnviNFe retorno, TEnviNFe enviNFe) throws Excecoes {
 
         try {
             this.inicioTransacao();
-            String toReturn = new Nota_Fiscal_EletronicaBD(this.sql).updateRetornoNFE(ed, retorno, ret);
+            String toReturn = new Nota_Fiscal_EletronicaBD(this.sql).updateRetornoNFE(ed, retorno, enviNFe);
             this.fimTransacao(true);
             return toReturn;
         } catch (Excecoes e) {
@@ -1105,11 +1118,11 @@ public class Nota_Fiscal_EletronicaRN extends Transacao {
         }
     }
 
-    public void enviaNFE_cancelada(Nota_Fiscal_EletronicaED ed, ConfiguracoesWebNfe config) throws Excecoes {
+    public void enviaNFE_cancelada(Empresa empresa, Nota_Fiscal_EletronicaED ed, ConfiguracoesWebNfe config) throws Excecoes {
 
         try {
             this.inicioTransacao();
-            new Nota_Fiscal_EletronicaBD(this.sql).cancelaNFE(ed, config);
+            new Nota_Fiscal_EletronicaBD(this.sql).cancelaNFE(empresa, ed, config);
             this.fimTransacao(true);
         } catch(Excecoes e) {
             this.abortaTransacao();

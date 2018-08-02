@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import auth.OracleConnection2;
+import br.cte.model.Empresa;
 
 import com.master.ed.CidadeED;
 import com.master.rn.CidadeRN;
@@ -172,7 +173,7 @@ public class CidadeBean
   }
 
   /*
-   *---------------- Bloco Padrão para Todas Classes ------------------
+   *---------------- Bloco Padrï¿½o para Todas Classes ------------------
    */
   public String getUsuario_Stamp () {
     return Usuario_Stamp;
@@ -240,13 +241,13 @@ public class CidadeBean
 
   public void insert () throws Exception {
     /*
-     * Abre a conexão com o banco
+     * Abre a conexï¿½o com o banco
      */
     Connection conn = null;
     try {
-      // Pede uma conexão ao gerenciador do driver
-      // passando como parâmetro o NM_Cidade do DSN
-      // o NM_Cidade de usuário e a senha do banco.
+      // Pede uma conexï¿½o ao gerenciador do driver
+      // passando como parï¿½metro o NM_Cidade do DSN
+      // o NM_Cidade de usuï¿½rio e a senha do banco.
       conn = OracleConnection2.getWEB ();
       conn.setAutoCommit (false);
     }
@@ -255,7 +256,7 @@ public class CidadeBean
       throw e;
     }
     /*
-     * Gera um novo código (OID)
+     * Gera um novo cï¿½digo (OID)
      */
     try {
       Statement stmt = conn.createStatement ();
@@ -305,7 +306,7 @@ public class CidadeBean
       throw e;
     }
     /*
-     * Faz o commit e fecha a conexão.
+     * Faz o commit e fecha a conexï¿½o.
      */
     try {
       conn.commit ();
@@ -319,7 +320,7 @@ public class CidadeBean
 
   public void insert (String nm_cidade , String cd_estado) throws Exception {
     /*
-     * Abre a conexão com o banco
+     * Abre a conexï¿½o com o banco
      */
 
     nm_cidade = (nm_cidade + "                                          ").substring (0 , 40);
@@ -328,9 +329,9 @@ public class CidadeBean
 
     Connection conn = null;
     try {
-      // Pede uma conexão ao gerenciador do driver
-      // passando como parâmetro o NM_Cidade do DSN
-      // o NM_Cidade de usuário e a senha do banco.
+      // Pede uma conexï¿½o ao gerenciador do driver
+      // passando como parï¿½metro o NM_Cidade do DSN
+      // o NM_Cidade de usuï¿½rio e a senha do banco.
       conn = OracleConnection2.getWEB ();
       conn.setAutoCommit (false);
     }
@@ -364,7 +365,7 @@ public class CidadeBean
       throw e;
     }
     /*
-     * Faz o commit e fecha a conexão.
+     * Faz o commit e fecha a conexï¿½o.
      */
     try {
       conn.commit ();
@@ -378,13 +379,13 @@ public class CidadeBean
 
   public void update () throws Exception {
     /*
-     * Abre a conexão com o banco
+     * Abre a conexï¿½o com o banco
      */
     Connection conn = null;
     try {
-      // Pede uma conexão ao gerenciador do driver
-      // passando como parâmetro o NM_Cidade do DSN
-      // o NM_Cidade de usuário e a senha do banco.
+      // Pede uma conexï¿½o ao gerenciador do driver
+      // passando como parï¿½metro o NM_Cidade do DSN
+      // o NM_Cidade de usuï¿½rio e a senha do banco.
       conn = OracleConnection2.getWEB ();
       conn.setAutoCommit (false);
     }
@@ -422,7 +423,7 @@ public class CidadeBean
       throw e;
     }
     /*
-     * Faz o commit e fecha a conexão.
+     * Faz o commit e fecha a conexï¿½o.
      */
     try {
       conn.commit ();
@@ -436,13 +437,13 @@ public class CidadeBean
 
   public void delete () throws Exception {
     /*
-     * Abre a conexão com o banco
+     * Abre a conexï¿½o com o banco
      */
     Connection conn = null;
     try {
-      // Pede uma conexão ao gerenciador do driver
-      // passando como parâmetro o NM_Cidade do DSN
-      // o NM_Cidade de usuário e a senha do banco.
+      // Pede uma conexï¿½o ao gerenciador do driver
+      // passando como parï¿½metro o NM_Cidade do DSN
+      // o NM_Cidade de usuï¿½rio e a senha do banco.
       conn = OracleConnection2.getWEB ();
       conn.setAutoCommit (false);
     }
@@ -472,7 +473,7 @@ public class CidadeBean
       throw e;
     }
     /*
-     * Faz o commit e fecha a conexão.
+     * Faz o commit e fecha a conexï¿½o.
      */
     try {
       conn.commit ();
@@ -484,10 +485,10 @@ public class CidadeBean
     }
   }
 
-  public static final CidadeBean getByOID (int oid) throws Exception {
-    // Abre a conexão com o banco
-    Connection conn = OracleConnection2.getWEB ();
-    conn.setAutoCommit (false);
+  public static final CidadeBean getByOID (Empresa empresa, int oid) throws Exception {
+    // Abre a conexï¿½o com o banco
+    Connection conn = OracleConnection2.getWEB (empresa);
+    conn.setAutoCommit (false); 
 
     CidadeBean p = new CidadeBean ();
     StringBuffer buff = new StringBuffer ();
@@ -560,7 +561,7 @@ public class CidadeBean
   }
 
   public static final CidadeBean getByCD_Cidade (String CD_Cidade) throws Exception {
-    // Abre a conexão com o banco
+    // Abre a conexï¿½o com o banco
     Connection conn = OracleConnection2.getWEB ();
     conn.setAutoCommit (false);
 
@@ -631,7 +632,7 @@ public class CidadeBean
   }
 
   public static final CidadeBean getByCidade (String NM_Cidade , String CD_Estado) throws Exception {
-    // Abre a conexão com o banco
+    // Abre a conexï¿½o com o banco
     Connection conn = OracleConnection2.getWEB ();
     conn.setAutoCommit (false);
 
@@ -700,13 +701,13 @@ public class CidadeBean
 
   public static final List getByNM_Cidade (String NM_Cidade) throws Exception {
     /*
-     * Abre a conexão com o banco
+     * Abre a conexï¿½o com o banco
      */
     Connection conn = null;
     try {
-      // Pede uma conexão ao gerenciador do driver
-      // passando como parâmetro o NM_Cidade do DSN
-      // o NM_Cidade de usuário e a senha do banco.
+      // Pede uma conexï¿½o ao gerenciador do driver
+      // passando como parï¿½metro o NM_Cidade do DSN
+      // o NM_Cidade de usuï¿½rio e a senha do banco.
       conn = OracleConnection2.getWEB ();
       conn.setAutoCommit (false);
     }
@@ -788,13 +789,13 @@ public class CidadeBean
 
   public static final List getByCidade (String NM_Cidade , String oid_Pais , String oid_Regiao_Pais , String oid_Estado , String oid_Regiao_Estado) throws Exception {
     /*
-     * Abre a conexão com o banco
+     * Abre a conexï¿½o com o banco
      */
     Connection conn = null;
     try {
-      // Pede uma conexão ao gerenciador do driver
-      // passando como parâmetro o NM_Cidade do DSN
-      // o NM_Cidade de usuário e a senha do banco.
+      // Pede uma conexï¿½o ao gerenciador do driver
+      // passando como parï¿½metro o NM_Cidade do DSN
+      // o NM_Cidade de usuï¿½rio e a senha do banco.
       conn = OracleConnection2.getWEB ();
       conn.setAutoCommit (false);
     }
@@ -894,9 +895,9 @@ public class CidadeBean
   public static final List getAll () throws Exception {
     Connection conn = null;
     try {
-      // Pede uma conexão ao gerenciador do driver
-      // passando como parâmetro o nome do DSN
-      // o nome de usuário e a senha do banco.
+      // Pede uma conexï¿½o ao gerenciador do driver
+      // passando como parï¿½metro o nome do DSN
+      // o nome de usuï¿½rio e a senha do banco.
       conn = OracleConnection2.getWEB ();
       conn.setAutoCommit (false);
     }
@@ -984,7 +985,7 @@ public class CidadeBean
 
       BufferedReader buff = man.leArquivo ("C:\\temp\\cidade.txt");
 
-      //Tod a esta rotina terá de ser feita para ler uma linha
+      //Tod a esta rotina terï¿½ de ser feita para ler uma linha
       //e depois ler cada elemento
       //separado pelo delimitador
       StringTokenizer st = null;
@@ -1033,7 +1034,7 @@ public class CidadeBean
           throw e;
         }
         /*
-         * Faz o commit e fecha a conexão.
+         * Faz o commit e fecha a conexï¿½o.
          */
         try {
           conn.commit ();
@@ -1072,7 +1073,7 @@ public class CidadeBean
 
       while (cursor.next ()) {
         int oid_Cidade = cursor.getInt ("oid_cidade");
-        String nm_Cidade = (cursor.getString ("nm_cidade")).replace ('\'' , '´');
+        String nm_Cidade = (cursor.getString ("nm_cidade")).replace ('\'' , 'ï¿½');
 
 //				// System.out.println("CidadeBean.retiraAspasNomeCidade() oid_Cidade="+oid_Cidade+" nm_Cidade="+nm_Cidade);
 
@@ -1106,7 +1107,7 @@ public class CidadeBean
     }
   }
 
-  //*** Relatório de Movimentos de Ordem de Servico
+  //*** Relatï¿½rio de Movimentos de Ordem de Servico
    public void relCidades (HttpServletRequest request , HttpServletResponse response) throws Excecoes {
      String Relatorio = request.getParameter ("Relatorio");
      String oid_Regiao_Estado = request.getParameter ("oid_Regiao_Estado");
@@ -1115,7 +1116,7 @@ public class CidadeBean
      String descFiltro = "";
 
      if (!JavaUtil.doValida (Relatorio)) {
-       throw new Mensagens ("Nome do Relatório não informado!");
+       throw new Mensagens ("Nome do Relatï¿½rio nï¿½o informado!");
      }
 
      CidadeED ed = new CidadeED (response , Relatorio);

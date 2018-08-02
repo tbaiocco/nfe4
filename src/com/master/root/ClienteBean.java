@@ -26,6 +26,7 @@ import com.master.util.bd.ExecutaSQL;
 import com.master.util.ed.Parametro_FixoED;
 
 import auth.OracleConnection2;
+import br.cte.model.Empresa;
 
 public class ClienteBean {
   private ExecutaSQL executasql;
@@ -784,7 +785,7 @@ public class ClienteBean {
     try {
 
       ClienteBean Cliente = new ClienteBean ();
-      Cliente = ClienteBean.getByOID_Cliente (Parametro_FixoED.getInstancia ().getOID_Cliente_Complemento_Padrao ());
+      Cliente = ClienteBean.getByOID_Cliente (null, Parametro_FixoED.getInstancia ().getOID_Cliente_Complemento_Padrao ());
       Cliente.setOID_Pessoa (oid_Pessoa);
       Cliente.setOID_Cliente (oid_Pessoa);
       Cliente.setOID_Cliente_Pagador(oid_Pessoa);
@@ -1883,11 +1884,11 @@ public class ClienteBean {
     }
   }
 
-  public static final ClienteBean getByOID_Cliente (String oid) throws Exception {
+  public static final ClienteBean getByOID_Cliente (Empresa empresa, String oid) throws Exception {
     Connection conn = null;
     ExecutaSQL executasql = new ExecutaSQL ();
     try {
-      conn = OracleConnection2.getWEB ();
+      conn = OracleConnection2.getWEB (empresa);
       conn.setAutoCommit (false);
       executasql.setConnection (conn);
     }
@@ -2082,7 +2083,7 @@ public class ClienteBean {
         p.setOid_Pessoa_Parceiro (cursor.getString (63));
         p.setNM_Endereco (cursor.getString (64));
         p.setOID_Cidade (String.valueOf (cursor.getInt (65)));
-        CidadeBean cidade = CidadeBean.getByOID (cursor.getInt (65));
+        CidadeBean cidade = CidadeBean.getByOID (empresa, cursor.getInt (65));
         p.setNM_Cidade (cidade.getNM_Cidade ());
         p.setCD_Estado (cidade.getCD_Estado ());
         p.setOid_Produto (cursor.getInt ("oid_Produto"));
@@ -2328,7 +2329,7 @@ public class ClienteBean {
         p.setOid_Pessoa_Parceiro (cursor.getString (63));
         p.setNM_Endereco (cursor.getString (64));
         p.setOID_Cidade (String.valueOf (cursor.getInt (65)));
-        CidadeBean cidade = CidadeBean.getByOID (cursor.getInt (65));
+        CidadeBean cidade = CidadeBean.getByOID (null, cursor.getInt (65));
         p.setNM_Cidade (cidade.getNM_Cidade ());
         p.setCD_Estado (cidade.getCD_Estado ());
         p.setOid_Produto (cursor.getInt ("oid_Produto"));
@@ -2541,7 +2542,7 @@ public class ClienteBean {
         p.setOid_Pessoa_Parceiro (cursor.getString (63));
         p.setNM_Endereco (cursor.getString (64));
         p.setOID_Cidade (String.valueOf (cursor.getInt (65)));
-        CidadeBean cidade = CidadeBean.getByOID (cursor.getInt (65));
+        CidadeBean cidade = CidadeBean.getByOID (null, cursor.getInt (65));
         p.setNM_Cidade (cidade.getNM_Cidade ());
         p.setCD_Estado (cidade.getCD_Estado ());
         p.setOid_Produto (cursor.getInt ("oid_Produto"));
@@ -3826,7 +3827,7 @@ public class ClienteBean {
     if (JavaUtil.doValida (oid_Cliente)) {
       RelatorioED ed = new RelatorioED ();
       //ClienteBean edVolta = getByOID_Cliente(oid_Vendedor);
-      ClienteBean edVolta = getByOID_Cliente (oid_Cliente);
+      ClienteBean edVolta = getByOID_Cliente (null, oid_Cliente);
       ed.setNr_cnpj_cpf (edVolta.getNR_CNPJ_CPF ());
       ed.setNm_razao_social (edVolta.getNM_Razao_Social ());
       PessoaBean edPessoa = PessoaBean.getByEndereco_Completo (ed.getNr_cnpj_cpf ());
@@ -3936,7 +3937,7 @@ public class ClienteBean {
     	update_Movimentacao(oid_Cliente);
       RelatorioED ed = new RelatorioED ();
       //ClienteBean edVolta = getByOID_Cliente(oid_Vendedor);
-      ClienteBean edVolta = getByOID_Cliente (oid_Cliente);
+      ClienteBean edVolta = getByOID_Cliente (null, oid_Cliente);
       ed.setNr_cnpj_cpf (edVolta.getNR_CNPJ_CPF ());
       ed.setNm_razao_social (edVolta.getNM_Razao_Social ());
       PessoaBean edPessoa = PessoaBean.getByEndereco_Completo (ed.getNr_cnpj_cpf ());

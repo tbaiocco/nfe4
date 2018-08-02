@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 
 import com.master.ed.CompromissoED;
 import com.master.ed.ConhecimentoED;
@@ -46,6 +47,7 @@ import com.master.root.UnidadeBean;
 import com.master.util.BancoUtil;
 import com.master.util.Data;
 import com.master.util.Excecoes;
+import com.master.util.FormataData;
 import com.master.util.JavaUtil;
 import com.master.util.ManipulaString;
 import com.master.util.Mensagens;
@@ -55,7 +57,7 @@ import com.master.util.bd.ExecutaSQL;
 import com.master.util.ed.Parametro_FixoED;
 
 import br.nfe.core.base.EmpresaDb;
-import br.nfe.model.Empresa;
+import br.cte.model.Empresa;
 import br.nfe.model.NfeCce;
 import br.nfe.model.NfeDestinatario;
 import br.nfe.model.NfeEmitente;
@@ -3411,7 +3413,7 @@ System.out.println(sql);
      *  @return NfeNotaFiscal nota para ser impressa ou NfeNotaFiscal vazio no caso de algum erro
      *  @throws Excecoes
      * */
-    public TNFe geraNFe(Nota_Fiscal_EletronicaED nota, String dtSaida, String hrSaida) throws Excecoes {
+    public TNFe geraNFe(Empresa empresa, Nota_Fiscal_EletronicaED nota, String dtSaida, String hrSaida) throws Excecoes {
 
     	TNFe nfeReturn = new TNFe();
         try {
@@ -3422,6 +3424,7 @@ System.out.println(sql);
             String toReturn = "";
             String sqlUpdate = "";
 
+            DecimalFormat dec = new DecimalFormat("#0.00");
             //*** Variveis
             ResultSet resLocal = null;
             String sqlBusca = null;
@@ -3459,14 +3462,14 @@ System.out.println(sql);
                 ArrayList lista = new Item_Nota_Fiscal_TransacoesBD(executasql).lista(new Item_Nota_Fiscal_TransacoesED(ed.getOid_nota_fiscal()));
                 Natureza_OperacaoED edCFOP = new Natureza_OperacaoBD(executasql).getByRecord(new Natureza_OperacaoED(new Integer((int)ed.getOid_natureza_operacao())));
 
-                ClienteBean edCliente = ClienteBean.getByOID_Cliente(ed.getOid_pessoa_destinatario());
+                ClienteBean edCliente = ClienteBean.getByOID_Cliente(empresa, ed.getOid_pessoa_destinatario());
 //                ClienteBean edCliente = ClienteBean.getByOID_Cliente_Nota(ed.getOid_pessoa_destinatario());
 
                 PessoaED edPessoa = new PessoaBD(executasql).getByRecord(new PessoaED(ed.getOid_pessoa_destinatario()));
 
                 int oid_uni = new Integer (String.valueOf(ed.getOID_Unidade_Fiscal())).intValue();
 
-                UnidadeBean unidade_Remetente = new UnidadeBean().getByOID_Unidade(oid_uni);;
+                UnidadeBean unidade_Remetente = new UnidadeBean().getByOID_Unidade(empresa, oid_uni);
 
 //                PessoaED edTransportador = new PessoaBD(executasql).getByRecord(new PessoaED(unidade_Remetente.getOID_Pessoa()));
                 PessoaED edTransportador = new PessoaED();
@@ -3536,7 +3539,7 @@ System.out.println(sql);
                         //old
 //                    	this.setNrSerieNotaFromAIDOF(ed, pWMS.getCd_Aidof_Nota_Fiscal_Devolucao());
                     	//nova numeracao
-                    	new Nota_Fiscal_EletronicaRN().numeraNFe(ed, pWMS.getCd_Aidof_Nota_Fiscal_Devolucao());
+                    	new Nota_Fiscal_EletronicaRN(empresa).numeraNFe(ed, pWMS.getCd_Aidof_Nota_Fiscal_Devolucao());
                     }
                     sqlUpdate = "UPDATE Notas_Fiscais SET " +
                                 "DM_Impresso = 'S' " +
@@ -3555,7 +3558,7 @@ System.out.println(sql);
 //                    		   ",unikey = '" + ed.getOid_pessoa() + String.valueOf(ed.getNr_nota_fiscal()) + ed.getNm_serie() + "' " +
                                "WHERE oid_Nota_Fiscal = '"+ed.getOid_nota_fiscal()+"' ";
 
-//System.out.println("printNotaFiscalSaida ->>" +sqlUpdate);
+System.out.println("printNotaFiscalSaida ->>" +sqlUpdate);
 
                     executasql.executarUpdate(sqlUpdate);
                     // RALPH
@@ -3576,13 +3579,13 @@ System.out.println(sql);
                 nrNotaAtual++;
 //              Nota Fiscal
                 TNFe.InfNFe infNFe = new InfNFe();
-                CidadeBean orig = CidadeBean.getByOID((int)unidade.getOid_Cidade());
+                CidadeBean orig = CidadeBean.getByOID(empresa, (int)unidade.getOid_Cidade());
     			String uIBGE_UF = getTableStringValue("nm_codigo_ibge", "estados", "oid_estado="+orig.getOID_Estado());
                 
-                String rnd = String.valueOf(System.currentTimeMillis());
-                CidadeBean origem = CidadeBean.getByOID((int)unidade.getOid_Cidade());
+                String rnd = String.valueOf(JavaUtil.truncInverse(System.currentTimeMillis(), 8));
+                CidadeBean origem = CidadeBean.getByOID(empresa, (int)unidade.getOid_Cidade());
     			String cIBGE_UF = getTableStringValue("nm_codigo_ibge", "estados", "oid_estado="+origem.getOID_Estado());
-    			CidadeBean destino = CidadeBean.getByOID((int)edPessoa.getOid_Cidade());
+    			CidadeBean destino = CidadeBean.getByOID(empresa, (int)edPessoa.getOid_Cidade());
     			String dIBGE_UF = getTableStringValue("nm_codigo_ibge", "estados", "oid_estado="+destino.getOID_Estado());
     	        if(!JavaUtil.doValida(edCliente.getOid_Pessoa())){
     				throw new Excecoes("Problemas com o destinatário: "+edPessoa.getNM_Razao_Social()+".\nDeve ser cadastrado como cliente...");
@@ -3600,23 +3603,25 @@ System.out.println(sql);
                 						doValida(ed.getNm_serie())&&"NF10".equals(ed.getNm_serie())?"2" :
                 				ed.getNm_serie();
                 
+                SimpleDateFormat dtUTC = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+                
              // Dados Nfe
                 Ide ide = new Ide();
-                ide.setCUF(cIBGE_UF);
+                ide.setCUF(uIBGE_UF);
                 ide.setCNF(rnd);
                 ide.setNatOp(edCFOP.getNm_Natureza_Operacao());
                 ide.setMod("55");
                 ide.setSerie(ser);
                 ide.setNNF(String.valueOf(ed.getNr_nota_fiscal()));
-                ide.setDhEmi(ed.getDt_emissao());
-                ide.setDhSaiEnt(getValueDef(dtSaida, ed.getDt_emissao()));
+                ide.setDhEmi(dtUTC.format(FormataData.formataDataTB(ed.getDt_emissao()))+"-03:00");
+                ide.setDhSaiEnt(dtUTC.format(FormataData.formataDataTB(getValueDef(dtSaida, ed.getDt_emissao())))+"-03:00");
                 ide.setTpNF(isSaida ? "1" : "0");
                 if(origem.getOID_Estado() != destino.getOID_Estado()){
                 	ide.setIdDest("2");//fora do estado... //10-4-14 - VER 3.10
     	        } else {
     	        	ide.setIdDest("1");//dentro do estado... //10-4-14 - VER 3.10
     	        }
-//                ide.setCMunFG("xxx"); mun fato gerador
+                ide.setCMunFG(ManipulaString.limpaCampo((doValida(cIBGE_UF)?cIBGE_UF:"") + origem.getNM_Codigo_IBGE())); //mun fato gerador
                 ide.setTpImp("1");
                 ide.setTpEmis("1");
 //                ide.setCDV("xxx"); dig chave acesso
@@ -3665,7 +3670,7 @@ System.out.println(sql);
 
               //Emitente
                 Emit emit = new Emit();
-                emit.setCNPJ(JavaUtil.formataCNPJ_CPF(unidade.getNR_CNPJ_CPF()));
+                emit.setCNPJ((unidade.getNR_CNPJ_CPF()));
                 emit.setXNome(unidade.getNM_Razao_Social());
                 emit.setXFant(unidade.getNM_Fantasia());
                 
@@ -3673,17 +3678,17 @@ System.out.println(sql);
     			String numero = endereco.substring (endereco.lastIndexOf (",") + 1);
     			endereco = endereco.substring (0 , endereco.lastIndexOf (","));
                 TEnderEmi enderEmit = new TEnderEmi();
-                enderEmit.setXLgr(endereco);
+                enderEmit.setXLgr(endereco.trim());
                 enderEmit.setNro(ManipulaString.limpaCampo(numero));
-                enderEmit.setXCpl("");
+                enderEmit.setXCpl(null);
                 enderEmit.setXBairro(unidade.getNM_Bairro());
                 enderEmit.setCMun(ManipulaString.limpaCampo((doValida(cIBGE_UF)?cIBGE_UF:"") + origem.getNM_Codigo_IBGE()));
-                enderEmit.setXMun(unidade.getNM_Cidade());
+                enderEmit.setXMun(unidade.getNM_Cidade().trim());
                 enderEmit.setUF(TUfEmi.valueOf(unidade.getCD_Estado()));
                 enderEmit.setCEP(unidade.getNR_CEP());
                 enderEmit.setCPais("1058");
                 enderEmit.setXPais("BRASIL");
-                enderEmit.setFone(unidade.getNR_Telefone());
+                enderEmit.setFone(ManipulaString.limpaCampo(unidade.getNR_Telefone()));
                 emit.setEnderEmit(enderEmit);
                 emit.setIE(unidade.getNM_Inscricao_Estadual());
                 emit.setCRT("3");
@@ -3692,13 +3697,13 @@ System.out.println(sql);
               //Destinatario
                 Dest dest = new Dest();
                 if(edCliente.getNR_CNPJ_CPF().length()<14)
-                	dest.setCPF(JavaUtil.formataCNPJ_CPF(edCliente.getNR_CNPJ_CPF()));
+                	dest.setCPF((edCliente.getNR_CNPJ_CPF()));
                 else
-                	dest.setCNPJ(JavaUtil.formataCNPJ_CPF(edCliente.getNR_CNPJ_CPF()));
+                	dest.setCNPJ((edCliente.getNR_CNPJ_CPF()));
                 
                 dest.setXNome(edCliente.getNM_Razao_Social());
                 endereco = edPessoa.getNM_Endereco();
-    			String cpl = "";
+    			String cpl = null;
     			if(endereco.lastIndexOf(',')>0){
     				numero = endereco.substring (endereco.lastIndexOf (",") + 1);
         			endereco = endereco.substring (0 , endereco.lastIndexOf (","));
@@ -3709,35 +3714,32 @@ System.out.println(sql);
     				throw new Excecoes("problemas com endereco do cliente: "+edCliente.getNM_Razao_Social()+".\nDeve ter o numero separado por virgula...");
     			}
                 TEndereco enderDest = new TEndereco();
-                enderDest.setXLgr(endereco);
+                enderDest.setXLgr(endereco.trim());
                 enderDest.setNro(ManipulaString.limpaCampo(numero));
                 if(!JavaUtil.doValida(edPessoa.getNM_Bairro())){
     				throw new Excecoes("Problemas com o destinatario: "+edPessoa.getNM_Razao_Social()+".\nO campo BAIRRO eh obrigat�oio...");
     			}
-                enderDest.setXBairro(edPessoa.getNM_Bairro());
+                enderDest.setXBairro(edPessoa.getNM_Bairro().trim());
                 enderDest.setXCpl(cpl);
-                enderDest.setCMun(ManipulaString.limpaCampo((doValida(cIBGE_UF)?cIBGE_UF:"") + destino.getNM_Codigo_IBGE()));
-                enderDest.setXMun(edPessoa.getNM_Cidade());
+                enderDest.setCMun(ManipulaString.limpaCampo((doValida(dIBGE_UF)?dIBGE_UF:"") + destino.getNM_Codigo_IBGE()));
+                enderDest.setXMun(edPessoa.getNM_Cidade().trim());
                 enderDest.setUF(TUf.valueOf(edPessoa.getCD_Estado()));
                 enderDest.setCEP(ManipulaString.limpaCampo(JavaUtil.doValida(edPessoa.getNR_CEP())?edPessoa.getNR_CEP():"0"));
                 enderDest.setCPais("1058");
                 enderDest.setXPais("BRASIL");
                 enderDest.setFone(ManipulaString.limpaCampo(edPessoa.getNR_Telefone()));
                 dest.setEnderDest(enderDest);
-                dest.setEmail("");
-                dest.setIndIEDest(JavaUtil.getValueDif(edPessoa.getNM_Inscricao_Estadual(),"ISENTO"));
+                dest.setEmail(null);
+                dest.setIE(JavaUtil.getValueDif(edPessoa.getNM_Inscricao_Estadual(),"ISENTO"));
                 infNFe.setDest(dest);
     	        
-//    	        if(!JavaUtil.doValida(edPessoa.getNM_Inscricao_Estadual())){
-//    	        	destinatario.setIndIEDest(9);//10-4-14 - VER 3.10
-//    	        } else if(edPessoa.getNM_Inscricao_Estadual().equalsIgnoreCase("ISENTO")){
-//    	        	destinatario.setIndIEDest(2);//10-4-14 - VER 3.10
-//    	        	destinatario.setIndIEDest(9);//10-4-14 - VER 3.10
-//    	        } else {
-//    	        	destinatario.setIndIEDest(1);//10-4-14 - VER 3.10
-//    	        }
-
-    	        
+    	        if(!JavaUtil.doValida(edPessoa.getNM_Inscricao_Estadual())){
+    	        	dest.setIndIEDest("9");//10-4-14 - VER 3.10
+    	        } else if(edPessoa.getNM_Inscricao_Estadual().equalsIgnoreCase("ISENTO")){
+    	        	dest.setIndIEDest("2");//10-4-14 - VER 3.10
+    	        } else {
+    	        	dest.setIndIEDest("1");//10-4-14 - VER 3.10
+    	        }
 
                 /** ---- Maximo de Itens ---- **/
                 peAliquota = 0;
@@ -3796,22 +3798,23 @@ System.out.println(sql);
                             //Produto
                             Prod prod = new Prod();
                             prod.setCProd(JavaUtil.doValida(edProduto.getCD_Fornecedor()) ? edProduto.getCD_Fornecedor() : edProduto.getCD_Produto());
-                            prod.setCEAN("");
+                            prod.setCEAN("SEM GTIN");
                             prod.setXProd(edProduto.getNM_Produto());
                             prod.setNCM(ManipulaString.limpaCampo(edProduto.getCD_Fiscal()));
-                            prod.setCEST("");
-                            prod.setIndEscala("");
+                            prod.setCEST(null);
+                            prod.setIndEscala(null);
                             Natureza_OperacaoED edCFOPDif = new Natureza_OperacaoBD(executasql).getByRecord(new Natureza_OperacaoED(new Integer((int)edItem.getOid_natureza_operacao())));
                             prod.setCFOP(edCFOPDif.getCd_Natureza_Operacao());
                             prod.setUCom(edProduto.getCD_Unidade_Produto());
-                            prod.setQCom(""+edItem.getNR_QT_Atendido());
-                            prod.setVUnCom(""+edItem.getVL_Unitario());
-                            prod.setVProd(""+edItem.getVL_Item());
-                            prod.setCEANTrib("");
+                            prod.setQCom(""+dec.format(edItem.getNR_QT_Atendido()).replace(",", "."));
+                            prod.setVUnCom(""+dec.format(edItem.getVL_Unitario()).replace(",", "."));
+                            prod.setVProd(""+dec.format(edItem.getVL_Item()).replace(",", "."));
+                            prod.setCEANTrib("SEM GTIN");
                             prod.setUTrib(edProduto.getCD_Unidade_Produto());
-                            prod.setQTrib(""+edItem.getNR_QT_Atendido());
+                            prod.setQTrib(""+dec.format(edItem.getNR_QT_Atendido()).replace(",", "."));
                             prod.setVUnTrib(prod.getVUnCom());
-                            prod.setVDesc(""+edItem.getVL_Desconto());
+                            if(edItem.getVL_Desconto() > 0)
+                            	prod.setVDesc(""+dec.format(edItem.getVL_Desconto()).replace(",", "."));
                             prod.setIndTot("1");
                             det.setProd(prod);
                         	
@@ -3823,9 +3826,9 @@ System.out.println(sql);
                             	icms00.setOrig("0");
                             	icms00.setCST("00");
                             	icms00.setModBC("3");
-                            	icms00.setVBC(""+edItem.getVL_Base_Calculo_ICMS());
-                            	icms00.setPICMS(""+edItem.getPE_Aliquota_ICMS());
-                            	icms00.setVICMS(""+edItem.getVL_ICMS_Aprov());
+                            	icms00.setVBC(""+dec.format(edItem.getVL_Base_Calculo_ICMS()).replace(",", "."));
+                            	icms00.setPICMS(""+dec.format(edItem.getPE_Aliquota_ICMS()).replace(",", "."));
+                            	icms00.setVICMS(""+dec.format(edItem.getVL_ICMS_Aprov()).replace(",", "."));
                             	icms.setICMS00(icms00);
                             } else if("090".equals(edProduto.getCD_Situacao_Tributaria())) {
                             	ICMS90 icms90 = new ICMS90();
@@ -3833,12 +3836,12 @@ System.out.println(sql);
                             	icms90.setCST("90");
                             	icms90.setModBC("3");
                             	icms90.setVBC("0");
-                            	icms90.setPICMS(""+edItem.getPE_Aliquota_ICMS());
-                            	icms90.setVICMS(""+edItem.getVL_ICMS_Aprov());
+                            	icms90.setPICMS(""+dec.format(edItem.getPE_Aliquota_ICMS()).replace(",", "."));
+                            	icms90.setVICMS(""+dec.format(edItem.getVL_ICMS_Aprov()).replace(",", "."));
                             	icms90.setPRedBC("0.01");//percentual da redu��o da BC
                             	icms.setICMS90(icms90);
                             	
-                            	prod.setVProd(""+edItem.getVL_ICMS_Aprov());
+                            	prod.setVProd(""+dec.format(edItem.getVL_ICMS_Aprov()).replace(",", "."));
 //                				 notafiscal.setVProd(ed.getVl_icms());//valor total dos produtos e servi�os
                             } else {
                             	ICMS10 icms10 = new ICMS10();
@@ -3850,7 +3853,7 @@ System.out.println(sql);
 //                            	icms10.setVICMS(""+edItem.getVL_ICMS_Aprov());
                             	icms10.setModBCST("4");
 //                            	icms10.setVBCST(""+edItem.getVL_Base_Calculo_ICMS());
-                            	icms10.setPICMSST(""+edItem.getPE_Aliquota_ICMS());
+                            	icms10.setPICMSST(""+dec.format(edItem.getPE_Aliquota_ICMS()).replace(",", "."));
 //                            	icms10.setVICMSST((""+edItem.getVL_ICMS_Aprov());
                             	icms10.setPRedBCST("0");
                             	icms.setICMS10(icms10);
@@ -3858,20 +3861,22 @@ System.out.println(sql);
                             }
                           
                             PIS pis = new PIS();
-                            PISAliq pisAliq = new PISAliq();
-                            pisAliq.setCST("7");
-                            pisAliq.setVBC("0");
-                            pisAliq.setPPIS("0");
-                            pisAliq.setVPIS("0");
-                            pis.setPISAliq(pisAliq);
+                            PIS.PISOutr pisOutro = new PIS.PISOutr();
+//                            PISAliq pisAliq = new PISAliq();
+                            pisOutro.setCST("99");
+                            pisOutro.setVBC("0.00");
+                            pisOutro.setPPIS("0.00");
+                            pisOutro.setVPIS("0.00");
+                            pis.setPISOutr(pisOutro);
 
                             COFINS cofins = new COFINS();
-                            COFINSAliq cofinsAliq = new COFINSAliq();
-                            cofinsAliq.setCST("7");
-                            cofinsAliq.setVBC("0");
-                            cofinsAliq.setPCOFINS("0");
-                            cofinsAliq.setVCOFINS("0");
-                            cofins.setCOFINSAliq(cofinsAliq);
+//                            COFINSAliq cofinsAliq = new COFINSAliq();
+                            COFINS.COFINSOutr cOutro = new COFINS.COFINSOutr();
+                            cOutro.setCST("99");
+                            cOutro.setVBC("0.00");
+                            cOutro.setPCOFINS("0.00");
+                            cOutro.setVCOFINS("0.00");
+                            cofins.setCOFINSOutr(cOutro);
 
                             JAXBElement<ICMS> icmsElement = new JAXBElement<ICMS>(new QName("ICMS"), ICMS.class, icms);
                             imposto.getContent().add(icmsElement);
@@ -3896,25 +3901,35 @@ System.out.println(sql);
                     Total total = new Total();
 
                     ICMSTot icmstot = new ICMSTot();
-                    icmstot.setVBC(""+ed.getVL_Base_Calculo_ICMS());
-                    icmstot.setVICMS(""+ed.getVl_icms());
-//                    icmstot.setVICMSDeson("xxx");
-//                    icmstot.setVFCP("xxx");
-//                    icmstot.setVFCPST("xxx");
-//                    icmstot.setVFCPSTRet("xxx");
-                    icmstot.setVBCST(""+ed.getVL_Base_Calculo_ICMS_Subst());
-                    icmstot.setVST(""+ed.getVL_ICMS_Subst());
-                    icmstot.setVProd(""+ed.getVl_nota_fiscal());
+                    icmstot.setVBC(""+dec.format(ed.getVL_Base_Calculo_ICMS()).replace(",", "."));
+                    icmstot.setVICMS(""+dec.format(ed.getVl_icms()).replace(",", "."));
+//                    if(ed.getVL_Base_Calculo_ICMS_Subst() > 0)
+                    	icmstot.setVBCST(""+dec.format(ed.getVL_Base_Calculo_ICMS_Subst()).replace(",", "."));
+//                    if(ed.getVL_ICMS_Subst() > 0) {
+                    	icmstot.setVST(""+dec.format(ed.getVL_ICMS_Subst()).replace(",", "."));
+//                    }
+                    	
+                    icmstot.setVICMSDeson("0.00");
+                    icmstot.setVProd(""+dec.format(ed.getVl_nota_fiscal()).replace(",", "."));
+                    
+                    icmstot.setVFCPUFDest("0.00"); 
+                    icmstot.setVICMSUFDest("0.00");
+                    icmstot.setVICMSUFRemet("0.00");
+                    icmstot.setVFCP("0.00");
+                    
+                    icmstot.setVFCPST("0.00");
+                    icmstot.setVFCPSTRet("0.00");
+                    
                     icmstot.setVFrete("0");
                     icmstot.setVSeg("0");
-                    icmstot.setVDesc(""+ed.getVL_Desconto_Itens());
+                    icmstot.setVDesc(""+dec.format(ed.getVL_Desconto_Itens()).replace(",", "."));
                     icmstot.setVII("0");
-                    icmstot.setVIPI(""+ed.getVl_ipi());
+                    icmstot.setVIPI(""+dec.format(ed.getVl_ipi()).replace(",", "."));
                     icmstot.setVIPIDevol("0");
                     icmstot.setVPIS("0");
                     icmstot.setVCOFINS("0");
                     icmstot.setVOutro("0");
-                    icmstot.setVNF(""+ed.getVl_liquido_nota_fiscal());
+                    icmstot.setVNF(""+dec.format(ed.getVl_liquido_nota_fiscal()).replace(",", "."));
                     total.setICMSTot(icmstot);
                     infNFe.setTotal(total);
 
@@ -3938,19 +3953,19 @@ System.out.println(sql);
                     trasnporta.setUF(TUf.valueOf(edTransportador.getCD_Estado()));//sigla UF
                     trasnporta.setXMun(JavaUtil.getValueDef(edTransportador.getNM_Cidade(),"").trim());//Nome do munic�pio
                     if(edTransportador.getNR_CNPJ_CPF().length()<14){
-                    	trasnporta.setCPF(JavaUtil.formataCNPJ_CPF(edTransportador.getNR_CNPJ_CPF()));//CNPJ ou CPF
+                    	trasnporta.setCPF((edTransportador.getNR_CNPJ_CPF()));//CNPJ ou CPF
                     } else 
-                    	trasnporta.setCNPJ(JavaUtil.formataCNPJ_CPF(edTransportador.getNR_CNPJ_CPF()));//CNPJ ou CPF
+                    	trasnporta.setCNPJ((edTransportador.getNR_CNPJ_CPF()));//CNPJ ou CPF
                     transp.setTransporta(trasnporta);
                     
                     br.inf.portalfiscal.nfe.schema_4.enviNFe.TVeiculo veicTransp = new TVeiculo();
                     veicTransp.setPlaca(getTableStringValue("NR_Placa", "Veiculos","oid_Veiculo = '"+ed.getOid_Veiculo()+"'"));//Placa do ve�culo
+                    
                     if(JavaUtil.doValida(veicTransp.getPlaca())){
                     	veicTransp.setUF(TUf.valueOf("RS"));
-        			} else {
-//        				veicTransp.setUF("");//sigla UF
-        			}
-                    transp.setVeicTransp(veicTransp);
+                    	transp.setVeicTransp(veicTransp);
+                    }
+                    
 
 //                    transp.setRntc("");//ANTT
 //                    transp.setRPlaca("");//Placa do reboque
@@ -3970,7 +3985,7 @@ System.out.println(sql);
         			String txt_dpl = "";
         			if (doValida(ed.getOid_nota_fiscal())){
         				
-//        				Pag pag = new Pag();
+        				Pag pag = new Pag();
         				InfNFe.Cobr cob = new InfNFe.Cobr();
         				try {
         					sqlBusca =" SELECT Duplicatas.NR_Duplicata,Duplicatas.DT_Vencimento,Duplicatas.vl_Duplicata " +
@@ -3986,26 +4001,44 @@ System.out.println(sql);
         					}
         					resLocal = sql.executarConsulta (sqlBusca);
         					if(resLocal.next ()) {
-        						InfNFe.Cobr.Dup dup = new InfNFe.Cobr.Dup();
-//        						Pag.DetPag detPag = new Pag.DetPag();
-//                	            detPag.setTPag("99");
-//                	            detPag.setVPag(""+resLocal.getDouble(3));
-//                	            pag.getDetPag().add(detPag);
+        						Pag.DetPag detPag = new Pag.DetPag();
+                	            detPag.setTPag("90");
+                	            detPag.setVPag(""+dec.format(resLocal.getDouble(3)).replace(",", "."));
+                	            pag.getDetPag().add(detPag);
+                	            InfNFe.Cobr.Dup dup = new InfNFe.Cobr.Dup();
         						dup.setNDup(resLocal.getString(1));
         						dup.setDVenc(resLocal.getString(2));
         						dup.setVDup(resLocal.getString(3));
         						cob.getDup().add(dup);
         						txt_dpl = "- Fatura: " + resLocal.getString(1) + " - Venc: " + FormataDataBean.getFormatDate(resLocal.getString(2));
+        					} else {
+        						Pag.DetPag detPag = new Pag.DetPag();
+                	            detPag.setTPag("90");
+                	            detPag.setVPag("0.00"); // icmstot.getVNF());
+                	            pag.getDetPag().add(detPag);
+                	            InfNFe.Cobr.Dup dup = new InfNFe.Cobr.Dup();
+        						dup.setNDup(ide.getNNF());
+        						dup.setDVenc(Data.getDataYMD());
+        						dup.setVDup(icmstot.getVNF());
+        						cob.getDup().add(dup);
+        						
         					}
+        					InfNFe.Cobr.Fat ft = new InfNFe.Cobr.Fat();
+    						ft.setNFat(ide.getNNF());
+//    						ft.setVDesc("0.00");
+    						ft.setVOrig(icmstot.getVNF());
+    						ft.setVLiq(icmstot.getVNF());
+    						cob.setFat(ft);
         				}
         				finally {
         					util.closeResultset (resLocal);
         				}
-        				infNFe.setCobr(cob);
+//        				infNFe.setCobr(cob);
+        				infNFe.setPag(pag);
         			}
 
 //        			INF ADICIONAL
-        			String inf = "";
+        			String inf = null;
         			if (msgFiscal.size() > 0)
                     {
                         for (int m=0; m < msgFiscal.size(); m++)
@@ -4036,9 +4069,11 @@ System.out.println(sql);
 //        			notafiscal.setInfCpl(ManipulaString.corrigeString(ManipulaString.Enter2BR(inf + txt_dpl))+infTrib);
         			infAdic.setInfCpl(ManipulaString.corrigeString(ManipulaString.Enter2BR(inf + txt_dpl)));
         			//...
-        			infNFe.setInfAdic(infAdic);
+//        			infNFe.setInfAdic(infAdic);
+            
+        			nfeReturn.setInfNFe(infNFe);
             }
-
+            
         } catch (Excecoes e) {
         	e.printStackTrace();
             throw e;
@@ -4066,31 +4101,33 @@ System.out.println(sqlUpdate);
 			return "ERRO: "+e.getMessage();
 		}
 	}
-	public String updateRetornoNFE(Nota_Fiscal_EletronicaED ed, NfeLote retorno, NfeRetornoEnvioLote ret) throws SQLException, Excecoes {
+	public String updateRetornoNFE(Nota_Fiscal_EletronicaED ed, TRetEnviNFe retorno, TEnviNFe enviNFe) throws SQLException, Excecoes {
 		try{
-			if ("S".equals(ed.edModelo.getDM_Gera_Fiscal()))
-	        {
-				boolean isSaida = ("D".equals(ed.getDm_tipo_nota_fiscal()) || "R".equals(ed.getDm_tipo_nota_fiscal()) || "S".equals(ed.getDm_tipo_nota_fiscal()));//*** Tipo de NOTA
-                if (isSaida || JavaUtil.doValida(ed.getDM_Tipo_Devolucao()))
-                {
-                	new Livro_FiscalBD(executasql).geraLivro_Fiscal_Saidas(new Livro_FiscalED(ed.getOid_nota_fiscal(), "NF"), "S");
-                }else{
-                	new Livro_FiscalBD(executasql).geraLivro_Fiscal_Entradas(new Livro_FiscalED(ed.getOid_nota_fiscal(), "NF"), "E");
-                }
-	        }
-
 			String sqlUpdate;
 			sqlUpdate = "UPDATE Notas_Fiscais SET " +
-			            " nfe_chave_acesso = '" + retorno.getNfeNotaFiscal().getChaveAcesso() + "' " +
-						" ,nfe_protocolo = '"+ret.getnProt() + "' " +
-			            " ,nfe_dt_hr_recebimento = '"+(ret.getDhRecbto()) + "' " +
-			    		" ,nfe_cstat = '" + ret.getcStat() + "' " +
-			    		" ,nfe_motivo = '" + ret.getxMotivo() + "' " +
-						" ,nfe_digestvalue = '" + ret.getDigVal() + "' " +
+			            " nfe_chave_acesso = '" + retorno.getProtNFe().getInfProt().getChNFe() + "', " +
+						" nfe_protocolo = '"+retorno.getProtNFe() + "' " +
+			            " ,nfe_dt_hr_recebimento = '"+(retorno.getDhRecbto()) + "' " +
+			    		" ,nfe_cstat = '" + retorno.getCStat() + "' " +
+			    		" ,nfe_motivo = '" + retorno.getXMotivo() + "' " +
+						" ,nfe_digestvalue = '" + retorno.getProtNFe().getInfProt().getDigVal() + "' " +
+						" ,xml_autorizacao = '" + XmlUtil.criaNfeProc(enviNFe, retorno.getProtNFe()) + "' " +
 			            " WHERE oid_Nota_Fiscal = '"+ed.getOid_nota_fiscal()+"' ";
-//System.out.println(sqlUpdate);
+System.out.println(sqlUpdate);
 			executasql.executarUpdate(sqlUpdate);
-			if(JavaUtil.doValida(ret.getcStat()) && "100".equals(ret.getcStat())){
+			if(JavaUtil.doValida(retorno.getCStat()) && "100".equals(retorno.getCStat())){
+				
+				if ("S".equals(ed.edModelo.getDM_Gera_Fiscal()))
+		        {
+					boolean isSaida = ("D".equals(ed.getDm_tipo_nota_fiscal()) || "R".equals(ed.getDm_tipo_nota_fiscal()) || "S".equals(ed.getDm_tipo_nota_fiscal()));//*** Tipo de NOTA
+	                if (isSaida || JavaUtil.doValida(ed.getDM_Tipo_Devolucao()))
+	                {
+	                	new Livro_FiscalBD(executasql).geraLivro_Fiscal_Saidas(new Livro_FiscalED(ed.getOid_nota_fiscal(), "NF"), "S");
+	                }else{
+	                	new Livro_FiscalBD(executasql).geraLivro_Fiscal_Entradas(new Livro_FiscalED(ed.getOid_nota_fiscal(), "NF"), "E");
+	                }
+		        }
+				
 				return "OK";
             } else {
             	return "NOK";
@@ -4121,16 +4158,16 @@ System.out.println(sqlUpdate);
 		}
 	}
 
-	public void cancelaNFE(Nota_Fiscal_EletronicaED ed, ConfiguracoesWebNfe config) throws Excecoes {
+	public void cancelaNFE(Empresa empresa, Nota_Fiscal_EletronicaED ed, ConfiguracoesWebNfe config) throws Excecoes {
 
 		NfeServicos servico = new NfeServicos();
 		try{
 			
 
 			int oid_uni = new Integer (String.valueOf(ed.getOID_Unidade_Fiscal())).intValue();
-            UnidadeBean unidade_Remetente = new UnidadeBean().getByOID_Unidade(oid_uni);
+            UnidadeBean unidade_Remetente = new UnidadeBean().getByOID_Unidade(empresa, oid_uni);
             PessoaED unidade = new PessoaBD(executasql).getByRecord(unidade_Remetente.getOID_Pessoa());
-	        CidadeBean orig = CidadeBean.getByOID((int)unidade.getOid_Cidade());
+	        CidadeBean orig = CidadeBean.getByOID(empresa, (int)unidade.getOid_Cidade());
 	        String cIBGE_UF = getTableStringValue("nm_codigo_ibge", "estados", "oid_estado="+orig.getOID_Estado());
 System.out.println("Cid:"+orig.getOID()+"-"+orig.getNM_Cidade()+" | "+cIBGE_UF+" >"+XmlUtil.dataNfe());
 			
@@ -4250,14 +4287,14 @@ System.out.println("Cid:"+orig.getOID()+"-"+orig.getNM_Cidade()+" | "+cIBGE_UF+"
             ArrayList lista = new Item_Nota_Fiscal_TransacoesBD(executasql).lista(new Item_Nota_Fiscal_TransacoesED(ed.getOid_nota_fiscal()));
             Natureza_OperacaoED edCFOP = new Natureza_OperacaoBD(executasql).getByRecord(new Natureza_OperacaoED(new Integer((int)ed.getOid_natureza_operacao())));
 
-            ClienteBean edCliente = ClienteBean.getByOID_Cliente(ed.getOid_pessoa_destinatario());
+            ClienteBean edCliente = ClienteBean.getByOID_Cliente(null, ed.getOid_pessoa_destinatario());
 //            ClienteBean edCliente = ClienteBean.getByOID_Cliente_Nota(ed.getOid_pessoa_destinatario());
 
             PessoaED edPessoa = new PessoaBD(executasql).getByRecord(new PessoaED(ed.getOid_pessoa_destinatario()));
 
             int oid_uni = new Integer (String.valueOf(ed.getOID_Unidade_Fiscal())).intValue();
 
-            UnidadeBean unidade_Remetente = new UnidadeBean().getByOID_Unidade(oid_uni);
+            UnidadeBean unidade_Remetente = new UnidadeBean().getByOID_Unidade(null, oid_uni);
 
 //            PessoaED edTransportador = new PessoaBD(executasql).getByRecord(new PessoaED(unidade_Remetente.getOID_Pessoa()));
             PessoaED edTransportador = new PessoaED();
@@ -4319,7 +4356,7 @@ System.out.println("Cid:"+orig.getOID()+"-"+orig.getNM_Cidade()+" | "+cIBGE_UF+"
                 	notafiscal.setNfeReferenciadaCollection(nfsref);
                 }
 
-    			CidadeBean origem = CidadeBean.getByOID((int)unidade.getOid_Cidade());
+    			CidadeBean origem = CidadeBean.getByOID(null, (int)unidade.getOid_Cidade());
 
     			String cIBGE_UF = getTableStringValue("nm_codigo_ibge", "estados", "oid_estado="+origem.getOID_Estado());
 //    			System.out.println("estado ORIG:"+cIBGE_UF);
@@ -4342,7 +4379,7 @@ System.out.println("Cid:"+orig.getOID()+"-"+orig.getNM_Cidade()+" | "+cIBGE_UF+"
     	        emitente.setXBairro(unidade.getNM_Bairro());//Bairro
     	        emitente.setCMun(Integer.parseInt(ManipulaString.limpaCampo((doValida(cIBGE_UF)?cIBGE_UF:"") + origem.getNM_Codigo_IBGE())));//C�digo do munic�pio no IBGE
     	        emitente.setXMun(unidade.getNM_Cidade());
-    	        CidadeBean orig = CidadeBean.getByOID((int)unidade.getOid_Cidade());
+    	        CidadeBean orig = CidadeBean.getByOID(null, (int)unidade.getOid_Cidade());
     			cIBGE_UF = getTableStringValue("nm_codigo_ibge", "estados", "oid_estado="+orig.getOID_Estado());
     	        emitente.setCUf(Integer.parseInt(cIBGE_UF));//C�digo do Estado
     	        emitente.setUf(unidade.getCD_Estado());//sigla UF
@@ -4355,13 +4392,13 @@ System.out.println("Cid:"+orig.getOID()+"-"+orig.getNM_Cidade()+" | "+cIBGE_UF+"
     	        emitente.setCrt(3);//C�digo de Regime Tribut�rio
     	        notafiscal.setEmitente(emitente);
 
-    	        notafiscal.setCnpj(emitente.getCnpj());//CNPJ emitente
-    	        EmpresaDb eDb = new EmpresaDb();
-    	        Empresa e = eDb.getEmpresa(emitente.getCnpj());
-    	        notafiscal.setEmpresa(e);
+//    	        notafiscal.setCnpj(emitente.getCnpj());//CNPJ emitente
+//    	        EmpresaDb eDb = new EmpresaDb();
+//    	        Empresa e = eDb.getEmpresa(emitente.getCnpj());
+//    	        notafiscal.setEmpresa(e);
 
 //    			Destinatario
-    	        CidadeBean destino = CidadeBean.getByOID((int)edPessoa.getOid_Cidade());
+    	        CidadeBean destino = CidadeBean.getByOID(null, (int)edPessoa.getOid_Cidade());
     			cIBGE_UF = getTableStringValue("nm_codigo_ibge", "estados", "oid_estado="+destino.getOID_Estado());
     	        if(!JavaUtil.doValida(edCliente.getOid_Pessoa())){
     				throw new Excecoes("Problemas com o destinat�rio: "+edPessoa.getNM_Razao_Social()+".\nDeve ser cadastrado como cliente...");

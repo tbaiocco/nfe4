@@ -6,6 +6,8 @@ import java.util.*;
 import javax.servlet.http.*;
 
 import auth.*;
+import br.cte.model.Empresa;
+
 import com.master.util.*;
 
 public class UnidadeBean
@@ -412,7 +414,7 @@ public String getNM_Sigla () {
 	  }
 
   /*
-   * ---------------- Bloco Padrão para Todas Classes ------------------
+   * ---------------- Bloco Padrï¿½o para Todas Classes ------------------
    */
   public String getUsuario_Stamp () {
     return Usuario_Stamp;
@@ -449,7 +451,7 @@ public String getNM_Sigla () {
       throw e;
     }
     /*
-     * Gera um novo código (OID)
+     * Gera um novo cï¿½digo (OID)
      */
     try {
       Statement stmt = conn.createStatement ();
@@ -547,7 +549,7 @@ public String getNM_Sigla () {
       throw e;
     }
     /*
-     * Faz o commit e fecha a conexão.
+     * Faz o commit e fecha a conexï¿½o.
      */
     try {
       conn.commit ();
@@ -641,7 +643,7 @@ public String getNM_Sigla () {
       throw e;
     }
     /*
-     * Faz o commit e fecha a conexão.
+     * Faz o commit e fecha a conexï¿½o.
      */
     try {
       conn.commit ();
@@ -696,7 +698,7 @@ public String getNM_Sigla () {
     }
 
     /*
-     * Faz o commit e fecha a conexão.
+     * Faz o commit e fecha a conexï¿½o.
      */
     try {
       conn.commit ();
@@ -762,10 +764,10 @@ public String getNM_Sigla () {
     }
   }
 
-  public static final UnidadeBean getByOID_Unidade (int OID_Unidade) throws Exception {
+  public static final UnidadeBean getByOID_Unidade (Empresa empresa, int OID_Unidade) throws Exception {
     Connection conn = null;
     try {
-      conn = OracleConnection2.getWEB ();
+      conn = OracleConnection2.getWEB (empresa);
       conn.setAutoCommit (false);
     }
     catch (Exception e) {
@@ -1136,7 +1138,7 @@ public String getNM_Sigla () {
 
   public void getByOID_Unidade (UnidadeBean ed , HttpServletRequest request , String nmObj) throws Excecoes {
     try {
-      request.setAttribute (nmObj , UnidadeBean.getByOID_Unidade (ed.OID_Unidade));
+      request.setAttribute (nmObj , UnidadeBean.getByOID_Unidade (null, ed.OID_Unidade));
     }
     catch (Exception e) {
       e.printStackTrace ();

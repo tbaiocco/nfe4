@@ -5,6 +5,8 @@ import java.sql.DriverManager;
 
 import com.master.util.ed.Parametro_FixoED;
 
+import br.cte.model.Empresa;
+
 public final class OracleConnection2 {
      private static   Parametro_FixoED parametro_FixoED  = new Parametro_FixoED();
 
@@ -36,6 +38,13 @@ public final class OracleConnection2 {
 
           return DriverManager.getConnection(desenv, parametro_FixoED.getNM_Database_Usuario(), parametro_FixoED.getNM_Database_Pwd());
      }
+     
+     public static Connection getWEB(Empresa empresa) throws Exception {
+         Class.forName(empresa.getDbDriver());
+         //// System.out.println("Usuario: " + parametro_FixoED.getNM_Database_Usuario() + " Empresa: " + parametro_FixoED.getNM_Empresa() );
+
+         return DriverManager.getConnection(empresa.getDbURL(), empresa.getDbUser(), empresa.getDbPass());
+    }
 
      public static void main(String args[]) {
      }

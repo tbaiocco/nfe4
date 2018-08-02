@@ -139,7 +139,7 @@ public class BancoUtil
   }
 
   /**
-   * Retorna o próximo ID disponível
+   * Retorna o prï¿½ximo ID disponï¿½vel
    */
   public int getAutoIncremento (String campo , String from) throws Excecoes {
 
@@ -298,21 +298,21 @@ public class BancoUtil
   }
 
   /**
-   * Verifica se o parâmetro do request é válido
+   * Verifica se o parï¿½metro do request ï¿½ vï¿½lido
    */
   public boolean doValida (String parametro) {
     return JavaUtil.doValida (parametro);
   }
 
   /**
-   * Verifica se o parâmetro do request é válido [STRING]
+   * Verifica se o parï¿½metro do request ï¿½ vï¿½lido [STRING]
    */
   public String getValueDef (String value , String strDefault) {
     return JavaUtil.getValueDef (value , strDefault);
   }
 
   /**
-   * Verifica se o parâmetro do request é válido [DOUBLE]
+   * Verifica se o parï¿½metro do request ï¿½ vï¿½lido [DOUBLE]
    */
   public double getValueDef (String value , double dblDefault) {
 
@@ -320,7 +320,7 @@ public class BancoUtil
   }
 
   /**
-   * Verifica se o parâmetro é válido [DOUBLE]
+   * Verifica se o parï¿½metro ï¿½ vï¿½lido [DOUBLE]
    */
   public double getValueDef (double value , double dblDefault) {
 
@@ -328,14 +328,14 @@ public class BancoUtil
   }
 
   /**
-   * Verifica se o parâmetro do request é válido [INT]
+   * Verifica se o parï¿½metro do request ï¿½ vï¿½lido [INT]
    */
   public int getValueDef (int value , int intDefault) {
     return JavaUtil.getValueDef (value , intDefault);
   }
 
   /**
-   * Verifica se o parâmetro do request é válido [INT]
+   * Verifica se o parï¿½metro do request ï¿½ vï¿½lido [INT]
    */
   public int getValueDef (String value , int intDefault) {
     return (doValida (value)) ? Integer.parseInt (value) : intDefault;
@@ -355,24 +355,24 @@ public class BancoUtil
 
   /**
    * Verifica se
-   * - O ID foi excluído por outro usuário
-   * - Já existe outro ID com o mesmo código
+   * - O ID foi excluï¿½do por outro usuï¿½rio
+   * - Jï¿½ existe outro ID com o mesmo cï¿½digo
    */
   public void doValidaUpdate (int oid , String cd , String table , String fieldOid , String fieldCd) throws Excecoes {
     String from = table;
     String where = fieldOid + " = " + oid;
-    // Valida se o registro em edição foi excluído por outro usuário
+    // Valida se o registro em ediï¿½ï¿½o foi excluï¿½do por outro usuï¿½rio
     if (doExiste (from , where)) {
       where = fieldOid + " <> " + oid +
           " and " + fieldCd + " = '" + cd + "'";
-      // Valida se existe outro registro com o mesmo código
+      // Valida se existe outro registro com o mesmo cï¿½digo
       if (doExiste (from , where)) {
-        throw new Mensagens ("Já existe um registro com este código!");
+        throw new Mensagens ("Jï¿½ existe um registro com este cï¿½digo!");
       }
     }
     else {
-      throw new Excecoes ("ID informado para atualização não existe (pode ter sido " +
-                          "excluído por outro usuário), efetue a consulta novamente!");
+      throw new Excecoes ("ID informado para atualizaï¿½ï¿½o nï¿½o existe (pode ter sido " +
+                          "excluï¿½do por outro usuï¿½rio), efetue a consulta novamente!");
     }
   }
 
@@ -390,7 +390,7 @@ public class BancoUtil
         }
       }
       catch (SQLException e) {
-        //No driver jdbc mais novo, o statement é fechado com o fechamento do resultset
+        //No driver jdbc mais novo, o statement ï¿½ fechado com o fechamento do resultset
       }
     }
   }

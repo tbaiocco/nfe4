@@ -16,7 +16,8 @@ import br.com.samuelweb.certificado.Certificado;
 import br.com.samuelweb.certificado.CertificadoService;
 import br.com.samuelweb.nfe.dom.ConfiguracoesWebNfe;
 import br.com.samuelweb.nfe.util.Estados;
-import br.model.Empresa;
+import br.cte.base.EmpresaDb;
+import br.cte.model.Empresa;
 import br.servicos.NfeServicos;
 
 /**
@@ -37,7 +38,7 @@ import br.servicos.NfeServicos;
 	private void cancelaNfe(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 		try{
 			if(JavaUtil.doValida(request.getParameter("emissor"))){
-				empresa = new br.core.base.EmpresaDb().getEmpresa(request.getParameter("emissor"));
+				empresa = new EmpresaDb().getEmpresa(request.getParameter("emissor"));
 				if(!JavaUtil.doValida(empresa.getRazaosocial())){
 					throw new Excecoes("A empresa emitente nao foi encontrada no sistema!");
 				}
@@ -61,7 +62,7 @@ import br.servicos.NfeServicos;
 
 	             Nota_Fiscal_EletronicaED ed = this.getByRecord(request.getParameter("oid_Nota_Fiscal"));
 	             try{
-	             	new Nota_Fiscal_EletronicaRN().enviaNFE_cancelada(ed, config);
+	             	new Nota_Fiscal_EletronicaRN().enviaNFE_cancelada(empresa, ed, config);
 	             } catch (Excecoes e) {
 	                 e.printStackTrace();
 	                 throw e;
@@ -88,7 +89,7 @@ import br.servicos.NfeServicos;
 
         ed.setOid_nota_fiscal(oid_Nota_Fiscal);
 
-        return new Nota_Fiscal_EletronicaRN().getByRecord(ed);
+        return new Nota_Fiscal_EletronicaRN(empresa).getByRecord(ed);
     }
 
 	/* (non-Java-doc)
