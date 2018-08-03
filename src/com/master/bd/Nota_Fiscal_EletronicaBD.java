@@ -3605,6 +3605,11 @@ System.out.println("printNotaFiscalSaida ->>" +sqlUpdate);
                 
                 SimpleDateFormat dtUTC = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
                 
+                if(rnd.length()<8) {
+                	rnd += String.valueOf(JavaUtil.truncInverse(System.currentTimeMillis(), 8));
+                	rnd = rnd.substring(rnd.length()-8);
+                }
+                
              // Dados Nfe
                 Ide ide = new Ide();
                 ide.setCUF(uIBGE_UF);

@@ -201,14 +201,6 @@ System.out.println("consulta nf:" + oid_Nota_Fiscal);
 	 * @see javax.servlet.http.HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		String retorno = request.getParameter("urlRetono");
-		String oid_Nota_Fiscal = request.getParameter("oid_Nota_Fiscal");
-
-		enviaRecebeNfe(request,response);
-
-		if(JavaUtil.doValida(retorno) && JavaUtil.doValida(oid_Nota_Fiscal)){
-			response.sendRedirect(retorno+"?oid_Nota_Fiscal="+oid_Nota_Fiscal+"&eRequest=true&acao=S&Busca_Campo=Nota_Fiscal");
-		}
+		doGet(request, response);
 	}
 }

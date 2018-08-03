@@ -11,6 +11,7 @@ import javax.xml.bind.JAXBException;
 import com.master.ed.Nota_Fiscal_EletronicaED;
 import com.master.rn.Nota_Fiscal_EletronicaRN;
 import com.master.util.CertUtil;
+import com.master.util.Data;
 import com.master.util.Excecoes;
 import com.master.util.JavaUtil;
 
@@ -21,8 +22,12 @@ import br.com.samuelweb.nfe.Nfe;
 import br.com.samuelweb.nfe.NfeWeb;
 import br.com.samuelweb.nfe.dom.ConfiguracoesWebNfe;
 import br.com.samuelweb.nfe.exception.NfeException;
+import br.com.samuelweb.nfe.util.Chave;
 import br.com.samuelweb.nfe.util.ConstantesUtil;
 import br.com.samuelweb.nfe.util.Estados;
+import br.com.samuelweb.nfe.util.XmlUtil;
+import br.inf.portalfiscal.nfe.schema_4.enviNFe.TEnviNFe;
+import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe;
 import br.inf.portalfiscal.nfe.schema_4.retConsSitNFe.TRetConsSitNFe;
 import br.cte.base.EmpresaDb;
 import br.cte.model.Empresa;
@@ -69,18 +74,42 @@ import br.cte.model.Empresa;
 	 	             		certPass);
 	 	             //Esse Objeto Voce pode guardar em uma Session.
 	 	             ConfiguracoesWebNfe config = ConfiguracoesWebNfe.iniciaConfiguracoes(Estados.RS,
-	 	            		 ConstantesUtil.AMBIENTE.HOMOLOGACAO,
-//	 	            		 empresa.getAmbiente(),
+//	 	            		 ConstantesUtil.AMBIENTE.HOMOLOGACAO,
+	 	            		 empresa.getAmbiente(),
 	 	                     certificado,
 	 	                     MethodHandles.lookup().lookupClass().
 	 	                     getResource("/schemas").getPath(), //PEGAR SCHEMAS EM AMBIENTE WEB ESTA PASTA ESTA DENTRO DE RESOURCES
 	 	                     true);
 
-//	 	             Nota_Fiscal_EletronicaED ed = this.getByRecord(request.getParameter("oid_Nota_Fiscal"));
-//	 	             
-//System.out.println("CHAVE nf:" + ed.getNfe_chave_acesso());
+	 	             Nota_Fiscal_EletronicaED ed = this.getByRecord(request.getParameter("oid_Nota_Fiscal"));
 	 	             
-	            	 TRetConsSitNFe retorno = NfeWeb.consultaXml(config, "43180887283164000151550010000163641207031650", ConstantesUtil.NFE);
+	 	          //busca dados envio
+		             TNFe nfe = new Nota_Fiscal_EletronicaRN(empresa).geraNFe(request.getParameter("oid_Nota_Fiscal"), Data.getDataDMY(), Data.getHoraHM());
+		             
+					nfe.getInfNFe().setId("NFe"+ed.getNfe_chave_acesso());
+					nfe.getInfNFe().getIde().setCDV(ed.getNfe_chave_acesso().substring(ed.getNfe_chave_acesso().length()-1));
+					
+					nfe.getInfNFe().getIde().setTpAmb(config.getAmbiente());
+					
+					if(nfe.getInfNFe().getIde().getTpAmb() == ConstantesUtil.AMBIENTE.HOMOLOGACAO) {
+						nfe.getInfNFe().getEmit().setXNome("NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL");
+						nfe.getInfNFe().getEmit().setXFant("NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL");
+						
+						nfe.getInfNFe().getDest().setXNome("NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL");
+					}
+
+		            TEnviNFe enviNFe = new TEnviNFe();
+		            enviNFe.setVersao("4.00");
+		            enviNFe.setIdLote("1");
+		            enviNFe.setIndSinc("1");
+		            enviNFe.getNFe().add(nfe);
+
+		            // Monta e Assina o XML
+		            enviNFe = NfeWeb.montaNfe(config, enviNFe, true);
+//	 	             
+System.out.println("CHAVE nf:" + ed.getNfe_chave_acesso());
+	 	             
+	            	 TRetConsSitNFe retorno = NfeWeb.consultaXml(config, ed.getNfe_chave_acesso(), ConstantesUtil.NFE);
 	                 System.out.println("Status:" + retorno.getCStat());
 	                 System.out.println("Motivo:" + retorno.getXMotivo());
 	                 if (retorno.getProtNFe() != null && retorno.getProtNFe().getInfProt() != null) {
@@ -96,6 +125,7 @@ import br.cte.model.Empresa;
 	 	                
 	 	                response.getWriter().append("   Prot: ").append(retorno.getProtNFe().getInfProt().getNProt()).println();
 	 	                response.getWriter().append("  ChNFE: ").append(retorno.getProtNFe().getInfProt().getChNFe()).println();
+	 	               response.getWriter().append("  ChNFE: ").append(XmlUtil.criaNfeProc(enviNFe, retorno.getProtNFe()));
 	                 }
 //	             	
 //	                response.getWriter().append("     Data: ").append(retorno.getDhRecbto()).println();
