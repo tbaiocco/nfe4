@@ -2,6 +2,7 @@ package com.master.nfe;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+import java.text.SimpleDateFormat;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -101,6 +102,12 @@ System.out.println("WS NFe");
 //System.out.println("enviando7 :"+nfe.getInfNFe().getIde().getCNF());
 				// Monta EnviNfe
 
+
+				String aamm = nfe.getInfNFe().getIde().getDhEmi().substring(0, 7);
+				aamm = aamm.replace("-", "");
+						
+//						new SimpleDateFormat("yyMM").format(Data.strToDate(nfe.getInfNFe().getIde().getDhEmi()));
+
 				//chave
 				Chave chNFe = new Chave(nfe.getInfNFe().getIde().getCUF(),
 						nfe.getInfNFe().getEmit().getCNPJ(),
@@ -109,6 +116,9 @@ System.out.println("WS NFe");
 						nfe.getInfNFe().getIde().getNNF(),
 						nfe.getInfNFe().getIde().getTpEmis(),
 						nfe.getInfNFe().getIde().getCNF());
+				
+				chNFe.setAno(aamm.substring(2,4));
+				chNFe.setMes(aamm.substring(4));
 				
 				nfe.getInfNFe().setId(chNFe.getChNFe());
 				nfe.getInfNFe().getIde().setCDV(chNFe.getChNFe().substring(chNFe.getChNFe().length()-1));

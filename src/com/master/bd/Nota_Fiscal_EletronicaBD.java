@@ -4118,11 +4118,15 @@ System.out.println(sqlUpdate);
 			String sqlUpdate;
 			sqlUpdate = "UPDATE Notas_Fiscais SET " +
 			            " nfe_chave_acesso = '" + retorno.getProtNFe().getInfProt().getChNFe() + "', " +
-						" nfe_protocolo = '"+retorno.getProtNFe() + "' " +
+						" nfe_protocolo = '"+retorno.getProtNFe().getInfProt().getNProt() + "' " +
 			            " ,nfe_dt_hr_recebimento = '"+(retorno.getDhRecbto()) + "' " +
-			    		" ,nfe_cstat = '" + retorno.getCStat() + "' " +
-			    		" ,nfe_motivo = '" + retorno.getXMotivo() + "' " +
-						" ,nfe_digestvalue = '" + retorno.getProtNFe().getInfProt().getDigVal() + "' " +
+			    		" ,nfe_cstat = '" + retorno.getProtNFe().getInfProt().getCStat() + "' " +
+			    		" ,nfe_motivo = '" + retorno.getProtNFe().getInfProt().getXMotivo() + "' " +
+			    		" ,nfe_recibo = '"+retorno.getInfRec().getNRec() + "' " +
+//			            " ,nfe_data_lote = '"+new SimpleDateFormat("dd/MM/yyyy' 'HH:mm:ss").format(retorno.getData()) + "' " +
+			    		" ,nfe_cstat_lote = '" + retorno.getCStat() + "' " +
+			    		" ,nfe_motivo_lote = '" + retorno.getXMotivo() + "' " +
+//						" ,nfe_digestvalue = '" + new String(retorno.getProtNFe().getInfProt().getDigVal()) + "' " +
 						" ,xml_autorizacao = '" + XmlUtil.criaNfeProc(enviNFe, retorno.getProtNFe()) + "' " +
 			            " WHERE oid_Nota_Fiscal = '"+ed.getOid_nota_fiscal()+"' ";
 System.out.println(sqlUpdate);
