@@ -87,6 +87,8 @@ import com.master.util.JavaUtil;
 				//busca dados envio
 	             TNFe nfe = new Nota_Fiscal_EletronicaRN(empresa).geraNFe(request.getParameter("oid_Nota_Fiscal"), Data.getDataDMY(), Data.getHoraHM());
 	             
+	             nfe.getInfNFe().getIde().setTpAmb(config.getAmbiente());
+	             
 System.out.println("WS NFe");
 //				mdfe = new MDFeTeste().getMdfe(1);
 
@@ -110,8 +112,6 @@ System.out.println("WS NFe");
 				
 				nfe.getInfNFe().setId(chNFe.getChNFe());
 				nfe.getInfNFe().getIde().setCDV(chNFe.getChNFe().substring(chNFe.getChNFe().length()-1));
-				
-				nfe.getInfNFe().getIde().setTpAmb(config.getAmbiente());
 				
 				if(nfe.getInfNFe().getIde().getTpAmb() == ConstantesUtil.AMBIENTE.HOMOLOGACAO) {
 					nfe.getInfNFe().getEmit().setXNome("NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL");

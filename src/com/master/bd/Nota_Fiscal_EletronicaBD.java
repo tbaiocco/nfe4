@@ -81,6 +81,7 @@ import br.com.samuelweb.nfe.exception.NfeException;
 import br.com.samuelweb.nfe.util.ConstantesUtil;
 import br.com.samuelweb.nfe.util.Estados;
 import br.com.samuelweb.nfe.util.XmlUtil;
+import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe.InfNFe.Det.Imposto.ICMS.ICMS40;
 import br.inf.portalfiscal.nfe.schema.envEventoCancNFe.TEnvEvento;
 import br.inf.portalfiscal.nfe.schema.envEventoCancNFe.TEvento;
 import br.inf.portalfiscal.nfe.schema.envEventoCancNFe.TProcEvento;
@@ -3843,11 +3844,17 @@ System.out.println("printNotaFiscalSaida ->>" +sqlUpdate);
                             	icms90.setVBC("0");
                             	icms90.setPICMS(""+dec.format(edItem.getPE_Aliquota_ICMS()).replace(",", "."));
                             	icms90.setVICMS(""+dec.format(edItem.getVL_ICMS_Aprov()).replace(",", "."));
-                            	icms90.setPRedBC("0.01");//percentual da redu��o da BC
+                            	icms90.setPRedBC("0.00");//percentual da redu��o da BC
                             	icms.setICMS90(icms90);
                             	
                             	prod.setVProd(""+dec.format(edItem.getVL_ICMS_Aprov()).replace(",", "."));
 //                				 notafiscal.setVProd(ed.getVl_icms());//valor total dos produtos e servi�os
+                            } else if("040".equals(edProduto.getCD_Situacao_Tributaria())) {
+                            	ICMS40 icms40 = new ICMS40();
+                            	icms40.setOrig("0");
+                            	icms40.setCST("40");
+                            	icms.setICMS40(icms40);
+                            	
                             } else {
                             	ICMS10 icms10 = new ICMS10();
                             	icms10.setOrig("0");
@@ -3860,7 +3867,7 @@ System.out.println("printNotaFiscalSaida ->>" +sqlUpdate);
 //                            	icms10.setVBCST(""+edItem.getVL_Base_Calculo_ICMS());
                             	icms10.setPICMSST(""+dec.format(edItem.getPE_Aliquota_ICMS()).replace(",", "."));
 //                            	icms10.setVICMSST((""+edItem.getVL_ICMS_Aprov());
-                            	icms10.setPRedBCST("0");
+                            	icms10.setPRedBCST("0.00");
                             	icms.setICMS10(icms10);
                 				
                             }
