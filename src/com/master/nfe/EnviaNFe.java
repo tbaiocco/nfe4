@@ -99,13 +99,13 @@ System.out.println("Estado de config:"+ehUF+"|"+String.valueOf(empresa.getcUf())
 System.out.println("WS NFe");
 //				mdfe = new MDFeTeste().getMdfe(1);
 
-//System.out.println("enviando1 :"+nfe.getInfNFe().getIde().getCUF());
-//System.out.println("enviando2 :"+nfe.getInfNFe().getEmit().getCNPJ());
-//System.out.println("enviando3 :"+nfe.getInfNFe().getIde().getMod());
-//System.out.println("enviando4 :"+nfe.getInfNFe().getIde().getSerie());
-//System.out.println("enviando5 :"+nfe.getInfNFe().getIde().getNNF());
-//System.out.println("enviando6 :"+nfe.getInfNFe().getIde().getTpEmis());
-//System.out.println("enviando7 :"+nfe.getInfNFe().getIde().getCNF());
+System.out.println("enviando1 :"+nfe.getInfNFe().getIde().getCUF());
+System.out.println("enviando2 :"+nfe.getInfNFe().getEmit().getCNPJ());
+System.out.println("enviando3 :"+nfe.getInfNFe().getIde().getMod());
+System.out.println("enviando4 :"+nfe.getInfNFe().getIde().getSerie());
+System.out.println("enviando5 :"+nfe.getInfNFe().getIde().getNNF());
+System.out.println("enviando6 :"+nfe.getInfNFe().getIde().getTpEmis());
+System.out.println("enviando7 :"+nfe.getInfNFe().getIde().getCNF());
 				// Monta EnviNfe
 
 				String aamm = nfe.getInfNFe().getIde().getDhEmi().substring(0, 7);
