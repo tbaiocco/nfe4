@@ -1,8 +1,8 @@
 package com.master.nfe;
 
 import java.io.IOException;
-
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -30,18 +30,20 @@ import br.inf.portalfiscal.nfe.schema_4.retConsReciNFe.TRetConsReciNFe;
 import br.inf.portalfiscal.nfe.schema_4.retConsSitNFe.TRetConsSitNFe;
 
 /**
- * Servlet implementation class for Servlet: AtualizaNFe
- *
+ * Servlet implementation class ConsultaRecibo
  */
- public class AtualizaNFe extends javax.servlet.http.HttpServlet implements javax.servlet.Servlet {
-    /* (non-Java-doc)
-	 * @see javax.servlet.http.HttpServlet#HttpServlet()
-	 */
-	public AtualizaNFe() {
-		super();
-	}   	
-	
-	Empresa empresa = new Empresa();
+public class ConsultaRecibo extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+       
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public ConsultaRecibo() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
+    
+Empresa empresa = new Empresa();
 	
 	private void consultaNfe(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 		try{
@@ -89,55 +91,56 @@ System.out.println("Estado de config:"+ehUF+"|"+String.valueOf(empresa.getcUf())
 
 	 	             Nota_Fiscal_EletronicaED ed = this.getByRecord(request.getParameter("oid_Nota_Fiscal"));
 	 	             
-System.out.println("CHAVE nf:" + ed.getNfe_chave_acesso());
-	 	             
-	            	 TRetConsSitNFe retorno = NfeWeb.consultaXml(config, ed.getNfe_chave_acesso(), ConstantesUtil.NFE);
-	                 System.out.println("Status:" + retorno.getCStat());
-	                 System.out.println("Motivo:" + retorno.getXMotivo());
-	                 if (retorno.getProtNFe() != null && retorno.getProtNFe().getInfProt() != null) {
-	                	 System.out.println("Data:" + retorno.getProtNFe().getInfProt().getDhRecbto());
-	                	 response.getWriter().append("Served at: ").append(request.getRemoteHost()).println();
-	 	                response.getWriter().append("      URI: ")
-	 	                					 .append(request.getRequestURI())
-	 	                					 .append(" > ")
-	 	                					 .append(request.getRequestURL())
-	 	                					 .println();
-	 	                response.getWriter().append("   Status: ").append(retorno.getCStat()).println();
-	 	                response.getWriter().append("   Motivo: ").append(retorno.getXMotivo()).println();
-	 	                
-	 	                response.getWriter().append("   Prot: ").append(retorno.getProtNFe().getInfProt().getNProt()).println();
-	 	                response.getWriter().append("  ChNFE: ").append(retorno.getProtNFe().getInfProt().getChNFe()).println();
-	 	                
-	 	             //busca dados envio
-			             TNFe nfe = new Nota_Fiscal_EletronicaRN(empresa).geraNFe(request.getParameter("oid_Nota_Fiscal"), Data.getDataDMY(), Data.getHoraHM());
-			             
-						nfe.getInfNFe().setId("NFe"+ed.getNfe_chave_acesso());
-						nfe.getInfNFe().getIde().setCDV(ed.getNfe_chave_acesso().substring(ed.getNfe_chave_acesso().length()-1));
-						
-						nfe.getInfNFe().getIde().setTpAmb(config.getAmbiente());
-						
-						if(nfe.getInfNFe().getIde().getTpAmb() == ConstantesUtil.AMBIENTE.HOMOLOGACAO) {
-							nfe.getInfNFe().getEmit().setXNome("NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL");
-							nfe.getInfNFe().getEmit().setXFant("NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL");
+						System.out.println("RECIBO nf:" + ed.getNfe_recibo());
+							 	             
+						if(ed.getNfe_recibo() != null && !ed.getNfe_recibo().isEmpty()) {
 							
-							nfe.getInfNFe().getDest().setXNome("NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL");
-						}
+							TRetConsReciNFe retornoR = NfeWeb.consultaRecibo(config, ed.getNfe_recibo(), ConstantesUtil.NFE);
+							 System.out.println("Status:" + retornoR.getCStat());
+						     System.out.println("Motivo:" + retornoR.getXMotivo());
+							
+							TNFe nfe = new Nota_Fiscal_EletronicaRN(empresa).geraNFe(request.getParameter("oid_Nota_Fiscal"), Data.getDataDMY(), Data.getHoraHM());
+				             
+							nfe.getInfNFe().setId("NFe"+ed.getNfe_chave_acesso());
+							nfe.getInfNFe().getIde().setCDV(ed.getNfe_chave_acesso().substring(ed.getNfe_chave_acesso().length()-1));
+							
+							nfe.getInfNFe().getIde().setTpAmb(config.getAmbiente());
+							
+							if(nfe.getInfNFe().getIde().getTpAmb() == ConstantesUtil.AMBIENTE.HOMOLOGACAO) {
+								nfe.getInfNFe().getEmit().setXNome("NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL");
+								nfe.getInfNFe().getEmit().setXFant("NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL");
+								
+								nfe.getInfNFe().getDest().setXNome("NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL");
+							}
 
-			            TEnviNFe enviNFe = new TEnviNFe();
-			            enviNFe.setVersao("4.00");
-			            enviNFe.setIdLote("1");
-			            enviNFe.setIndSinc("1");
-			            enviNFe.getNFe().add(nfe);
-			            
-			            // Monta e Assina o XML
-			            enviNFe = NfeWeb.montaNfe(config, enviNFe, false);
-
-			            response.getWriter().append("  XML  : ").append(XmlUtil.criaNfeProc(enviNFe, retorno.getProtNFe()));
-			 	               
-			            String OK = new Nota_Fiscal_EletronicaRN(empresa).updateRetornoNFE(ed, retorno, enviNFe);
-	 	               
-	                 }
-//	             	
+				            TEnviNFe enviNFe = new TEnviNFe();
+				            enviNFe.setVersao("4.00");
+				            enviNFe.setIdLote("1");
+				            enviNFe.setIndSinc("1");
+				            enviNFe.getNFe().add(nfe);
+				            
+				            // Monta e Assina o XML
+				            enviNFe = NfeWeb.montaNfe(config, enviNFe, false);
+							
+							if (retornoR.getProtNFe() != null && retornoR.getProtNFe().get(0).getInfProt() != null) {
+						    	 System.out.println("Data:" + retornoR.getProtNFe().get(0).getInfProt().getDhRecbto());
+						    	 response.getWriter().append("Served at: ").append(request.getRemoteHost()).println();
+						         response.getWriter().append("      URI: ")
+						         					 .append(request.getRequestURI())
+						         					 .append(" > ")
+						         					 .append(request.getRequestURL())
+						         					 .println();
+						         response.getWriter().append("   Status: ").append(retornoR.getCStat()).println();
+						         response.getWriter().append("   Motivo: ").append(retornoR.getXMotivo()).println();
+						         
+						         response.getWriter().append("   Prot: ").append(retornoR.getProtNFe().get(0).getInfProt().getNProt()).println();
+						         response.getWriter().append("  ChNFE: ").append(retornoR.getProtNFe().get(0).getInfProt().getChNFe()).println();
+						         response.getWriter().append("  XML  : ").append(XmlUtil.criaNfeProc(enviNFe, retornoR.getProtNFe().get(0)));
+						        
+						       String OK = new Nota_Fiscal_EletronicaRN(empresa).updateRetornoConsNFE(ed, retornoR, enviNFe);
+						     }
+						} 
+	                 //	             	
 //	                response.getWriter().append("     Data: ").append(retorno.getDhRecbto()).println();
 	             	
 	             } catch (/*Excecoes |*/ CertificadoException | NfeException e) {
@@ -167,20 +170,21 @@ System.out.println("CHAVE nf:" + ed.getNfe_chave_acesso());
 System.out.println("consulta nf:" + oid_Nota_Fiscal);
         return new Nota_Fiscal_EletronicaRN(empresa).getByRecord(ed);
     }
-	
-	/* (non-Java-doc)
-	 * @see javax.servlet.http.HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+
+	/**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		consultaNfe(request, response);
-	}  	
-	
-	/* (non-Java-doc)
-	 * @see javax.servlet.http.HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	}
+
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		doGet(request, response);
-	}   	  	    
+	}
+
 }
