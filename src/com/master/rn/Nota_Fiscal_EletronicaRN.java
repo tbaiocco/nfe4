@@ -58,6 +58,8 @@ import br.cte.model.Empresa;
 import br.inf.portalfiscal.nfe.schema_4.enviNFe.TEnviNFe;
 import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe;
 import br.inf.portalfiscal.nfe.schema_4.enviNFe.TRetEnviNFe;
+import br.inf.portalfiscal.nfe.schema_4.retConsSitNFe.TRetConsSitNFe;
+import br.inf.portalfiscal.nfe.schema_4.retEnviNFe.TRetConsReciNFe;
 import br.nfe.core.BeanDanfeItens;
 import br.nfe.model.NfeInutilizacao;
 import br.nfe.model.NfeLote;
@@ -1074,11 +1076,11 @@ public class Nota_Fiscal_EletronicaRN extends Transacao {
 //        }
     }
 
-    public String updateRetornoLote(Nota_Fiscal_EletronicaED ed, NfeLote retorno) throws Excecoes {
+    public String updateRetornoLote(Nota_Fiscal_EletronicaED ed, TRetEnviNFe retorno, TEnviNFe enviNFe) throws Excecoes {
 
         try {
             this.inicioTransacao();
-            String toReturn = new Nota_Fiscal_EletronicaBD(this.sql).updateRetornoLote(ed, retorno);
+            String toReturn = new Nota_Fiscal_EletronicaBD(this.sql).updateRetornoLote(ed, retorno, enviNFe);
             this.fimTransacao(true);
             return toReturn;
         } catch (Excecoes e) {
@@ -1101,6 +1103,50 @@ public class Nota_Fiscal_EletronicaRN extends Transacao {
         try {
             this.inicioTransacao();
             String toReturn = new Nota_Fiscal_EletronicaBD(this.sql).updateRetornoNFE(ed, retorno, enviNFe);
+            this.fimTransacao(true);
+            return toReturn;
+        } catch (Excecoes e) {
+            this.abortaTransacao();
+            e.printStackTrace();
+            throw e;
+        } catch(RuntimeException e) {
+            this.abortaTransacao();
+            e.printStackTrace();
+            throw e;
+        } catch(Exception e){
+        	this.abortaTransacao();
+            e.printStackTrace();
+            throw new Excecoes();
+        }
+    }
+    
+    public String updateRetornoConsNFE(Nota_Fiscal_EletronicaED ed, br.inf.portalfiscal.nfe.schema_4.retConsReciNFe.TRetConsReciNFe retorno, TEnviNFe enviNFe) throws Excecoes {
+
+        try {
+            this.inicioTransacao();
+            String toReturn = new Nota_Fiscal_EletronicaBD(this.sql).updateRetornoConsNFE(ed, retorno, enviNFe);
+            this.fimTransacao(true);
+            return toReturn;
+        } catch (Excecoes e) {
+            this.abortaTransacao();
+            e.printStackTrace();
+            throw e;
+        } catch(RuntimeException e) {
+            this.abortaTransacao();
+            e.printStackTrace();
+            throw e;
+        } catch(Exception e){
+        	this.abortaTransacao();
+            e.printStackTrace();
+            throw new Excecoes();
+        }
+    }
+    
+    public String updateRetornoNFE(Nota_Fiscal_EletronicaED ed, TRetConsSitNFe retorno, TEnviNFe enviNFe) throws Excecoes {
+
+        try {
+            this.inicioTransacao();
+            String toReturn = new Nota_Fiscal_EletronicaBD(this.sql).updateConsultaNFE(ed, retorno, enviNFe);
             this.fimTransacao(true);
             return toReturn;
         } catch (Excecoes e) {

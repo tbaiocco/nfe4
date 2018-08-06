@@ -1,12 +1,10 @@
 package com.master.nfe;
 
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.bind.JAXBException;
 
 import com.master.ed.Nota_Fiscal_EletronicaED;
 import com.master.rn.Nota_Fiscal_EletronicaRN;
@@ -18,19 +16,18 @@ import com.master.util.JavaUtil;
 import br.com.samuelweb.certificado.Certificado;
 import br.com.samuelweb.certificado.CertificadoService;
 import br.com.samuelweb.certificado.exception.CertificadoException;
-import br.com.samuelweb.nfe.Nfe;
 import br.com.samuelweb.nfe.NfeWeb;
 import br.com.samuelweb.nfe.dom.ConfiguracoesWebNfe;
 import br.com.samuelweb.nfe.exception.NfeException;
-import br.com.samuelweb.nfe.util.Chave;
 import br.com.samuelweb.nfe.util.ConstantesUtil;
 import br.com.samuelweb.nfe.util.Estados;
 import br.com.samuelweb.nfe.util.XmlUtil;
-import br.inf.portalfiscal.nfe.schema_4.enviNFe.TEnviNFe;
-import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe;
-import br.inf.portalfiscal.nfe.schema_4.retConsSitNFe.TRetConsSitNFe;
 import br.cte.base.EmpresaDb;
 import br.cte.model.Empresa;
+import br.inf.portalfiscal.nfe.schema_4.enviNFe.TEnviNFe;
+import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe;
+import br.inf.portalfiscal.nfe.schema_4.retConsReciNFe.TRetConsReciNFe;
+import br.inf.portalfiscal.nfe.schema_4.retConsSitNFe.TRetConsSitNFe;
 
 /**
  * Servlet implementation class for Servlet: AtualizaNFe
@@ -64,6 +61,14 @@ import br.cte.model.Empresa;
 			}
 
 			if(JavaUtil.doValida(request.getParameter("oid_Nota_Fiscal"))){
+				
+				Estados ehUF = Estados.RS;
+				for(Estados euf : Estados.values()) {
+					if(euf.getCodigoIbge().equals(String.valueOf(empresa.getcUf())))
+						ehUF = euf;
+				}
+System.out.println("Estado de config:"+ehUF+"|"+String.valueOf(empresa.getcUf()));
+
 //				String certPath = "/data/nfe4/certificados/miro_cac.pfx";
 //		    	String certPass = "1444";
 				String certPath = "/data/nfe4/certificados/" + empresa.getCertificado();
@@ -73,40 +78,17 @@ import br.cte.model.Empresa;
 	 	             		certPath, 
 	 	             		certPass);
 	 	             //Esse Objeto Voce pode guardar em uma Session.
-	 	             ConfiguracoesWebNfe config = ConfiguracoesWebNfe.iniciaConfiguracoes(Estados.RS,
+	 	             ConfiguracoesWebNfe config = ConfiguracoesWebNfe.iniciaConfiguracoes(ehUF,
 //	 	            		 ConstantesUtil.AMBIENTE.HOMOLOGACAO,
 	 	            		 empresa.getAmbiente(),
 	 	                     certificado,
-	 	                     MethodHandles.lookup().lookupClass().
-	 	                     getResource("/schemas").getPath(), //PEGAR SCHEMAS EM AMBIENTE WEB ESTA PASTA ESTA DENTRO DE RESOURCES
+	 	                    "/data/nfe4/schemas",
+//	 	                     MethodHandles.lookup().lookupClass().
+//	 	                     getResource("/schemas").getPath(), //PEGAR SCHEMAS EM AMBIENTE WEB ESTA PASTA ESTA DENTRO DE RESOURCES
 	 	                     true);
 
 	 	             Nota_Fiscal_EletronicaED ed = this.getByRecord(request.getParameter("oid_Nota_Fiscal"));
 	 	             
-	 	          //busca dados envio
-		             TNFe nfe = new Nota_Fiscal_EletronicaRN(empresa).geraNFe(request.getParameter("oid_Nota_Fiscal"), Data.getDataDMY(), Data.getHoraHM());
-		             
-					nfe.getInfNFe().setId("NFe"+ed.getNfe_chave_acesso());
-					nfe.getInfNFe().getIde().setCDV(ed.getNfe_chave_acesso().substring(ed.getNfe_chave_acesso().length()-1));
-					
-					nfe.getInfNFe().getIde().setTpAmb(config.getAmbiente());
-					
-					if(nfe.getInfNFe().getIde().getTpAmb() == ConstantesUtil.AMBIENTE.HOMOLOGACAO) {
-						nfe.getInfNFe().getEmit().setXNome("NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL");
-						nfe.getInfNFe().getEmit().setXFant("NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL");
-						
-						nfe.getInfNFe().getDest().setXNome("NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL");
-					}
-
-		            TEnviNFe enviNFe = new TEnviNFe();
-		            enviNFe.setVersao("4.00");
-		            enviNFe.setIdLote("1");
-		            enviNFe.setIndSinc("1");
-		            enviNFe.getNFe().add(nfe);
-
-		            // Monta e Assina o XML
-		            enviNFe = NfeWeb.montaNfe(config, enviNFe, true);
-//	 	             
 System.out.println("CHAVE nf:" + ed.getNfe_chave_acesso());
 	 	             
 	            	 TRetConsSitNFe retorno = NfeWeb.consultaXml(config, ed.getNfe_chave_acesso(), ConstantesUtil.NFE);
@@ -125,7 +107,60 @@ System.out.println("CHAVE nf:" + ed.getNfe_chave_acesso());
 	 	                
 	 	                response.getWriter().append("   Prot: ").append(retorno.getProtNFe().getInfProt().getNProt()).println();
 	 	                response.getWriter().append("  ChNFE: ").append(retorno.getProtNFe().getInfProt().getChNFe()).println();
-	 	               response.getWriter().append("  ChNFE: ").append(XmlUtil.criaNfeProc(enviNFe, retorno.getProtNFe()));
+	 	                
+	 	             //busca dados envio
+			             TNFe nfe = new Nota_Fiscal_EletronicaRN(empresa).geraNFe(request.getParameter("oid_Nota_Fiscal"), Data.getDataDMY(), Data.getHoraHM());
+			             
+						nfe.getInfNFe().setId("NFe"+ed.getNfe_chave_acesso());
+						nfe.getInfNFe().getIde().setCDV(ed.getNfe_chave_acesso().substring(ed.getNfe_chave_acesso().length()-1));
+						
+						nfe.getInfNFe().getIde().setTpAmb(config.getAmbiente());
+						
+						if(nfe.getInfNFe().getIde().getTpAmb() == ConstantesUtil.AMBIENTE.HOMOLOGACAO) {
+							nfe.getInfNFe().getEmit().setXNome("NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL");
+							nfe.getInfNFe().getEmit().setXFant("NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL");
+							
+							nfe.getInfNFe().getDest().setXNome("NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL");
+						}
+
+			            TEnviNFe enviNFe = new TEnviNFe();
+			            enviNFe.setVersao("4.00");
+			            enviNFe.setIdLote("1");
+			            enviNFe.setIndSinc("1");
+			            enviNFe.getNFe().add(nfe);
+			            
+			            // Monta e Assina o XML
+			            enviNFe = NfeWeb.montaNfe(config, enviNFe, false);
+//			            
+//			            
+			            if(ed.getNfe_recibo() != null && !ed.getNfe_recibo().isEmpty()) {
+			            	TRetConsReciNFe retornoR = NfeWeb.consultaRecibo(config, ed.getNfe_recibo(), ConstantesUtil.NFE);
+			            	 System.out.println("Status:" + retornoR.getCStat());
+			                 System.out.println("Motivo:" + retornoR.getXMotivo());
+			                 if (retornoR.getProtNFe() != null && retornoR.getProtNFe().get(0).getInfProt() != null) {
+			                	 System.out.println("Data:" + retornoR.getProtNFe().get(0).getInfProt().getDhRecbto());
+			                	 response.getWriter().append("Served at: ").append(request.getRemoteHost()).println();
+			 	                response.getWriter().append("      URI: ")
+			 	                					 .append(request.getRequestURI())
+			 	                					 .append(" > ")
+			 	                					 .append(request.getRequestURL())
+			 	                					 .println();
+			 	                response.getWriter().append("   Status: ").append(retornoR.getCStat()).println();
+			 	                response.getWriter().append("   Motivo: ").append(retornoR.getXMotivo()).println();
+			 	                
+			 	                response.getWriter().append("   Prot: ").append(retornoR.getProtNFe().get(0).getInfProt().getNProt()).println();
+			 	                response.getWriter().append("  ChNFE: ").append(retornoR.getProtNFe().get(0).getInfProt().getChNFe()).println();
+			 	                response.getWriter().append("  XML  : ").append(XmlUtil.criaNfeProc(enviNFe, retornoR.getProtNFe().get(0)));
+			 	               
+			 	              String OK = new Nota_Fiscal_EletronicaRN(empresa).updateRetornoConsNFE(ed, retornoR, enviNFe);
+			                 }
+			            } else {
+
+			            	response.getWriter().append("  XML  : ").append(XmlUtil.criaNfeProc(enviNFe, retorno.getProtNFe()));
+			 	               
+			 	              String OK = new Nota_Fiscal_EletronicaRN(empresa).updateRetornoNFE(ed, retorno, enviNFe);
+			            }
+	 	               
 	                 }
 //	             	
 //	                response.getWriter().append("     Data: ").append(retorno.getDhRecbto()).println();

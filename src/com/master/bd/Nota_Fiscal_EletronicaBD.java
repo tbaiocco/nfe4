@@ -106,6 +106,7 @@ import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe.InfNFe.Det.Imposto.PIS.PISA
 import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe.InfNFe.Det.Prod;
 import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe.InfNFe.Total.ICMSTot;
 import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe.InfNFe.Transp.Transporta;
+import br.inf.portalfiscal.nfe.schema_4.retConsSitNFe.TRetConsSitNFe;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -3805,7 +3806,7 @@ System.out.println("printNotaFiscalSaida ->>" +sqlUpdate);
                             Prod prod = new Prod();
                             prod.setCProd(JavaUtil.doValida(edProduto.getCD_Fornecedor()) ? edProduto.getCD_Fornecedor() : edProduto.getCD_Produto());
                             prod.setCEAN("SEM GTIN");
-                            prod.setXProd(edProduto.getNM_Produto());
+                            prod.setXProd(edProduto.getNM_Produto().trim());
                             prod.setNCM(ManipulaString.limpaCampo(edProduto.getCD_Fiscal()));
                             prod.setCEST(null);
                             prod.setIndEscala(null);
@@ -3859,14 +3860,14 @@ System.out.println("printNotaFiscalSaida ->>" +sqlUpdate);
                             	ICMS10 icms10 = new ICMS10();
                             	icms10.setOrig("0");
                             	icms10.setCST("10");
-//                            	icms10.setModBC("3");
-//                            	icms10.setVBC(""+edItem.getVL_Base_Calculo_ICMS());
-//                            	icms10.setPICMS(""+edItem.getPE_Aliquota_ICMS());
-//                            	icms10.setVICMS(""+edItem.getVL_ICMS_Aprov());
+                            	icms10.setModBC("3");
+                            	icms10.setVBC(""+dec.format(edItem.getVL_Base_Calculo_ICMS()).replace(",", "."));
+                            	icms10.setPICMS(""+dec.format(edItem.getPE_Aliquota_ICMS()).replace(",", "."));
+                            	icms10.setVICMS(""+dec.format(edItem.getVL_ICMS_Aprov()).replace(",", "."));
                             	icms10.setModBCST("4");
-//                            	icms10.setVBCST(""+edItem.getVL_Base_Calculo_ICMS());
-                            	icms10.setPICMSST(""+dec.format(edItem.getPE_Aliquota_ICMS()).replace(",", "."));
-//                            	icms10.setVICMSST((""+edItem.getVL_ICMS_Aprov());
+                            	icms10.setVBCST("0.00");
+                            	icms10.setPICMSST("0.00");
+                            	icms10.setVICMSST("0.00");
                             	icms10.setPRedBCST("0.00");
                             	icms.setICMS10(icms10);
                 				
@@ -4097,16 +4098,16 @@ System.out.println("printNotaFiscalSaida ->>" +sqlUpdate);
         return nfeReturn;
     }
 
-	public String updateRetornoLote(Nota_Fiscal_EletronicaED ed, NfeLote retorno) throws SQLException, Excecoes {
+	public String updateRetornoLote(Nota_Fiscal_EletronicaED ed, TRetEnviNFe retorno, TEnviNFe enviNFe) throws SQLException, Excecoes {
 		try{
 			String sqlUpdate;
 			sqlUpdate = "UPDATE Notas_Fiscais SET " +
-			            " nfe_recibo = '"+retorno.getNRec() + "' " +
-			            " ,nfe_data_lote = '"+new SimpleDateFormat("dd/MM/yyyy' 'HH:mm:ss").format(retorno.getData()) + "' " +
+			            " nfe_recibo = '"+retorno.getInfRec().getNRec() + "' " +
+			            " ,nfe_data_lote = '"+(retorno.getDhRecbto()) + "' " +
 			    		" ,nfe_cstat_lote = '" + retorno.getCStat() + "' " +
 			    		" ,nfe_motivo_lote = '" + retorno.getXMotivo() + "' " +
 			            " WHERE oid_Nota_Fiscal = '"+ed.getOid_nota_fiscal()+"' ";
-System.out.println(sqlUpdate);
+System.out.println("SOH RECIBO: "+sqlUpdate);
 			executasql.executarUpdate(sqlUpdate);
 			return "OK";
 		} catch(Exception e){
@@ -4122,7 +4123,85 @@ System.out.println(sqlUpdate);
 			            " ,nfe_dt_hr_recebimento = '"+(retorno.getDhRecbto()) + "' " +
 			    		" ,nfe_cstat = '" + retorno.getProtNFe().getInfProt().getCStat() + "' " +
 			    		" ,nfe_motivo = '" + retorno.getProtNFe().getInfProt().getXMotivo() + "' " +
-			    		" ,nfe_recibo = '"+retorno.getInfRec().getNRec() + "' " +
+			    		
+//			    		" ,nfe_recibo = '"+retorno.getInfRec().getNRec() + "' " +
+//			            " ,nfe_data_lote = '"+new SimpleDateFormat("dd/MM/yyyy' 'HH:mm:ss").format(retorno.getData()) + "' " +
+			    		" ,nfe_cstat_lote = '" + retorno.getCStat() + "' " +
+			    		" ,nfe_motivo_lote = '" + retorno.getXMotivo() + "' " +
+//						" ,nfe_digestvalue = '" + new String(retorno.getProtNFe().getInfProt().getDigVal()) + "' " +
+						" ,xml_autorizacao = '" + XmlUtil.criaNfeProc(enviNFe, retorno.getProtNFe()) + "' " +
+			            " WHERE oid_Nota_Fiscal = '"+ed.getOid_nota_fiscal()+"' ";
+System.out.println(sqlUpdate);
+			executasql.executarUpdate(sqlUpdate);
+			if(JavaUtil.doValida(retorno.getCStat()) && StatusEnum.AUTORIZADO.getCodigo().equals(retorno.getCStat())){
+				
+				if ("S".equals(ed.edModelo.getDM_Gera_Fiscal()))
+		        {
+					boolean isSaida = ("D".equals(ed.getDm_tipo_nota_fiscal()) || "R".equals(ed.getDm_tipo_nota_fiscal()) || "S".equals(ed.getDm_tipo_nota_fiscal()));//*** Tipo de NOTA
+	                if (isSaida || JavaUtil.doValida(ed.getDM_Tipo_Devolucao()))
+	                {
+	                	new Livro_FiscalBD(executasql).geraLivro_Fiscal_Saidas(new Livro_FiscalED(ed.getOid_nota_fiscal(), "NF"), "S");
+	                }else{
+	                	new Livro_FiscalBD(executasql).geraLivro_Fiscal_Entradas(new Livro_FiscalED(ed.getOid_nota_fiscal(), "NF"), "E");
+	                }
+		        }
+				
+				return "OK";
+            } else {
+            	return "NOK";
+            }
+		} catch(Exception e){
+			e.printStackTrace();
+			return "ERRO: "+e.getMessage();
+		}
+	}
+	
+	public String updateRetornoConsNFE(Nota_Fiscal_EletronicaED ed, br.inf.portalfiscal.nfe.schema_4.retConsReciNFe.TRetConsReciNFe retorno, TEnviNFe enviNFe) throws SQLException, Excecoes {
+		try{
+			String sqlUpdate;
+			sqlUpdate = "UPDATE Notas_Fiscais SET " +
+			            " nfe_chave_acesso = '" + retorno.getProtNFe().get(0).getInfProt().getChNFe() + "', " +
+						" nfe_protocolo = '"+retorno.getProtNFe().get(0).getInfProt().getNProt() + "' " +
+			            " ,nfe_dt_hr_recebimento = '"+(retorno.getDhRecbto()) + "' " +
+			    		" ,nfe_cstat = '" + retorno.getProtNFe().get(0).getInfProt().getCStat() + "' " +
+			    		" ,nfe_motivo = '" + retorno.getProtNFe().get(0).getInfProt().getXMotivo() + "' " +
+			    		" ,nfe_cstat_lote = '" + retorno.getCStat() + "' " +
+			    		" ,nfe_motivo_lote = '" + retorno.getXMotivo() + "' " +
+						" ,xml_autorizacao = '" + XmlUtil.criaNfeProc(enviNFe, retorno.getProtNFe().get(0)) + "' " +
+			            " WHERE oid_Nota_Fiscal = '"+ed.getOid_nota_fiscal()+"' ";
+System.out.println(sqlUpdate);
+			executasql.executarUpdate(sqlUpdate);
+			if(JavaUtil.doValida(retorno.getCStat()) && StatusEnum.AUTORIZADO.getCodigo().equals(retorno.getCStat())){
+				
+				if ("S".equals(ed.edModelo.getDM_Gera_Fiscal()))
+		        {
+					boolean isSaida = ("D".equals(ed.getDm_tipo_nota_fiscal()) || "R".equals(ed.getDm_tipo_nota_fiscal()) || "S".equals(ed.getDm_tipo_nota_fiscal()));//*** Tipo de NOTA
+	                if (isSaida || JavaUtil.doValida(ed.getDM_Tipo_Devolucao()))
+	                {
+	                	new Livro_FiscalBD(executasql).geraLivro_Fiscal_Saidas(new Livro_FiscalED(ed.getOid_nota_fiscal(), "NF"), "S");
+	                }else{
+	                	new Livro_FiscalBD(executasql).geraLivro_Fiscal_Entradas(new Livro_FiscalED(ed.getOid_nota_fiscal(), "NF"), "E");
+	                }
+		        }
+				
+				return "OK";
+            } else {
+            	return "NOK";
+            }
+		} catch(Exception e){
+			return "ERRO: "+e.getMessage();
+		}
+	}
+	
+	public String updateConsultaNFE(Nota_Fiscal_EletronicaED ed, TRetConsSitNFe retorno, TEnviNFe enviNFe) throws SQLException, Excecoes {
+		try{
+			String sqlUpdate;
+			sqlUpdate = "UPDATE Notas_Fiscais SET " +
+			            " nfe_chave_acesso = '" + retorno.getProtNFe().getInfProt().getChNFe() + "', " +
+						" nfe_protocolo = '"+retorno.getProtNFe().getInfProt().getNProt() + "' " +
+			            " ,nfe_dt_hr_recebimento = '"+(retorno.getDhRecbto()) + "' " +
+			    		" ,nfe_cstat = '" + retorno.getProtNFe().getInfProt().getCStat() + "' " +
+			    		" ,nfe_motivo = '" + retorno.getProtNFe().getInfProt().getXMotivo() + "' " +
 //			            " ,nfe_data_lote = '"+new SimpleDateFormat("dd/MM/yyyy' 'HH:mm:ss").format(retorno.getData()) + "' " +
 			    		" ,nfe_cstat_lote = '" + retorno.getCStat() + "' " +
 			    		" ,nfe_motivo_lote = '" + retorno.getXMotivo() + "' " +
@@ -4149,9 +4228,11 @@ System.out.println(sqlUpdate);
             	return "NOK";
             }
 		} catch(Exception e){
+			e.printStackTrace();
 			return "ERRO: "+e.getMessage();
 		}
 	}
+	
 	public String updateRetornoCancelamento(Nota_Fiscal_EletronicaED ed, br.inf.portalfiscal.nfe.schema.envEventoCancNFe.TRetEvento.InfEvento ret) throws SQLException, Excecoes {
 		try{
 			String sqlUpdate;
