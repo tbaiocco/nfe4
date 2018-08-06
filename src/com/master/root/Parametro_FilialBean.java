@@ -4,6 +4,8 @@ import java.sql.*;
 import java.util.*;
 
 import auth.*;
+import br.cte.model.Empresa;
+
 import com.master.util.*;
 
 public class Parametro_FilialBean {
@@ -334,7 +336,7 @@ public class Parametro_FilialBean {
   }
 
   /*
-   *---------------- Bloco Padrão para Todas Classes ------------------
+   *---------------- Bloco Padrï¿½o para Todas Classes ------------------
    */
   public String getUsuario_Stamp () {
     return Usuario_Stamp;
@@ -516,15 +518,15 @@ public class Parametro_FilialBean {
 
   public void insert () throws Exception {
     /*
-     * Abre a conexão com o banco
+     * Abre a conexï¿½o com o banco
      */
     int oid = 0;
 
     Connection conn = null;
     try {
-      // Pede uma conexão ao gerenciador do driver
-      // passando como parâmetro o NR_Proximo_Lote_Baixa do DSN
-      // o NR_Proximo_Lote_Baixa de usuário e a senha do banco.
+      // Pede uma conexï¿½o ao gerenciador do driver
+      // passando como parï¿½metro o NR_Proximo_Lote_Baixa do DSN
+      // o NR_Proximo_Lote_Baixa de usuï¿½rio e a senha do banco.
       conn = OracleConnection2.getWEB ();
       conn.setAutoCommit (false);
     }
@@ -533,7 +535,7 @@ public class Parametro_FilialBean {
       throw e;
     }
     /*
-     * Gera um novo código (OID)
+     * Gera um novo cï¿½digo (OID)
      */
     try {
       Statement stmt = conn.createStatement ();
@@ -660,7 +662,7 @@ public class Parametro_FilialBean {
        throw e;
      }
     /*
-     * Faz o commit e fecha a conexão.
+     * Faz o commit e fecha a conexï¿½o.
      */
     try {
       conn.commit ();
@@ -674,13 +676,13 @@ public class Parametro_FilialBean {
 
   public void update () throws Exception {
     /*
-     * Abre a conexão com o banco
+     * Abre a conexï¿½o com o banco
      */
     Connection conn = null;
     try {
-      // Pede uma conexão ao gerenciador do driver
-      // passando como parâmetro o NR_Proximo_Lote_Baixa do DSN
-      // o NR_Proximo_Lote_Baixa de usuário e a senha do banco.
+      // Pede uma conexï¿½o ao gerenciador do driver
+      // passando como parï¿½metro o NR_Proximo_Lote_Baixa do DSN
+      // o NR_Proximo_Lote_Baixa de usuï¿½rio e a senha do banco.
       conn = OracleConnection2.getWEB ();
       conn.setAutoCommit (false);
     }
@@ -789,7 +791,7 @@ public class Parametro_FilialBean {
       throw e;
     }
     /*
-     * Faz o commit e fecha a conexão.
+     * Faz o commit e fecha a conexï¿½o.
      */
     try {
       conn.commit ();
@@ -803,13 +805,13 @@ public class Parametro_FilialBean {
 
   public void delete () throws Exception {
     /*
-     * Abre a conexão com o banco
+     * Abre a conexï¿½o com o banco
      */
     Connection conn = null;
     try {
-      // Pede uma conexão ao gerenciador do driver
-      // passando como parâmetro o NR_Proximo_Lote_Baixa do DSN
-      // o NR_Proximo_Lote_Baixa de usuário e a senha do banco.
+      // Pede uma conexï¿½o ao gerenciador do driver
+      // passando como parï¿½metro o NR_Proximo_Lote_Baixa do DSN
+      // o NR_Proximo_Lote_Baixa de usuï¿½rio e a senha do banco.
       conn = OracleConnection2.getWEB ();
       conn.setAutoCommit (false);
     }
@@ -839,7 +841,7 @@ public class Parametro_FilialBean {
       throw e;
     }
     /*
-     * Faz o commit e fecha a conexão.
+     * Faz o commit e fecha a conexï¿½o.
      */
     try {
       conn.commit ();
@@ -853,13 +855,13 @@ public class Parametro_FilialBean {
 
   public static final Parametro_FilialBean getByOID (int oid) throws Exception {
     /*
-     * Abre a conexão com o banco
+     * Abre a conexï¿½o com o banco
      */
     Connection conn = null;
     try {
-      // Pede uma conexão ao gerenciador do driver
-      // passando como parâmetro o NR_Proximo_Lote_Baixa do DSN
-      // o NR_Proximo_Lote_Baixa de usuário e a senha do banco.
+      // Pede uma conexï¿½o ao gerenciador do driver
+      // passando como parï¿½metro o NR_Proximo_Lote_Baixa do DSN
+      // o NR_Proximo_Lote_Baixa de usuï¿½rio e a senha do banco.
       conn = OracleConnection2.getWEB ();
       conn.setAutoCommit (false);
     }
@@ -1600,16 +1602,16 @@ public class Parametro_FilialBean {
     return p;
   }
 
-  public static final Parametro_FilialBean getByOID_Unidade_Parametro (int oid_Unidade) throws Exception {
+  public static final Parametro_FilialBean getByOID_Unidade_Parametro (Empresa empresa, int oid_Unidade) throws Exception {
     /*
-     * Abre a conexão com o banco
+     * Abre a conexï¿½o com o banco
      */
     Connection conn = null;
     try {
-      // Pede uma conexão ao gerenciador do driver
-      // passando como parâmetro o NR_Proximo_Lote_Baixa do DSN
-      // o NR_Proximo_Lote_Baixa de usuário e a senha do banco.
-      conn = OracleConnection2.getWEB ();
+      // Pede uma conexï¿½o ao gerenciador do driver
+      // passando como parï¿½metro o NR_Proximo_Lote_Baixa do DSN
+      // o NR_Proximo_Lote_Baixa de usuï¿½rio e a senha do banco.
+      conn = OracleConnection2.getWEB (empresa);
       conn.setAutoCommit (false);
     }
     catch (Exception e) {
@@ -1991,13 +1993,13 @@ public class Parametro_FilialBean {
 
   public static final List getByOID_Unidade (int OID_Unidade) throws Exception {
     /*
-     * Abre a conexão com o banco
+     * Abre a conexï¿½o com o banco
      */
     Connection conn = null;
     try {
-      // Pede uma conexão ao gerenciador do driver
-      // passando como parâmetro o NR_Proximo_Lote_Baixa do DSN
-      // o NR_Proximo_Lote_Baixa de usuário e a senha do banco.
+      // Pede uma conexï¿½o ao gerenciador do driver
+      // passando como parï¿½metro o NR_Proximo_Lote_Baixa do DSN
+      // o NR_Proximo_Lote_Baixa de usuï¿½rio e a senha do banco.
       conn = OracleConnection2.getWEB ();
       conn.setAutoCommit (false);
     }
@@ -2115,9 +2117,9 @@ public class Parametro_FilialBean {
   public static final List getAll () throws Exception {
     Connection conn = null;
     try {
-      // Pede uma conexão ao gerenciador do driver
-      // passando como parâmetro o nome do DSN
-      // o nome de usuário e a senha do banco.
+      // Pede uma conexï¿½o ao gerenciador do driver
+      // passando como parï¿½metro o nome do DSN
+      // o nome de usuï¿½rio e a senha do banco.
       conn = OracleConnection2.getWEB ();
       conn.setAutoCommit (false);
     }
@@ -2235,7 +2237,7 @@ public class Parametro_FilialBean {
     pp.setOID (10);
     pp.update ();
 
-    Parametro_FilialBean p = getByOID_Unidade_Parametro (2);
+    Parametro_FilialBean p = getByOID_Unidade_Parametro (null,2);
     // //// System.out.println(p.getCD_AIDOF_CTO_Nacional());
     // //// System.out.println(p.getCD_AIDOF_Manifesto());
   }

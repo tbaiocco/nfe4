@@ -1316,7 +1316,7 @@ public class Nota_Fiscal_EletronicaBD extends BancoUtil {
     		if (Itens_Nao_Devolvidos <= 0){
 	    		// Anota as nfs retornadas nas observacoes da nota de devolucao
 	            Parametro_WmsED edPWms = new Parametro_WmsED();
-	            edPWms = new Parametro_WmsBD(this.sql).getByRecord(edPWms);
+	            edPWms = new Parametro_WmsBD(this.sql).getByRecord(null,edPWms);
 	    		if (doValida(ed.getDm_observacao())) Observacao = ed.getDm_observacao();
 	    		Observacao = edPWms.getNm_Observacao_Devolucao() + " "  + Observacao ;
 	    		sql = "Select "+
@@ -3537,7 +3537,7 @@ System.out.println(sql);
                     	Parametro_WmsED pWMS= new Parametro_WmsED();
                     	//Linha para pegar a AIDOF da unidade...
                     	pWMS.setOid_Unidade(new Long(ed.getOID_Unidade_Fiscal()).intValue());
-                    	pWMS = new Parametro_WmsBD (executasql).getByRecord(pWMS);
+                    	pWMS = new Parametro_WmsBD (executasql).getByRecord(empresa, pWMS);
                         //old
 //                    	this.setNrSerieNotaFromAIDOF(ed, pWMS.getCd_Aidof_Nota_Fiscal_Devolucao());
                     	//nova numeracao

@@ -8,6 +8,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.master.util.CertUtil;
+import com.master.util.Excecoes;
+import com.master.util.JavaUtil;
+
 import br.com.samuelweb.certificado.Certificado;
 import br.com.samuelweb.certificado.CertificadoService;
 import br.com.samuelweb.nfe.NfeWeb;
@@ -15,7 +19,9 @@ import br.com.samuelweb.nfe.dom.ConfiguracoesWebNfe;
 import br.com.samuelweb.nfe.util.ConstantesUtil;
 import br.com.samuelweb.nfe.util.Estados;
 import br.inf.portalfiscal.nfe.schema_4.retConsStatServ.TRetConsStatServ;
-import br.model.Empresa;
+
+import br.cte.base.EmpresaDb;
+import br.cte.model.Empresa;
 
 /**
  * Servlet implementation class StatusServico
@@ -34,18 +40,21 @@ public class StatusServico extends HttpServlet {
     }
     
     private void doStatusCheck(HttpServletRequest request, HttpServletResponse response) {
-    	String certPath = "/data/nfe4/certificados/miro_cac.pfx";
+    	String certPath = "/data/nfe4/certificados/tonelli.pfx";
     	String certPass = "1444";
     	try {
     		
-//    		if(JavaUtil.doValida(request.getParameter("emissor"))){
-//				empresa = new br.core.base.EmpresaDb().getEmpresa(request.getParameter("emissor"));
-//				if(!JavaUtil.doValida(empresa.getRazaosocial())){
-//					throw new Excecoes("A empresa emitente nao foi encontrada no sistema!");
-//				}
-//			} else {
-//				throw new Excecoes("A empresa emitente nao foi informada!");
-//			}
+    		if(JavaUtil.doValida(request.getParameter("emissor"))){
+				empresa = new EmpresaDb().getEmpresa(request.getParameter("emissor"));
+				if(!JavaUtil.doValida(empresa.getRazaosocial())){
+					throw new Excecoes("A empresa emitente nao foi encontrada no sistema!");
+				}
+			} else {
+				throw new Excecoes("A empresa emitente nao foi informada!");
+			}
+			
+			certPath = "/data/nfe4/certificados/" + empresa.getCertificado();
+	    	certPass = CertUtil.getSenhaPlain(empresa);
     		 
              // Inicia As Certificado
              Certificado certificado = CertificadoService.certificadoPfx(

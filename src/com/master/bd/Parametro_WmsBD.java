@@ -11,6 +11,8 @@ import com.master.util.Excecoes;
 import com.master.util.JavaUtil;
 import com.master.util.bd.ExecutaSQL;
 
+import br.cte.model.Empresa;
+
 public class Parametro_WmsBD extends BancoUtil {
 
     private ExecutaSQL executasql;
@@ -21,7 +23,7 @@ public class Parametro_WmsBD extends BancoUtil {
 		this.executasql = sql;
     }
 
-    public Parametro_WmsED getByRecord(Parametro_WmsED ed) throws Excecoes {
+    public Parametro_WmsED getByRecord(Empresa empresa, Parametro_WmsED ed) throws Excecoes {
         String sql = null;
         ResultSet res = null;
         Parametro_WmsED edVolta = new Parametro_WmsED();
@@ -51,7 +53,7 @@ public class Parametro_WmsBD extends BancoUtil {
                 edVolta.setCd_Cfop_Entrada(res.getString("Cd_Cfop_Entrada"));
                 edVolta.setCd_Modelo_Nota_Fiscal_Entrada(res.getString("Cd_Modelo_Nota_Fiscal_Entrada"));
                 if(ed.getOid_Unidade()>0){
-                	edVolta.setCd_Aidof_Nota_Fiscal_Devolucao(Parametro_FilialBean.getByOID_Unidade_Parametro(ed.getOid_Unidade()).getCD_AIDOF_Nota_Fiscal());
+                	edVolta.setCd_Aidof_Nota_Fiscal_Devolucao(Parametro_FilialBean.getByOID_Unidade_Parametro(empresa, ed.getOid_Unidade()).getCD_AIDOF_Nota_Fiscal());
                 }
                 if(!JavaUtil.doValida(edVolta.getCd_Aidof_Nota_Fiscal_Devolucao())){
                 	edVolta.setCd_Aidof_Nota_Fiscal_Devolucao(res.getString("Cd_Aidof_Nota_Fiscal_Devolucao"));
@@ -71,9 +73,9 @@ public class Parametro_WmsBD extends BancoUtil {
     public void altera(Parametro_WmsED ed) throws Excecoes {
         String sql = null;
         try {
-        	// Se não existe , cria
+        	// Se nï¿½o existe , cria
         	Parametro_WmsED edVolta = new Parametro_WmsED();
-        	edVolta = this.getByRecord(ed);
+//        	edVolta = this.getByRecord(ed);
         	if (edVolta.getOid_Parametro_Wms()==0)
         		executasql.executarUpdate("insert into Parametros_Wms (oid_parametro_wms) values(1)");
         	// Atualiza
