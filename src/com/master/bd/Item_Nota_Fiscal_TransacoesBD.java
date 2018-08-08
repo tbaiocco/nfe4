@@ -1,8 +1,8 @@
 package com.master.bd;
 
 /**
- * Empresa: ÊxitoLogística Mastercom
- * Autor: André Valadas
+ * Empresa: ï¿½xitoLogï¿½stica Mastercom
+ * Autor: Andrï¿½ Valadas
 */
 import java.sql.ResultSet;
 import java.util.ArrayList;
@@ -42,11 +42,11 @@ public class Item_Nota_Fiscal_TransacoesBD extends BancoUtil {
 
         String sql = null;
         try{
-            //*** Para inserção de multiplos registros utilizando a mesma conexão, o oid podera vir informado
+            //*** Para inserï¿½ï¿½o de multiplos registros utilizando a mesma conexï¿½o, o oid podera vir informado
             if (ed.getOID_Item_Nota_Fiscal() > 0)
             {
                 if (super.doExiste("Itens_Notas_Fiscais", "oid_Item_Nota_Fiscal = "+ed.getOID_Item_Nota_Fiscal()))
-                    throw new Excecoes("ID Item Nota Fiscal já existe!");
+                    throw new Excecoes("ID Item Nota Fiscal jï¿½ existe!");
             } else ed.setOID_Item_Nota_Fiscal(new Long(getAutoIncremento("oid_Item_Nota_Fiscal","Itens_Notas_Fiscais")).longValue());
 
             Comissao_VendedorED edCV = new Comissao_VendedorED();
@@ -64,7 +64,7 @@ public class Item_Nota_Fiscal_TransacoesBD extends BancoUtil {
             {
 
             	String tipoICMS = "";
-                // As notas fiscais de devolução não consta ICMS
+                // As notas fiscais de devoluï¿½ï¿½o nï¿½o consta ICMS
             	if (edNF.getDm_tipo_nota_fiscal().equals("D")){
             		tipoICMS = "S";
             	}else{
@@ -109,7 +109,7 @@ public class Item_Nota_Fiscal_TransacoesBD extends BancoUtil {
                 ed.setVl_Comissao(edCV.getPE_Comissao() * ed.getVL_Item()/100);// calcular venda direta
             }
 
-            // Havendo desconto especial na nota fiscal o mesmo deverá ser raeteado
+            // Havendo desconto especial na nota fiscal o mesmo deverï¿½ ser raeteado
             // no ICMS e Base ICMS dos itens da nota fiscal de saida
             if (ed.getVL_Desconto_NF() > 0 ){
                 ed.setVL_ICMS_Aprov(Valor.round(ed.getVL_ICMS_Aprov() * (ed.getVL_Item() - ed.getVL_Desconto_NF()) / ed.getVL_Item(),2));
@@ -266,7 +266,7 @@ public class Item_Nota_Fiscal_TransacoesBD extends BancoUtil {
             {
 
             	String tipoICMS = "";
-                // As notas fiscais de devolução não consta ICMS
+                // As notas fiscais de devoluï¿½ï¿½o nï¿½o consta ICMS
             	if (edNF.getDm_tipo_nota_fiscal().equals("D")){
             		tipoICMS = "S";
             	}else{
@@ -305,7 +305,7 @@ public class Item_Nota_Fiscal_TransacoesBD extends BancoUtil {
                 ed.setVl_Comissao(edCV.getPE_Comissao() * ed.getVL_Item()/100);// calcular venda direta
             }
 
-            // Havendo desconto especial na nota fiscal o mesmo deverá ser raeteado
+            // Havendo desconto especial na nota fiscal o mesmo deverï¿½ ser raeteado
             // no ICMS e Base ICMS dos itens da nota fiscal de saida
             if (ed.getVL_Desconto_NF() > 0 ){
                 ed.setVL_ICMS_Aprov(Valor.round(ed.getVL_ICMS_Aprov() * (ed.getVL_Item() - ed.getVL_Desconto_NF()) / ed.getVL_Item(),2));
@@ -449,25 +449,25 @@ public class Item_Nota_Fiscal_TransacoesBD extends BancoUtil {
     public Item_Nota_Fiscal_TransacoesED getICMS_Produto(String oid_Produto, int oidUnidade, String oidPessoaDestino, int oidTipoProduto, long oidNaturezaOperacao, double vlItem, String dmOperacao, String tipoICMS) throws Exception {
 
         try {
-            //*** Validações
+            //*** Validaï¿½ï¿½es
             if (!doValida(oid_Produto))
-                throw new Excecoes("Produto não informado!");
+                throw new Excecoes("Produto nï¿½o informado!");
             if (oidUnidade < 1)
-                throw new Excecoes("Unidade não informada!");
+                throw new Excecoes("Unidade nï¿½o informada!");
             if (!doValida(oidPessoaDestino))
-                throw new Excecoes("Destinatário não informado!");
+                throw new Excecoes("Destinatï¿½rio nï¿½o informado!");
             if (oidTipoProduto < 1)
-                throw new Excecoes("Tipo de Produto não informado!");
+                throw new Excecoes("Tipo de Produto nï¿½o informado!");
             if (oidNaturezaOperacao < 1)
-                throw new Excecoes("Natureza de Operação não informada!");
+                throw new Excecoes("Natureza de Operaï¿½ï¿½o nï¿½o informada!");
             if (!doValida(dmOperacao))
-                throw new Excecoes("Operação não informada!");
-            //*** Verifica se CFOP não possui Aprovação de Credito.
+                throw new Excecoes("Operaï¿½ï¿½o nï¿½o informada!");
+            //*** Verifica se CFOP nï¿½o possui Aprovaï¿½ï¿½o de Credito.
             boolean notAprovCredito = "I".equals(getTableStringValue("DM_Tipo_Imposto", "Naturezas_Operacoes", "oid_Natureza_Operacao="+oidNaturezaOperacao));
 
             String oidPessoaOrigem = "";
             //*** Se dmOperacao for "E"=Entrada de Produtos, a Unidade vai ser o Destino
-            //    No caso da "S"=Saida a Unidade é Origem
+            //    No caso da "S"=Saida a Unidade ï¿½ Origem
             if ("E".equals(dmOperacao))
             {
                 oidPessoaOrigem = oidPessoaDestino;
@@ -480,19 +480,19 @@ public class Item_Nota_Fiscal_TransacoesBD extends BancoUtil {
     												  "oid_unidade = "+oidUnidade);
             }
             if (!doValida(oidPessoaOrigem))
-                throw new Excecoes("Pessoa Origem não localizada!");
+                throw new Excecoes("Pessoa Origem nï¿½o localizada!");
 
             //*** Estado ORIGEM
-            CidadeBean edCidade_Orig = CidadeBean.getByOID(getTableIntValue("oid_Cidade",
+            CidadeBean edCidade_Orig = CidadeBean.getByOID(null, getTableIntValue("oid_Cidade",
                     														"Pessoas",
                     														"oid_Pessoa = '"+oidPessoaOrigem+"'"));
             //*** Estado DESTINO
-            CidadeBean edCidade_Dest = CidadeBean.getByOID(getTableIntValue("oid_Cidade",
+            CidadeBean edCidade_Dest = CidadeBean.getByOID(null, getTableIntValue("oid_Cidade",
                     														"Pessoas",
                     														"oid_Pessoa = '"+oidPessoaDestino+"'"));
             Item_Nota_Fiscal_TransacoesED edItemNF = new Item_Nota_Fiscal_TransacoesED();
             edItemNF.setOid_natureza_operacao(oidNaturezaOperacao);
-            // Se na natureza de operacao da NF estiver setado para manter para toda a nota não tenta mudar para a diferenciada.
+            // Se na natureza de operacao da NF estiver setado para manter para toda a nota nï¿½o tenta mudar para a diferenciada.
             if ("N".equals(getTableStringValue("dm_manter_para_nf","naturezas_operacoes","oid_natureza_operacao = "+oidNaturezaOperacao))) {
 	            //*** CFOP DIFERENCIADO CARNE(Saidas)
 	            if ("S".equals(dmOperacao) &&
@@ -530,9 +530,9 @@ public class Item_Nota_Fiscal_TransacoesBD extends BancoUtil {
                     edItemNF.setPE_Aliquota_ICMS_Aprov(edTaxa.getPE_Aliquota_ICMS());
                 }
 
-            } else throw new Excecoes("Taxa não localizada!");
+            } else throw new Excecoes("Taxa nï¿½o localizada!");
 
-            //*** CALCULA VALOR do ICMS caso não tenha sido calculado pelas Taxas
+            //*** CALCULA VALOR do ICMS caso nï¿½o tenha sido calculado pelas Taxas
             if (edItemNF.getVL_ICMS() <= 0)
             {
                 //edItemNF.setVL_ICMS(Valor.round(Valor.calcPercentual(vlItem, edItemNF.getPE_Aliquota_ICMS()),2));
@@ -805,10 +805,10 @@ public class Item_Nota_Fiscal_TransacoesBD extends BancoUtil {
         String sql = "";
         try {
             if (!doValida(ed.getOID_Nota_Fiscal()))
-                throw new Mensagens("ID Nota Fiscal não informado!");
+                throw new Mensagens("ID Nota Fiscal nï¿½o informado!");
 
-            //Método alterado devido o erro ao calcular ICMS na NF de saída da Daudt.
-            //Alteração: sql +="    ,VL_ICMS = "+ vl_Icms_Aprov;
+            //Mï¿½todo alterado devido o erro ao calcular ICMS na NF de saï¿½da da Daudt.
+            //Alteraï¿½ï¿½o: sql +="    ,VL_ICMS = "+ vl_Icms_Aprov;
 
             // Busca o somatorio dos itens jah incluidos na NF
             sql="select " +
@@ -857,7 +857,7 @@ public class Item_Nota_Fiscal_TransacoesBD extends BancoUtil {
         }
     }
 
-    //*** Recalcula preço dos itens pela Condição de Pagamento e Tabela de Preços!
+    //*** Recalcula preï¿½o dos itens pela Condiï¿½ï¿½o de Pagamento e Tabela de Preï¿½os!
     //    Obs.: Tbm existente em Item_PedidoED: recalculaPrecoItensPedido()
     public void recalculaPrecoItensNota(Nota_Fiscal_EletronicaED ed, boolean byTabela, boolean byCondicao) throws Excecoes {
 
@@ -865,9 +865,9 @@ public class Item_Nota_Fiscal_TransacoesBD extends BancoUtil {
         try {
 
             if (!doValida(ed.getOid_nota_fiscal()))
-                throw new Excecoes("Nota Fiscal não informada!");
+                throw new Excecoes("Nota Fiscal nï¿½o informada!");
             if (ed.getOid_Condicao_Pagamento() < 1)
-                throw new Mensagens("Condição de Pagamento não informada!");
+                throw new Mensagens("Condiï¿½ï¿½o de Pagamento nï¿½o informada!");
 
             ArrayList lista = this.lista(new Item_Nota_Fiscal_TransacoesED(ed.getOid_nota_fiscal()));
             for (int i=0; i < lista.size(); i++)
@@ -878,17 +878,17 @@ public class Item_Nota_Fiscal_TransacoesBD extends BancoUtil {
 
                 ProdutoED edProduto = (ProdutoED) new ProdutoBD(executasql).getByRecord(new ProdutoED(edItem.getOID_Produto()));
 
-                /** by TABELA DE PREÇOS **/
+                /** by TABELA DE PREï¿½OS **/
                 if (byTabela)
                     edProduto.edPreco = new Pro004Bean().getPrecoByTabela((int)ed.getOid_Condicao_Pagamento(), edProduto.getOID_Produto(), ed.getOid_Tabela_Venda());
                 else
-                /** by CONDIÇÃO DE PAGAMENTO (mesma Tabela) **/
+                /** by CONDIï¿½ï¿½O DE PAGAMENTO (mesma Tabela) **/
                 if (byCondicao)
                     edProduto.edPreco = new Pro004Bean().getPrecoByOIDCondPagamento((int)ed.getOid_Condicao_Pagamento(), edItem.getOid_Preco_Produto());
 
                 boolean existPreco = edProduto.edPreco.getOID_Preco_Produto() > 0;
                 double nrQtAtendido = edItem.getNR_Quantidade();
-                /** Se não existe o ITEM NA TABELA, ZERA QUANTIDADE DO MESMO **/
+                /** Se nï¿½o existe o ITEM NA TABELA, ZERA QUANTIDADE DO MESMO **/
                 if (!existPreco)
                     nrQtAtendido = 0;
                 double vlUnitario = edProduto.edPreco.getVL_Venda();
@@ -999,10 +999,10 @@ public class Item_Nota_Fiscal_TransacoesBD extends BancoUtil {
             	vlFrr = vlMlt * ed.getVl_total_frete();
             	vlSer = vlMlt * ed.getVl_total_seguro();
             	vlDer = vlMlt * ed.getVl_total_despesas();
-            	vlAer = vlMlt * ed.getVL_Adicional(); /** Aqui está o frete que é informado por fora da NF **/
+            	vlAer = vlMlt * ed.getVL_Adicional(); /** Aqui estï¿½ o frete que ï¿½ informado por fora da NF **/
             	/** Guarda o valor do item rateado para o fechamento final **/
             	vlTFrr += vlFrr ; vlTSer += vlSer;vlTDer += vlDer;vlTAer += vlAer;
-            	/** Se for o último item da nf, verifica se há diferença entre o rateio e o valor original **/
+            	/** Se for o ï¿½ltimo item da nf, verifica se hï¿½ diferenï¿½a entre o rateio e o valor original **/
             	if (res.isLast()) {
             		vlFrr = vlFrr + ( ed.getVl_total_frete() - vlTFrr );
                 	vlSer = vlSer + ( ed.getVl_total_seguro() - vlTSer );
@@ -1010,9 +1010,9 @@ public class Item_Nota_Fiscal_TransacoesBD extends BancoUtil {
                 	vlAer = vlAer + ( ed.getVL_Adicional() - vlTAer );
             	}
             	/** Calcula o custo **/
-            	/** Preço - icms recuperado  - ( 9,25 * preço / 100 ) + ipi do item + rateio despesa acessoria NF + rateio frete NF + rateio valor do seguro NF. **/
+            	/** Preï¿½o - icms recuperado  - ( 9,25 * preï¿½o / 100 ) + ipi do item + rateio despesa acessoria NF + rateio frete NF + rateio valor do seguro NF. **/
             	vlCst = Valor.round((vlItn - vlIap - (parametro_FixoED.getPE_Aliquota_PIS_COFINS() * vlItn / 100) + vlIpi + vlFrr + vlSer + vlDer + vlAer ),5) ;
-            	vlCst = vlCst / qtAte; /** Calcula o valor unitário **/
+            	vlCst = vlCst / qtAte; /** Calcula o valor unitï¿½rio **/
             	/** Atualiza o item com o novo custo **/
                 sql =" Update "+
            	 		 " Itens_Notas_Fiscais "+
@@ -1043,8 +1043,8 @@ public class Item_Nota_Fiscal_TransacoesBD extends BancoUtil {
   	  ArrayList lstNF = new ArrayList();
 
   	  try{
-          // Procura no cliente se deve buscar a nota de entrada ou não para devolver.
-  		  // Feito para a Miro que não tinha nota de entrada de alguns clientes. Gelson.
+          // Procura no cliente se deve buscar a nota de entrada ou nï¿½o para devolver.
+  		  // Feito para a Miro que nï¿½o tinha nota de entrada de alguns clientes. Gelson.
           ResultSet res = null;
           try {
 
@@ -1109,16 +1109,16 @@ public class Item_Nota_Fiscal_TransacoesBD extends BancoUtil {
 	  			  vl_Unitario = itnE.getDouble("vl_Unitario");
 	  			  //Verifica quanto pode ser devolvido do item, desta nfe
 	  			  if ((pNr_Quantidade_Saida + nr_Quantidade_Ja_Devolvida) > nr_Quantidade_Movimento){
-	  				  // Se somente uma parte da saída
-	  				  nr_Saldo =  pNr_Quantidade_Saida - (nr_Quantidade_Movimento - nr_Quantidade_Ja_Devolvida); // Então sobrou algo para outra nota
+	  				  // Se somente uma parte da saï¿½da
+	  				  nr_Saldo =  pNr_Quantidade_Saida - (nr_Quantidade_Movimento - nr_Quantidade_Ja_Devolvida); // Entï¿½o sobrou algo para outra nota
 	  				  nr_Quantidade_Ja_Devolvida = nr_Quantidade_Movimento;
 	  			  } else {
-	  				  // Se toda a saída
-	  				  nr_Saldo = 0; // Então sobrou nada para outro nota.
+	  				  // Se toda a saï¿½da
+	  				  nr_Saldo = 0; // Entï¿½o sobrou nada para outro nota.
 	  				  nr_Quantidade_Ja_Devolvida = nr_Quantidade_Ja_Devolvida + pNr_Quantidade_Saida;
 	  			  }
 	  			  if (nr_Quantidade_Ja_Devolvida == nr_Quantidade_Movimento) {
-	  				  // Então não há nada mais a devolver deste item da nfe
+	  				  // Entï¿½o nï¿½o hï¿½ nada mais a devolver deste item da nfe
 	  				  dm_Devolvido = "S";
 	  			  } else {
 	  				  dm_Devolvido = "N";
@@ -1127,7 +1127,7 @@ public class Item_Nota_Fiscal_TransacoesBD extends BancoUtil {
 	              // Calcula a quantidade que conseguiu retirar
 	  			  nr_Quantidade_Retirada = pNr_Quantidade_Saida - nr_Saldo;
 
-	  			  // Insere vínculos entre as notas fiscais de entrada, saída e devolvida.
+	  			  // Insere vï¿½nculos entre as notas fiscais de entrada, saï¿½da e devolvida.
 
 	              sql = " INSERT INTO Itens_Notas_Fiscais_Vinculadas (" +
 	              		"		OID_Item_Nota_Fiscal_Entrada" +
@@ -1151,7 +1151,7 @@ public class Item_Nota_Fiscal_TransacoesBD extends BancoUtil {
 	  			  	  "WHERE "+
 	  			  	  "oid_Item_Nota_Fiscal = '"+ oid_Item_Nota_Fiscal + "'" ;
 	  			  executasql.executarUpdate(sql);
-	  			  //Testa se a NF já devolveu todos os itens
+	  			  //Testa se a NF jï¿½ devolveu todos os itens
 	  			  sql="SELECT "+
 	  			  	  "count(oid_Item_Nota_Fiscal) as Itens_Nao_Devolvidos "+
 	  			  	  "FROM "+
@@ -1171,10 +1171,10 @@ public class Item_Nota_Fiscal_TransacoesBD extends BancoUtil {
 	  			  	      "oid_Nota_Fiscal = '"+ oid_Nota_Fiscal + "'" ;
 	  				  executasql.executarUpdate(sql);
 	  			  }
-	  			  // Pega o número da NF para colocar na NF de devolucao
+	  			  // Pega o nï¿½mero da NF para colocar na NF de devolucao
 
 	  			  lstNF.add(nr_Nota_Fiscal);
-	  			  //Se o saldo for zero para por aqui, senão continua a buscar o item para baixar.
+	  			  //Se o saldo for zero para por aqui, senï¿½o continua a buscar o item para baixar.
 	  			  if (nr_Saldo == 0) {
 	  				  break;
 	  			  } else {
@@ -1185,7 +1185,7 @@ public class Item_Nota_Fiscal_TransacoesBD extends BancoUtil {
 	  		  edNFi.setVL_Unitario(vl_Unitario); // Atualiza o valor unitario
 	  		  edNFi.setVL_Produto(edNFi.getVL_Unitario() * edNFi.getNR_Quantidade()); // Atualiza o valor do produto
 	  		  edNFi.setVL_Item(edNFi.getVL_Unitario() * edNFi.getNR_Quantidade()); // Atualiza o valor do item
-	  		  // Se não achou nas notas de entrada, marca o item da nf de devolução para evitar a finalização
+	  		  // Se nï¿½o achou nas notas de entrada, marca o item da nf de devoluï¿½ï¿½o para evitar a finalizaï¿½ï¿½o
 
 	  		  if (vl_Unitario <=0) edNFi.setDm_Devolvido("X");
   		  }

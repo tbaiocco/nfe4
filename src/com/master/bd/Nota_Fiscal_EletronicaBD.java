@@ -104,6 +104,7 @@ import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe.InfNFe.Det.Imposto.ICMS.ICM
 import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe.InfNFe.Det.Imposto.PIS;
 import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe.InfNFe.Det.Imposto.PIS.PISAliq;
 import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe.InfNFe.Det.Prod;
+import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe.InfNFe.Ide.NFref;
 import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe.InfNFe.Total.ICMSTot;
 import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe.InfNFe.Transp.Transporta;
 import br.inf.portalfiscal.nfe.schema_4.retConsSitNFe.TRetConsSitNFe;
@@ -3646,22 +3647,20 @@ System.out.println("printNotaFiscalSaida ->>" +sqlUpdate);
 //                }
 
                 //NOTAS DE DEVOLUCAO
-//                if("D".equals(ed.getDm_tipo_nota_fiscal()) || edCFOP.getDM_Tipo_Operacao().equalsIgnoreCase("S")){
-//                	if(edCFOP.getOid_Natureza_Operacao() == 43 || edCFOP.getOid_Natureza_Operacao() == 99 || edCFOP.getOid_Natureza_Operacao() == 6)
-//                		ide.setFinNFe("1");//Finalidade de emiss�o da NF-E >> SAIDA/REMESSA
-//                	else {
-//                		ide.setFinNFe("4");//Finalidade de emiss�o da NF-E >> DEVOLUCAO
-//	                	String NF_Ref = getTableStringValue("nm_ch_referenciada",	"Notas_Fiscais", "oid_nota_fiscal = '"	+ ed.getOid_nota_fiscal() + "'");
-//	                	if(!JavaUtil.doValida(NF_Ref)){
-//	                		throw new Excecoes("Para NFe de devolução é necessário informar a chave da nota de entrada referenciada!");
-//	                	}
-//	                	NfeReferenciada nfref = new NfeReferenciada();
-//	                	ArrayList nfsref = new ArrayList();
-//	                	nfref.setRefNfe(NF_Ref);
-//	                	nfsref.add(nfref);
-//	                	notafiscal.setNfeReferenciadaCollection(nfsref);
-//                	}
-//                } 
+                if("D".equals(ed.getDm_tipo_nota_fiscal()) || edCFOP.getDM_Tipo_Operacao().equalsIgnoreCase("S")){
+                	if(edCFOP.getOid_Natureza_Operacao() == 43 || edCFOP.getOid_Natureza_Operacao() == 99 || edCFOP.getOid_Natureza_Operacao() == 6)
+                		ide.setFinNFe("1");//Finalidade de emiss�o da NF-E >> SAIDA/REMESSA
+                	else {
+                		ide.setFinNFe("4");//Finalidade de emiss�o da NF-E >> DEVOLUCAO
+	                	String NF_Ref = getTableStringValue("nm_ch_referenciada",	"Notas_Fiscais", "oid_nota_fiscal = '"	+ ed.getOid_nota_fiscal() + "'");
+	                	if(!JavaUtil.doValida(NF_Ref)){
+	                		throw new Excecoes("Para NFe de devolução é necessário informar a chave da nota de entrada referenciada!");
+	                	}
+	                	NFref nfref = new NFref();
+	                	nfref.setRefNFe(NF_Ref);
+	                	ide.getNFref().add(nfref);
+                	}
+                } 
 //                if("E".equals(ed.getDm_tipo_nota_fiscal()) && edCFOP.getOid_Natureza_Operacao() == 116){
 //                	ide.setFinNFe("4");//Finalidade de emiss�o da NF-E >> DEVOLUCAO
 //                	String NF_Ref = getTableStringValue("nm_ch_referenciada",	"Notas_Fiscais", "oid_nota_fiscal = '"	+ ed.getOid_nota_fiscal() + "'");
@@ -3709,7 +3708,7 @@ System.out.println("printNotaFiscalSaida ->>" +sqlUpdate);
                 	dest.setCNPJ((edCliente.getNR_CNPJ_CPF()));
                 
                 dest.setXNome(edCliente.getNM_Razao_Social());
-                endereco = edPessoa.getNM_Endereco();
+                endereco = edPessoa.getNM_Endereco().trim();
     			String cpl = null;
     			if(endereco.lastIndexOf(',')>0){
     				numero = endereco.substring (endereco.lastIndexOf (",") + 1);
@@ -3738,6 +3737,9 @@ System.out.println("printNotaFiscalSaida ->>" +sqlUpdate);
                 dest.setEnderDest(enderDest);
                 dest.setEmail(null);
                 dest.setIE(JavaUtil.getValueDif(edPessoa.getNM_Inscricao_Estadual(),"ISENTO"));
+                if(!JavaUtil.doValida(dest.getIE())) {
+                	dest.setIE(null);
+                }
                 infNFe.setDest(dest);
     	        
     	        if(!JavaUtil.doValida(edPessoa.getNM_Inscricao_Estadual())){
@@ -3820,9 +3822,13 @@ System.out.println("printNotaFiscalSaida ->>" +sqlUpdate);
                             prod.setUTrib(edProduto.getCD_Unidade_Produto());
                             prod.setQTrib(""+dec.format(edItem.getNR_QT_Atendido()).replace(",", "."));
                             prod.setVUnTrib(prod.getVUnCom());
-                            if(edItem.getVL_Desconto() > 0)
-                            	prod.setVDesc(""+dec.format(edItem.getVL_Desconto()).replace(",", "."));
+//                            if(edItem.getVL_Desconto() > 0)
+//                            	prod.setVDesc(""+dec.format(edItem.getVL_Desconto()).replace(",", "."));
                             prod.setIndTot("1");
+                            
+                            if(ed.getVl_total_frete()>0 && countItens==1)
+                            	prod.setVFrete(""+dec.format(ed.getVl_total_frete()).replace(",", "."));
+                            
                             det.setProd(prod);
                         	
                           //Impostos
@@ -3933,7 +3939,7 @@ System.out.println("printNotaFiscalSaida ->>" +sqlUpdate);
                     icmstot.setVFCPST("0.00");
                     icmstot.setVFCPSTRet("0.00");
                     
-                    icmstot.setVFrete("0");
+                    icmstot.setVFrete(""+dec.format(ed.getVl_total_frete()).replace(",", "."));
                     icmstot.setVSeg("0");
                     icmstot.setVDesc(""+dec.format(ed.getVL_Desconto_Itens()).replace(",", "."));
                     icmstot.setVII("0");
@@ -4063,6 +4069,9 @@ System.out.println("printNotaFiscalSaida ->>" +sqlUpdate);
                     }
         			InfAdic infAdic = new InfAdic();
                     infAdic.setInfAdFisco(inf);
+                    if(!JavaUtil.doValida(infAdic.getInfAdFisco())) {
+                    	infAdic.setInfAdFisco(null);	
+                    }
                     
         			inf = "";
         			if("D".equals(ed.getDm_tipo_nota_fiscal())){
@@ -4075,14 +4084,21 @@ System.out.println("printNotaFiscalSaida ->>" +sqlUpdate);
                     {
                 		inf+=ed.getDm_observacao();
                     }
+    				if (doValida(ed.getNm_complemento()))
+                    {
+                		inf+=ed.getNm_complemento() ;
+                    }
 
 //        			inf += " ****** SR. CLIENTE: PARA ACESSAR OS ARQUIVOS ELETRONICOS (XML) DE SUAS NF-E ACESSE http://201.66.254.114:8180/DisponibilizadorNFe/login.jsp,";
 //        			inf += " utilizando o login CLIENTE com a senha DEST e informe corretamente APENAS OS NUMEROS de seu CNPJ/CPF. ******  ";
 //    				String infTrib = "\n\nLei da Transparencia - O valor aproximado de tributos incidentes sobre o preco deste Documento e de R$ "+new DecimalFormat("#,##0.00").format(notafiscal.getvTotTrib());
 //        			notafiscal.setInfCpl(ManipulaString.corrigeString(ManipulaString.Enter2BR(inf + txt_dpl))+infTrib);
         			infAdic.setInfCpl(ManipulaString.corrigeString(ManipulaString.Enter2BR(inf + txt_dpl)));
+        			if(!JavaUtil.doValida(infAdic.getInfCpl())) {
+                    	infAdic.setInfCpl(null);	
+                    }
         			//...
-//        			infNFe.setInfAdic(infAdic);
+        			infNFe.setInfAdic(infAdic);
             
         			nfeReturn.setInfNFe(infNFe);
             }
