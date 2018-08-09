@@ -69,6 +69,53 @@ public class Parametro_WmsBD extends BancoUtil {
 			closeResultset(res);
 		}
     }
+    
+    public Parametro_WmsED getByRecord(Parametro_WmsED ed) throws Excecoes {
+        String sql = null;
+        ResultSet res = null;
+        Parametro_WmsED edVolta = new Parametro_WmsED();
+        try {
+        	sql = " select * from Parametros_Wms ";
+            res = this.executasql.executarConsulta(sql);
+            while (res.next()){
+                //Dados dos parametros wms
+                edVolta = new Parametro_WmsED();
+                edVolta.setOid_Parametro_Wms(res.getLong("Oid_Parametro_Wms"));
+                edVolta.setCd_Modelo_Nota_Fiscal(res.getString("Cd_Modelo_Nota_Fiscal"));
+                edVolta.setCd_Cfop_Retorno_Simbolico(res.getString("Cd_Cfop_Retorno_Simbolico"));
+                edVolta.setCd_Cfop_Retorno_Simbolico_Interestadual(res.getString("Cd_Cfop_Retorno_Simbolico_Interestadual"));
+                edVolta.setNm_Observacao_Devolucao(res.getString("Nm_Observacao_Devolucao"));
+                edVolta.setCd_Tipo_Produto(res.getString("Cd_Tipo_Produto"));
+                edVolta.setCd_Setor_Produto(res.getString("Cd_setor_produto"));
+                edVolta.setCd_Reduzido_Classificacao_Fiscal(res.getString("Cd_reduzido_classificacao_fiscal"));
+                edVolta.setCd_Situacao_Tributaria(res.getString("Cd_situacao_tributaria"));
+                edVolta.setCd_Localizacao(res.getString("Cd_localizacao"));
+                edVolta.setOid_Embalagem(res.getLong("Oid_embalagem"));
+                edVolta.setOid_Tipo_Pallet(res.getLong("Oid_tipo_pallet"));
+                edVolta.setDm_Rotatividade(res.getString("dm_Rotatividade"));
+                edVolta.setOid_Embalagem_TX(res.getString("Oid_embalagem"));
+                edVolta.setOid_Tipo_Pallet_TX(res.getString("Oid_tipo_pallet"));
+                edVolta.setCd_Cfop_Saida(res.getString("Cd_Cfop_Saida"));
+                edVolta.setCd_Modelo_Nota_Fiscal_Saida(res.getString("Cd_Modelo_Nota_Fiscal_Saida"));
+                edVolta.setCd_Cfop_Entrada(res.getString("Cd_Cfop_Entrada"));
+                edVolta.setCd_Modelo_Nota_Fiscal_Entrada(res.getString("Cd_Modelo_Nota_Fiscal_Entrada"));
+                if(ed.getOid_Unidade()>0){
+                	edVolta.setCd_Aidof_Nota_Fiscal_Devolucao(Parametro_FilialBean.getByOID_Unidade_Parametro(null, ed.getOid_Unidade()).getCD_AIDOF_Nota_Fiscal());
+                }
+                if(!JavaUtil.doValida(edVolta.getCd_Aidof_Nota_Fiscal_Devolucao())){
+                	edVolta.setCd_Aidof_Nota_Fiscal_Devolucao(res.getString("Cd_Aidof_Nota_Fiscal_Devolucao"));
+                }
+                // System.out.println("AIDOF NF: "+edVolta.getCd_Aidof_Nota_Fiscal_Devolucao());
+            }
+            return edVolta;
+		} catch (Exception exc) {
+			exc.printStackTrace();
+			throw new Excecoes(exc.getMessage(), exc,
+					this.getClass().getName(), "getByRecord(Parametro_WmsED ed)");
+		} finally {
+			closeResultset(res);
+		}
+    }
 
     public void altera(Parametro_WmsED ed) throws Excecoes {
         String sql = null;

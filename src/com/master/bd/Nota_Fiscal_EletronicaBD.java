@@ -3539,8 +3539,6 @@ System.out.println(sql);
                     	//Linha para pegar a AIDOF da unidade...
                     	pWMS.setOid_Unidade(new Long(ed.getOID_Unidade_Fiscal()).intValue());
                     	pWMS = new Parametro_WmsBD (executasql).getByRecord(empresa, pWMS);
-                        //old
-//                    	this.setNrSerieNotaFromAIDOF(ed, pWMS.getCd_Aidof_Nota_Fiscal_Devolucao());
                     	//nova numeracao
                     	new Nota_Fiscal_EletronicaRN(empresa).numeraNFe(ed, pWMS.getCd_Aidof_Nota_Fiscal_Devolucao());
                     }
