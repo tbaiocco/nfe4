@@ -1601,6 +1601,11 @@ public class Parametro_FilialBean {
     }
     return p;
   }
+  
+  public static final Parametro_FilialBean getByOID_Unidade_Parametro (int oid_Unidade) throws Exception {
+	  return getByOID_Unidade_Parametro(null, oid_Unidade);
+  }
+	  
 
   public static final Parametro_FilialBean getByOID_Unidade_Parametro (Empresa empresa, int oid_Unidade) throws Exception {
     /*
