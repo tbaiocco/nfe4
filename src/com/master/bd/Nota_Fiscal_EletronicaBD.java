@@ -11,9 +11,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.Iterator;
-import java.util.List;
+
+import javax.xml.bind.JAXBElement;
+import javax.xml.namespace.QName;
 
 import com.master.ed.CompromissoED;
 import com.master.ed.ConhecimentoED;
@@ -56,62 +57,57 @@ import com.master.util.Valor;
 import com.master.util.bd.ExecutaSQL;
 import com.master.util.ed.Parametro_FixoED;
 
-import br.nfe.core.base.EmpresaDb;
-import br.cte.model.Empresa;
-import br.nfe.model.NfeCce;
-import br.nfe.model.NfeDestinatario;
-import br.nfe.model.NfeEmitente;
-import br.nfe.model.NfeFaturamento;
-import br.nfe.model.NfeInutilizacao;
-import br.nfe.model.NfeLote;
-import br.nfe.model.NfeNotaFiscal;
-import br.nfe.model.NfeNotaItem;
-import br.nfe.model.NfeReferenciada;
-import br.nfe.model.NfeRetornoEnvioLote;
-import br.nfe.model.NfeTransporte;
-import br.servicos.NfeServicos;
-import br.utils.Utils;
-
-import br.com.samuelweb.certificado.exception.CertificadoException;
 import br.com.samuelweb.nfe.Nfe;
-import br.com.samuelweb.nfe.dom.ConfiguracoesIniciaisNfe;
 import br.com.samuelweb.nfe.dom.ConfiguracoesWebNfe;
 import br.com.samuelweb.nfe.dom.Enum.StatusEnum;
 import br.com.samuelweb.nfe.exception.NfeException;
 import br.com.samuelweb.nfe.util.ConstantesUtil;
-import br.com.samuelweb.nfe.util.Estados;
 import br.com.samuelweb.nfe.util.XmlUtil;
-import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe.InfNFe.Det.Imposto.ICMS.ICMS40;
+import br.cte.model.Empresa;
 import br.inf.portalfiscal.nfe.schema.envEventoCancNFe.TEnvEvento;
 import br.inf.portalfiscal.nfe.schema.envEventoCancNFe.TEvento;
-import br.inf.portalfiscal.nfe.schema.envEventoCancNFe.TProcEvento;
 import br.inf.portalfiscal.nfe.schema.envEventoCancNFe.TRetEnvEvento;
-import br.inf.portalfiscal.nfe.schema.retEnvEventoCancNFe.TRetEvento;
-
-import br.com.samuelweb.nfe.util.ConstantesUtil;
-import br.com.samuelweb.nfe.util.XmlUtil;
-import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe.InfNFe.Det.Imposto.ICMS.ICMS00;
-import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe.InfNFe.Det.Imposto.ICMS.ICMS10;
-import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe.InfNFe.Det.Imposto.ICMS.ICMS90;
-import br.inf.portalfiscal.nfe.schema_4.enviNFe.*;
+import br.inf.portalfiscal.nfe.schema_4.enviNFe.TEnderEmi;
+import br.inf.portalfiscal.nfe.schema_4.enviNFe.TEndereco;
+import br.inf.portalfiscal.nfe.schema_4.enviNFe.TEnviNFe;
+import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe;
 import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe.InfNFe;
-import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe.InfNFe.*;
+import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe.InfNFe.Dest;
+import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe.InfNFe.Det;
 import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe.InfNFe.Det.Imposto;
 import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe.InfNFe.Det.Imposto.COFINS;
-import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe.InfNFe.Det.Imposto.COFINS.COFINSAliq;
 import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe.InfNFe.Det.Imposto.ICMS;
-import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe.InfNFe.Det.Imposto.ICMS.ICMS60;
+import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe.InfNFe.Det.Imposto.ICMS.ICMS00;
+import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe.InfNFe.Det.Imposto.ICMS.ICMS10;
+import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe.InfNFe.Det.Imposto.ICMS.ICMS40;
+import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe.InfNFe.Det.Imposto.ICMS.ICMS90;
 import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe.InfNFe.Det.Imposto.PIS;
-import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe.InfNFe.Det.Imposto.PIS.PISAliq;
 import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe.InfNFe.Det.Prod;
+import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe.InfNFe.Emit;
+import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe.InfNFe.Ide;
 import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe.InfNFe.Ide.NFref;
+import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe.InfNFe.InfAdic;
+import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe.InfNFe.Pag;
+import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe.InfNFe.Total;
 import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe.InfNFe.Total.ICMSTot;
+import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe.InfNFe.Transp;
 import br.inf.portalfiscal.nfe.schema_4.enviNFe.TNFe.InfNFe.Transp.Transporta;
+import br.inf.portalfiscal.nfe.schema_4.enviNFe.TRetEnviNFe;
+import br.inf.portalfiscal.nfe.schema_4.enviNFe.TUf;
+import br.inf.portalfiscal.nfe.schema_4.enviNFe.TUfEmi;
+import br.inf.portalfiscal.nfe.schema_4.enviNFe.TVeiculo;
+import br.inf.portalfiscal.nfe.schema_4.retConsReciNFe.TRetConsReciNFe;
 import br.inf.portalfiscal.nfe.schema_4.retConsSitNFe.TRetConsSitNFe;
-
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.namespace.QName;
+import br.nfe.model.NfeDestinatario;
+import br.nfe.model.NfeEmitente;
+import br.nfe.model.NfeFaturamento;
+import br.nfe.model.NfeInutilizacao;
+import br.nfe.model.NfeNotaFiscal;
+import br.nfe.model.NfeNotaItem;
+import br.nfe.model.NfeReferenciada;
+import br.nfe.model.NfeTransporte;
+import br.servicos.NfeServicos;
+import br.utils.Utils;
 
 public class Nota_Fiscal_EletronicaBD extends BancoUtil {
 
@@ -4128,6 +4124,49 @@ System.out.println("SOH RECIBO: "+sqlUpdate);
 			return "ERRO: "+e.getMessage();
 		}
 	}
+	
+	public String updateRetornoNFE(Nota_Fiscal_EletronicaED ed, TRetConsReciNFe retorno, TEnviNFe enviNFe) throws SQLException, Excecoes {
+		try{
+			String sqlUpdate;
+			sqlUpdate = "UPDATE Notas_Fiscais SET " +
+			            " nfe_chave_acesso = '" + retorno.getProtNFe().get(0).getInfProt().getChNFe() + "', " +
+						" nfe_protocolo = '"+retorno.getProtNFe().get(0).getInfProt().getNProt() + "' " +
+			            " ,nfe_dt_hr_recebimento = '"+(retorno.getDhRecbto()) + "' " +
+			    		" ,nfe_cstat = '" + retorno.getProtNFe().get(0).getInfProt().getCStat() + "' " +
+			    		" ,nfe_motivo = '" + retorno.getProtNFe().get(0).getInfProt().getXMotivo() + "' " +
+			    		
+//			    		" ,nfe_recibo = '"+retorno.getInfRec().getNRec() + "' " +
+//			            " ,nfe_data_lote = '"+new SimpleDateFormat("dd/MM/yyyy' 'HH:mm:ss").format(retorno.getData()) + "' " +
+			    		" ,nfe_cstat_lote = '" + retorno.getCStat() + "' " +
+			    		" ,nfe_motivo_lote = '" + retorno.getXMotivo() + "' " +
+//						" ,nfe_digestvalue = '" + new String(retorno.getProtNFe().getInfProt().getDigVal()) + "' " +
+						" ,xml_autorizacao = '" + XmlUtil.criaNfeProc(enviNFe, retorno.getProtNFe()) + "' " +
+			            " WHERE oid_Nota_Fiscal = '"+ed.getOid_nota_fiscal()+"' ";
+System.out.println(sqlUpdate);
+			executasql.executarUpdate(sqlUpdate);
+			if(JavaUtil.doValida(retorno.getCStat()) && StatusEnum.AUTORIZADO.getCodigo().equals(retorno.getCStat())){
+				
+				if ("S".equals(ed.edModelo.getDM_Gera_Fiscal()))
+		        {
+					boolean isSaida = ("D".equals(ed.getDm_tipo_nota_fiscal()) || "R".equals(ed.getDm_tipo_nota_fiscal()) || "S".equals(ed.getDm_tipo_nota_fiscal()));//*** Tipo de NOTA
+	                if (isSaida || JavaUtil.doValida(ed.getDM_Tipo_Devolucao()))
+	                {
+	                	new Livro_FiscalBD(executasql).geraLivro_Fiscal_Saidas(new Livro_FiscalED(ed.getOid_nota_fiscal(), "NF"), "S");
+	                }else{
+	                	new Livro_FiscalBD(executasql).geraLivro_Fiscal_Entradas(new Livro_FiscalED(ed.getOid_nota_fiscal(), "NF"), "E");
+	                }
+		        }
+				
+				return "OK";
+            } else {
+            	return "NOK";
+            }
+		} catch(Exception e){
+			e.printStackTrace();
+			return "ERRO: "+e.getMessage();
+		}
+	}
+	
 	public String updateRetornoNFE(Nota_Fiscal_EletronicaED ed, TRetEnviNFe retorno, TEnviNFe enviNFe) throws SQLException, Excecoes {
 		try{
 			String sqlUpdate;
