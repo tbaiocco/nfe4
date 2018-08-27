@@ -3813,7 +3813,7 @@ System.out.println("printNotaFiscalSaida ->>" +sqlUpdate);
                             prod.setUCom(edProduto.getCD_Unidade_Produto());
                             prod.setQCom(""+dec3.format(edItem.getNR_QT_Atendido()).replace(",", "."));
                             prod.setVUnCom(""+dec3.format(edItem.getVL_Unitario()).replace(",", "."));
-                            prod.setVProd(""+dec3.format(edItem.getVL_Item()).replace(",", "."));
+                            prod.setVProd(""+dec.format(edItem.getVL_Item()).replace(",", "."));
                             prod.setCEANTrib("SEM GTIN");
                             prod.setUTrib(edProduto.getCD_Unidade_Produto());
                             prod.setQTrib(""+dec3.format(edItem.getNR_QT_Atendido()).replace(",", "."));
