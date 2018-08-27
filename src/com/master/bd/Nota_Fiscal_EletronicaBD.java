@@ -3424,6 +3424,8 @@ System.out.println(sql);
             String sqlUpdate = "";
 
             DecimalFormat dec = new DecimalFormat("#0.00");
+            DecimalFormat dec3 = new DecimalFormat("#0.000");
+            DecimalFormat dec4 = new DecimalFormat("#0.0000");
             //*** Variveis
             ResultSet resLocal = null;
             String sqlBusca = null;
@@ -3809,12 +3811,12 @@ System.out.println("printNotaFiscalSaida ->>" +sqlUpdate);
                             Natureza_OperacaoED edCFOPDif = new Natureza_OperacaoBD(executasql).getByRecord(new Natureza_OperacaoED(new Integer((int)edItem.getOid_natureza_operacao())));
                             prod.setCFOP(edCFOPDif.getCd_Natureza_Operacao());
                             prod.setUCom(edProduto.getCD_Unidade_Produto());
-                            prod.setQCom(""+dec.format(edItem.getNR_QT_Atendido()).replace(",", "."));
-                            prod.setVUnCom(""+dec.format(edItem.getVL_Unitario()).replace(",", "."));
-                            prod.setVProd(""+dec.format(edItem.getVL_Item()).replace(",", "."));
+                            prod.setQCom(""+dec3.format(edItem.getNR_QT_Atendido()).replace(",", "."));
+                            prod.setVUnCom(""+dec3.format(edItem.getVL_Unitario()).replace(",", "."));
+                            prod.setVProd(""+dec3.format(edItem.getVL_Item()).replace(",", "."));
                             prod.setCEANTrib("SEM GTIN");
                             prod.setUTrib(edProduto.getCD_Unidade_Produto());
-                            prod.setQTrib(""+dec.format(edItem.getNR_QT_Atendido()).replace(",", "."));
+                            prod.setQTrib(""+dec3.format(edItem.getNR_QT_Atendido()).replace(",", "."));
                             prod.setVUnTrib(prod.getVUnCom());
 //                            if(edItem.getVL_Desconto() > 0)
 //                            	prod.setVDesc(""+dec.format(edItem.getVL_Desconto()).replace(",", "."));
