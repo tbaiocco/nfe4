@@ -225,7 +225,7 @@ System.out.println("consulta nf:" + oid_Nota_Fiscal);
 		enviaRecebeNfe(request,response);
 //System.out.println("VOLTAR para:"+retorno+"?oid_Nota_Fiscal="+oid_Nota_Fiscal+"&eRequest=true&acao=S&Busca_Campo=Nota_Fiscal");
 		if(JavaUtil.doValida(retorno) && JavaUtil.doValida(oid_Nota_Fiscal)){
-			response.sendRedirect(retorno+"?oid_Nota_Fiscal="+oid_Nota_Fiscal+"&eRequest=true&acao=S&Busca_Campo=Nota_Fiscal");
+			response.sendRedirect(retorno+"?oid_Nota_Fiscal="+oid_Nota_Fiscal+"&eRequest=true&acao=UF&IS_OK=SIM&Busca_Campo=Nota_Fiscal");
 		}
 	}
 
