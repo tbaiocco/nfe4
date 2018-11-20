@@ -781,7 +781,7 @@ public class Nota_Fiscal_EletronicaRN extends Transacao {
             String oid_Pessoa = bancoUtil.getTableStringValue("oid_pessoa","unidades","oid_unidade='"+ed.getOID_Unidade_Contabil()+"'");
         	//Pega o oid_modelo_nota_fiscal e oid_natureza_operacao
             Parametro_WmsED edPWms = new Parametro_WmsED();
-            edPWms = new Parametro_WmsBD(this.sql).getByRecord(edPWms);
+            edPWms = new Parametro_WmsBD(this.sql).getByRecord(new Empresa(), edPWms);
             oid_Modelo_Nota_Fiscal = bancoUtil.getTableIntValue("oid_Modelo_Nota_Fiscal","Modelos_Notas_Fiscais","cd_Modelo_Nota_Fiscal='"+edPWms.getCd_Modelo_Nota_Fiscal()+"'");
             // Busca todas as notas fiscais de saida do cliente n�o devolvidas
             ed.setDm_tipo_nota_fiscal("S");
