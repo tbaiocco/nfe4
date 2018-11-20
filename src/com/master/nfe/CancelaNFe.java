@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.master.ed.Nota_Fiscal_EletronicaED;
 import com.master.rn.Nota_Fiscal_EletronicaRN;
+import com.master.util.CertUtil;
 import com.master.util.Excecoes;
 import com.master.util.JavaUtil;
 
@@ -46,23 +47,33 @@ import br.servicos.NfeServicos;
 				throw new Excecoes("A empresa emitente nao foi informada!");
 			}
 			Nota_Fiscal_EletronicaED edNF = new Nota_Fiscal_EletronicaED();
+			
+			String certPath = "/data/nfe4/certificados/" + empresa.getCertificado();
+	    	String certPass = CertUtil.getSenhaPlain(empresa);
 
 			if(JavaUtil.doValida(request.getParameter("oid_Nota_Fiscal"))){
 
+				Estados ehUF = Estados.RS;
+				for(Estados euf : Estados.values()) {
+					if(euf.getCodigoIbge().equals(String.valueOf(empresa.getcUf())))
+						ehUF = euf;
+				}
+System.out.println("Estado de config:"+ehUF+"|"+String.valueOf(empresa.getcUf()));
 				Certificado certificado = CertificadoService.certificadoPfx(
-	             		empresa.getCertificado(), 
-	             		empresa.getSenha());
+	             		certPath, 
+	             		certPass);
 	             //Esse Objeto Voce pode guardar em uma Session.
-	             ConfiguracoesWebNfe config = ConfiguracoesWebNfe.iniciaConfiguracoes(Estados.RS,
+				ConfiguracoesWebNfe config = ConfiguracoesWebNfe.iniciaConfiguracoes(ehUF,
 	                     empresa.getAmbiente(),
 	                     certificado,
-	                     MethodHandles.lookup().lookupClass().
-	                     getResource("/schemas").getPath(), //PEGAR SCHEMAS EM AMBIENTE WEB ESTA PASTA ESTA DENTRO DE RESOURCES
+	                     "/data/nfe4/schemas",
+//	                     MethodHandles.lookup().lookupClass().
+//	                     	getResource("/schemas").getPath(), //PEGAR SCHEMAS EM AMBIENTE WEB ESTA PASTA ESTA DENTRO DE RESOURCES
 	                     true);
-
+	             
 	             Nota_Fiscal_EletronicaED ed = this.getByRecord(request.getParameter("oid_Nota_Fiscal"));
 	             try{
-	             	new Nota_Fiscal_EletronicaRN().enviaNFE_cancelada(empresa, ed, config);
+	             	new Nota_Fiscal_EletronicaRN(empresa).enviaNFE_cancelada(empresa, ed, config);
 	             } catch (Excecoes e) {
 	                 e.printStackTrace();
 	                 throw e;
