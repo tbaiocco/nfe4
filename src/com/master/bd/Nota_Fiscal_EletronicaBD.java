@@ -1,5 +1,6 @@
 package com.master.bd;
 
+import java.io.File;
 /**
  * Andr� Valadas
  */
@@ -48,6 +49,7 @@ import com.master.root.UnidadeBean;
 import com.master.util.BancoUtil;
 import com.master.util.Data;
 import com.master.util.Excecoes;
+import com.master.util.FileUtil;
 import com.master.util.FormataData;
 import com.master.util.JavaUtil;
 import com.master.util.ManipulaString;
@@ -3470,7 +3472,7 @@ System.out.println(sql);
 
                 int oid_uni = new Integer (String.valueOf(ed.getOID_Unidade_Fiscal())).intValue();
 
-                UnidadeBean unidade_Remetente = new UnidadeBean().getByOID_Unidade(empresa, oid_uni);
+                UnidadeBean unidade_Remetente = UnidadeBean.getByOID_Unidade(empresa, oid_uni);
 
 //                PessoaED edTransportador = new PessoaBD(executasql).getByRecord(new PessoaED(unidade_Remetente.getOID_Pessoa()));
                 PessoaED edTransportador = new PessoaED();
@@ -4172,6 +4174,7 @@ System.out.println(sqlUpdate);
 	public String updateRetornoNFE(Nota_Fiscal_EletronicaED ed, TRetEnviNFe retorno, TEnviNFe enviNFe) throws SQLException, Excecoes {
 		try{
 			String sqlUpdate;
+			String xml = XmlUtil.criaNfeProc(enviNFe, retorno.getProtNFe());
 			sqlUpdate = "UPDATE Notas_Fiscais SET " +
 			            " nfe_chave_acesso = '" + retorno.getProtNFe().getInfProt().getChNFe() + "', " +
 						" nfe_protocolo = '"+retorno.getProtNFe().getInfProt().getNProt() + "' " +
@@ -4184,11 +4187,23 @@ System.out.println(sqlUpdate);
 			    		" ,nfe_cstat_lote = '" + retorno.getCStat() + "' " +
 			    		" ,nfe_motivo_lote = '" + retorno.getXMotivo() + "' " +
 //						" ,nfe_digestvalue = '" + new String(retorno.getProtNFe().getInfProt().getDigVal()) + "' " +
-						" ,xml_autorizacao = '" + XmlUtil.criaNfeProc(enviNFe, retorno.getProtNFe()) + "' " +
+						" ,xml_autorizacao = '" + xml + "' " +
 			            " WHERE oid_Nota_Fiscal = '"+ed.getOid_nota_fiscal()+"' ";
 System.out.println(sqlUpdate);
 			executasql.executarUpdate(sqlUpdate);
-			if(JavaUtil.doValida(retorno.getCStat()) && StatusEnum.AUTORIZADO.getCodigo().equals(retorno.getCStat())){
+			if(retorno != null &&
+					retorno.getProtNFe() != null &&
+					retorno.getProtNFe().getInfProt() != null &&
+					JavaUtil.doValida(retorno.getProtNFe().getInfProt().getCStat()) && 
+					StatusEnum.AUTORIZADO.getCodigo().equals(retorno.getProtNFe().getInfProt().getCStat())){
+				
+				//gravar arquivo
+				String caminho = "/data/doc-e/nfe/" + 
+						ManipulaString.limpaCampo(enviNFe.getNFe().get(0).getInfNFe().getEmit().getCNPJ())+"/";
+            	String arq = retorno.getProtNFe().getInfProt().getChNFe() + "-procNFe.xml";
+            	if(!new File(caminho + arq).exists()) {
+            		FileUtil.saveToFile(caminho + arq, xml);
+            	}				
 				
 				if ("S".equals(ed.edModelo.getDM_Gera_Fiscal()))
 		        {
